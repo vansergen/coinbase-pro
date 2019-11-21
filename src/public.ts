@@ -53,6 +53,16 @@ export type OrderBookLevel3 = {
 
 export type OrderBook = OrderBookLevel1 | OrderBookLevel2 | OrderBookLevel3;
 
+export type Ticker = {
+  trade_id: number;
+  price: string;
+  size: string;
+  time: string;
+  bid: string;
+  ask: string;
+  volume: string;
+};
+
 export type PublicClientOptions = {
   product_id?: string;
   sandbox?: boolean;
@@ -84,5 +94,9 @@ export class PublicClient extends RPC {
     ...qs
   }: OrderBookArgs = {}): Promise<OrderBook> {
     return this.get({ uri: "/products/" + product_id + "/book", qs });
+  }
+
+  getTicker({ product_id = this.product_id }: ProductID = {}): Promise<Ticker> {
+    return this.get({ uri: "/products/" + product_id + "/ticker" });
   }
 }
