@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "description": "Node.js library for Coinbase Pro",
   "main": "index.js",
+  "scripts": {
+    "prettier": "prettier -c **/*.{js,md,ts,json}",
+    "prettier-write": "npm run prettier -- --write",
+    "lint": "eslint --ext .ts,.js ./",
+    "lint-fix": "npm run lint -- --fix"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vansergen/coinbase-pro.git"
