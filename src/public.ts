@@ -124,6 +124,11 @@ export type CurrencyInfo = {
   convertible_to?: string[];
 };
 
+export type Time = {
+  iso: string;
+  epoch: number;
+};
+
 export type PublicClientOptions = {
   product_id?: string;
   sandbox?: boolean;
@@ -183,5 +188,9 @@ export class PublicClient extends RPC {
 
   getCurrencies(): Promise<CurrencyInfo[]> {
     return this.get({ uri: "/currencies" });
+  }
+
+  getTime(): Promise<Time> {
+    return this.get({ uri: "/time" });
   }
 }
