@@ -37,3 +37,12 @@ const book = await client.getOrderBook({ level });
 const product_id = "ETH-BTC";
 const ticker = await client.getTicker({ product_id });
 ```
+
+- [`getTrades`](https://docs.pro.coinbase.com/#get-trades)
+
+```typescript
+const product_id = "ETH-BTC";
+const limit = 10;
+const after = 74;
+const trades = await client.getTrades({ product_id, limit, after });
+```
