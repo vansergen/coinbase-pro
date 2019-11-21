@@ -10,7 +10,8 @@ import {
   OrderBook,
   Ticker,
   Trade,
-  Candle
+  Candle,
+  ProductStats
 } from "../index";
 import * as assert from "assert";
 
@@ -243,6 +244,22 @@ suite("PublicClient", () => {
       .query({ granularity })
       .reply(200, response);
     const data = await client.getHistoricRates({ granularity });
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".get24hrStats()", async () => {
+    const response: ProductStats = {
+      open: "0.02167000",
+      high: "0.02169000",
+      low: "0.02101000",
+      volume: "12454.23017859",
+      last: "0.02115000",
+      volume_30day: "392055.30746805"
+    };
+    nock(apiUri)
+      .get("/products/" + product_id + "/stats")
+      .reply(200, response);
+    const data = await client.get24hrStats({ product_id });
     assert.deepStrictEqual(data, response);
   });
 });
