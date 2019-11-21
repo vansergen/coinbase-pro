@@ -74,3 +74,9 @@ const stats = await client.get24hrStats({ product_id });
 ```typescript
 const currencies = await client.getCurrencies();
 ```
+
+- [`getTime`](https://docs.pro.coinbase.com/#time)
+
+```typescript
+const time = await client.getTime();
+```
