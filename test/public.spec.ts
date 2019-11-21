@@ -11,7 +11,8 @@ import {
   Ticker,
   Trade,
   Candle,
-  ProductStats
+  ProductStats,
+  CurrencyInfo
 } from "../index";
 import * as assert from "assert";
 
@@ -260,6 +261,53 @@ suite("PublicClient", () => {
       .get("/products/" + product_id + "/stats")
       .reply(200, response);
     const data = await client.get24hrStats({ product_id });
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getCurrencies()", async () => {
+    const response: CurrencyInfo[] = [
+      {
+        id: "USDC",
+        name: "USD Coin",
+        min_size: "0.000001",
+        status: "online",
+        message: "",
+        details: {
+          type: "crypto",
+          symbol: "$",
+          network_confirmations: 35,
+          sort_order: 80,
+          crypto_address_link:
+            "https://etherscan.io/token/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48?a={{address}}",
+          crypto_transaction_link: "https://etherscan.io/tx/0x{{txId}}",
+          push_payment_methods: ["crypto"],
+          group_types: ["stablecoin", "usdc", "crypto"]
+        },
+        max_precision: "0.000001",
+        convertible_to: ["USD"]
+      },
+      {
+        id: "DASH",
+        name: "Dash",
+        min_size: "1",
+        status: "online",
+        message: null,
+        details: {
+          type: "crypto",
+          network_confirmations: 2,
+          sort_order: 47,
+          crypto_address_link: "https://chain.so/address/DASH/{{address}}",
+          crypto_transaction_link: "https://chain.so/tx/DASH/{{address}}",
+          push_payment_methods: ["crypto"],
+          min_withdrawal_amount: 0.01
+        },
+        max_precision: "0.00000001"
+      }
+    ];
+    nock(apiUri)
+      .get("/currencies")
+      .reply(200, response);
+    const data = await client.getCurrencies();
     assert.deepStrictEqual(data, response);
   });
 });
