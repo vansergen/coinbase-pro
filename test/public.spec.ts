@@ -8,7 +8,8 @@ import {
   SandboxApiUri,
   ProductInfo,
   OrderBook,
-  Ticker
+  Ticker,
+  Trade
 } from "../index";
 import * as assert from "assert";
 
@@ -158,6 +159,57 @@ suite("PublicClient", () => {
       .get("/products/" + product_id + "/ticker")
       .reply(200, response);
     const data = await client.getTicker();
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getTrades()", async () => {
+    const response: Trade[] = [
+      {
+        time: "2019-11-12T19:46:40.935Z",
+        trade_id: 77695138,
+        price: "8748.91000000",
+        size: "0.00267368",
+        side: "sell"
+      },
+      {
+        time: "2019-11-12T19:46:30.075Z",
+        trade_id: 77695137,
+        price: "8749.83000000",
+        size: "0.03499187",
+        side: "sell"
+      }
+    ];
+    nock(apiUri)
+      .get("/products/" + product_id + "/trades")
+      .reply(200, response);
+    const data = await client.getTrades();
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getTrades() (with options)", async () => {
+    const limit = 2;
+    const after = 77695139;
+    const response: Trade[] = [
+      {
+        time: "2019-11-12T19:46:40.935Z",
+        trade_id: 77695138,
+        price: "8748.91000000",
+        size: "0.00267368",
+        side: "sell"
+      },
+      {
+        time: "2019-11-12T19:46:30.075Z",
+        trade_id: 77695137,
+        price: "8749.83000000",
+        size: "0.03499187",
+        side: "sell"
+      }
+    ];
+    nock(apiUri)
+      .get("/products/" + product_id + "/trades")
+      .query({ limit, after })
+      .reply(200, response);
+    const data = await client.getTrades({ after, limit });
     assert.deepStrictEqual(data, response);
   });
 });
