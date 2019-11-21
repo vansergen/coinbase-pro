@@ -4,6 +4,7 @@
   "description": "Node.js library for Coinbase Pro",
   "main": "index.js",
   "scripts": {
+    "test": "mocha -r ts-node/register --full-trace --ui tdd --bail --extension ts",
     "prettier": "prettier -c **/*.{js,md,ts,json}",
     "prettier-write": "npm run prettier -- --write",
     "lint": "eslint --ext .ts,.js ./",
