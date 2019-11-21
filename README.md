@@ -1,4 +1,4 @@
-# coinbase-pro
+# coinbase-pro [![Build Status](https://travis-ci.com/vansergen/coinbase-pro.svg?token=cg5dVMovG8Db6p5Qzzps&branch=master)](https://travis-ci.com/vansergen/coinbase-pro)
 
 Node.js library for [Coinbase Pro](https://pro.coinbase.com/)
 
