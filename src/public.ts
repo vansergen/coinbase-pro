@@ -90,6 +90,15 @@ export type Trade = {
 
 export type Candle = [number, number, number, number, number, number];
 
+export type ProductStats = {
+  open: string;
+  high: string;
+  low: string;
+  volume: string;
+  last: string;
+  volume_30day: string;
+};
+
 export type PublicClientOptions = {
   product_id?: string;
   sandbox?: boolean;
@@ -139,5 +148,11 @@ export class PublicClient extends RPC {
     ...qs
   }: HistoricRatesArgs): Promise<Candle[]> {
     return this.get({ uri: "/products/" + product_id + "/candles", qs });
+  }
+
+  get24hrStats({ product_id = this.product_id }: ProductID = {}): Promise<
+    ProductStats
+  > {
+    return this.get({ uri: "/products/" + product_id + "/stats" });
   }
 }
