@@ -1,0 +1,73 @@
+{
+  "name": "coinbase-pro-node-api",
+  "version": "1.0.0",
+  "description": "Node.js library for Coinbase Pro",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "type": "module",
+  "engines": {
+    "node": ">=8.16.2"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run prettier && npm run lint && npm run build && npm run prettier-write && npm run lint-fix",
+    "postpublish": "rm -fr build",
+    "test": "mocha -r ts-node/register --full-trace --ui tdd --bail --extension ts",
+    "prettier": "prettier -c **/*.{js,md,ts,json}",
+    "prettier-write": "npm run prettier -- --write",
+    "lint": "eslint --ext .ts,.js ./",
+    "lint-fix": "npm run lint -- --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vansergen/coinbase-pro.git"
+  },
+  "keywords": [
+    "Coinbase",
+    "crypto",
+    "currency",
+    "exchange",
+    "API"
+  ],
+  "author": "Sergey Bakulin",
+  "license": "GPL-3.0-only",
+  "bugs": {
+    "url": "https://github.com/vansergen/coinbase-pro/issues"
+  },
+  "homepage": "https://github.com/vansergen/coinbase-pro#readme",
+  "devDependencies": {
+    "@types/mocha": "^5.2.7",
+    "@typescript-eslint/eslint-plugin": "^2.8.0",
+    "@typescript-eslint/parser": "^2.8.0",
+    "eslint": "^6.6.0",
+    "husky": "^3.1.0",
+    "lint-staged": "^9.4.3",
+    "mocha": "^6.2.2",
+    "nock": "^11.7.0",
+    "prettier": "^1.19.1",
+    "ts-node": "^8.5.2",
+    "typescript": "^3.7.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts,json,md}": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.{ts,js}": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "dependencies": {
+    "rpc-request": "^3.1.1"
+  },
+  "funding": {
+    "type": "Coinbase Commerce",
+    "url": "https://commerce.coinbase.com/checkout/ce079fed-047e-4280-bb3d-3cf865a3c309"
+  }
+}

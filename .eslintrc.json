@@ -1,0 +1,26 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "env": {
+    "node": true,
+    "es2020": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "curly": "error",
+    "eqeqeq": "error",
+    "linebreak-style": "error",
+    "quotes": ["error", "double"],
+    "prefer-destructuring": "error",
+    "semi": "error",
+    "no-console": ["error"],
+    "@typescript-eslint/camelcase": "off"
+  }
+}
