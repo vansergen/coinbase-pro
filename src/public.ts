@@ -22,6 +22,13 @@ export type PagProductID = ProductID & PagArgs;
 
 export type OrderBookArgs = ProductID & { level?: 1 | 2 | 3 };
 
+export type HistoricRatesArgs = {
+  product_id?: string;
+  start?: string;
+  end?: string;
+  granularity: 60 | 300 | 900 | 3600 | 21600 | 86400;
+};
+
 export type ProductInfo = {
   id: string;
   base_currency: string;
@@ -81,6 +88,8 @@ export type Trade = {
   side: Side;
 };
 
+export type Candle = [number, number, number, number, number, number];
+
 export type PublicClientOptions = {
   product_id?: string;
   sandbox?: boolean;
@@ -123,5 +132,12 @@ export class PublicClient extends RPC {
     ...qs
   }: PagProductID = {}): Promise<Trade[]> {
     return this.get({ uri: "/products/" + product_id + "/trades", qs });
+  }
+
+  getHistoricRates({
+    product_id = this.product_id,
+    ...qs
+  }: HistoricRatesArgs): Promise<Candle[]> {
+    return this.get({ uri: "/products/" + product_id + "/candles", qs });
   }
 }
