@@ -7,7 +7,8 @@ import {
   ApiUri,
   SandboxApiUri,
   ProductInfo,
-  OrderBook
+  OrderBook,
+  Ticker
 } from "../index";
 import * as assert from "assert";
 
@@ -140,6 +141,23 @@ suite("PublicClient", () => {
       .query({ level })
       .reply(200, response);
     const data = await client.getOrderBook({ level });
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getTicker()", async () => {
+    const response: Ticker = {
+      trade_id: 77692587,
+      price: "8735.01",
+      size: "0.02225439",
+      time: "2019-11-12T18:28:34.962Z",
+      bid: "8735",
+      ask: "8735.01",
+      volume: "6079.45359045"
+    };
+    nock(apiUri)
+      .get("/products/" + product_id + "/ticker")
+      .reply(200, response);
+    const data = await client.getTicker();
     assert.deepStrictEqual(data, response);
   });
 });
