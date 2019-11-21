@@ -23,3 +23,10 @@ const client = new PublicClient({ sandbox });
 ```typescript
 const products = await client.getProducts();
 ```
+
+- [`getOrderBook`](https://docs.pro.coinbase.com/#get-product-order-book)
+
+```typescript
+const level = 2;
+const book = await client.getOrderBook({ level });
+```
