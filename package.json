@@ -4,8 +4,14 @@
   "description": "Node.js library for Coinbase Pro",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "type": "module",
+  "engines": {
+    "node": ">=8.16.2"
+  },
   "scripts": {
     "build": "tsc",
+    "prepublishOnly": "npm run prettier && npm run lint && npm run build && npm run prettier-write && npm run lint-fix",
+    "postpublish": "rm -fr build",
     "test": "mocha -r ts-node/register --full-trace --ui tdd --bail --extension ts",
     "prettier": "prettier -c **/*.{js,md,ts,json}",
     "prettier-write": "npm run prettier -- --write",
@@ -59,5 +65,9 @@
   },
   "dependencies": {
     "rpc-request": "^3.1.1"
+  },
+  "funding": {
+    "type": "Coinbase Commerce",
+    "url": "https://commerce.coinbase.com/checkout/ce079fed-047e-4280-bb3d-3cf865a3c309"
   }
 }
