@@ -99,6 +99,31 @@ export type ProductStats = {
   volume_30day: string;
 };
 
+export type CurrencyDetails = {
+  type: string;
+  symbol?: string;
+  sort_order: number;
+  push_payment_methods: string[];
+  processing_time_seconds?: number;
+  min_withdrawal_amount?: number;
+  network_confirmations?: number;
+  group_types?: string[];
+  crypto_address_link?: string;
+  crypto_transaction_link?: string;
+  display_name?: string;
+};
+
+export type CurrencyInfo = {
+  id: string;
+  name: string;
+  min_size: string;
+  status: string;
+  message: null | string;
+  details: CurrencyDetails;
+  max_precision: string;
+  convertible_to?: string[];
+};
+
 export type PublicClientOptions = {
   product_id?: string;
   sandbox?: boolean;
@@ -154,5 +179,9 @@ export class PublicClient extends RPC {
     ProductStats
   > {
     return this.get({ uri: "/products/" + product_id + "/stats" });
+  }
+
+  getCurrencies(): Promise<CurrencyInfo[]> {
+    return this.get({ uri: "/currencies" });
   }
 }
