@@ -12,6 +12,14 @@ export type ProductID = {
   product_id?: string;
 };
 
+export type PagArgs = {
+  before?: number | string;
+  after?: number | string;
+  limit?: number | string;
+};
+
+export type PagProductID = ProductID & PagArgs;
+
 export type OrderBookArgs = ProductID & { level?: 1 | 2 | 3 };
 
 export type ProductInfo = {
@@ -63,6 +71,16 @@ export type Ticker = {
   volume: string;
 };
 
+export type Side = "buy" | "sell";
+
+export type Trade = {
+  time: string;
+  trade_id: number;
+  price: string;
+  size: string;
+  side: Side;
+};
+
 export type PublicClientOptions = {
   product_id?: string;
   sandbox?: boolean;
@@ -98,5 +116,12 @@ export class PublicClient extends RPC {
 
   getTicker({ product_id = this.product_id }: ProductID = {}): Promise<Ticker> {
     return this.get({ uri: "/products/" + product_id + "/ticker" });
+  }
+
+  getTrades({
+    product_id = this.product_id,
+    ...qs
+  }: PagProductID = {}): Promise<Trade[]> {
+    return this.get({ uri: "/products/" + product_id + "/trades", qs });
   }
 }
