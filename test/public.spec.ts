@@ -12,7 +12,8 @@ import {
   Trade,
   Candle,
   ProductStats,
-  CurrencyInfo
+  CurrencyInfo,
+  Time
 } from "../index";
 import * as assert from "assert";
 
@@ -308,6 +309,18 @@ suite("PublicClient", () => {
       .get("/currencies")
       .reply(200, response);
     const data = await client.getCurrencies();
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getTime()", async () => {
+    const response: Time = {
+      iso: "2019-11-13T10:16:24.124Z",
+      epoch: 1573640184.124
+    };
+    nock(apiUri)
+      .get("/time")
+      .reply(200, response);
+    const data = await client.getTime();
     assert.deepStrictEqual(data, response);
   });
 });
