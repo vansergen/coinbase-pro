@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/vansergen/coinbase-pro#readme",
   "devDependencies": {
+    "ts-node": "^8.5.2",
     "typescript": "^3.7.2"
   }
 }
