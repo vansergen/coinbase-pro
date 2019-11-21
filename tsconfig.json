@@ -4,6 +4,7 @@
     "module": "commonjs",
     "declaration": true,
     "declarationMap": true,
+    "outDir": "./build",
     "newLine": "lf",
     "sourceMap": true,
     "strict": true,
@@ -12,5 +13,6 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
-  }
+  },
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }

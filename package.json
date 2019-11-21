@@ -2,8 +2,10 @@
   "name": "coinbase-pro-node-api",
   "version": "1.0.0",
   "description": "Node.js library for Coinbase Pro",
-  "main": "index.js",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
+    "build": "tsc",
     "test": "mocha -r ts-node/register --full-trace --ui tdd --bail --extension ts",
     "prettier": "prettier -c **/*.{js,md,ts,json}",
     "prettier-write": "npm run prettier -- --write",
