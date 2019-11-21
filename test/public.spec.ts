@@ -6,7 +6,8 @@ import {
   DefaultHeaders,
   ApiUri,
   SandboxApiUri,
-  ProductInfo
+  ProductInfo,
+  OrderBook
 } from "../index";
 import * as assert from "assert";
 
@@ -105,6 +106,40 @@ suite("PublicClient", () => {
       .get("/products")
       .reply(200, response);
     const data = await client.getProducts();
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getOrderBook()", async () => {
+    const response: OrderBook = {
+      sequence: 11228249048,
+      bids: [["8736.97", "21.90409501", 6]],
+      asks: [["8736.98", "1.182", 1]]
+    };
+    nock(apiUri)
+      .get("/products/" + product_id + "/book")
+      .reply(200, response);
+    const data = await client.getOrderBook();
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getOrderBook() (with level)", async () => {
+    const level = 2;
+    const response: OrderBook = {
+      sequence: 11228259122,
+      bids: [
+        ["8736.08", "0.73298845", 2],
+        ["8735", "1.00456364", 2]
+      ],
+      asks: [
+        ["8736.09", "3.43889621", 3],
+        ["8736.3", "0.2", 1]
+      ]
+    };
+    nock(apiUri)
+      .get("/products/" + product_id + "/book")
+      .query({ level })
+      .reply(200, response);
+    const data = await client.getOrderBook({ level });
     assert.deepStrictEqual(data, response);
   });
 });
