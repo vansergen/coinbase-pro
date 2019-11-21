@@ -46,3 +46,18 @@ const limit = 10;
 const after = 74;
 const trades = await client.getTrades({ product_id, limit, after });
 ```
+
+- [`getHistoricRates`](https://docs.pro.coinbase.com/#get-historic-rates)
+
+```typescript
+const product_id = "ETH-BTC";
+const end = "2019-11-12T16:40:00-0500";
+const start = "2019-11-12T16:37:00-0500";
+const granularity = 60;
+const candles = await client.getHistoricRates({
+  product_id,
+  end,
+  start,
+  granularity
+});
+```
