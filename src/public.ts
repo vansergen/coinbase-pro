@@ -8,6 +8,12 @@ export const DefaultHeaders = {
   "User-Agent": "coinbase-pro-node-api-client"
 };
 
+export type ProductID = {
+  product_id?: string;
+};
+
+export type OrderBookArgs = ProductID & { level?: 1 | 2 | 3 };
+
 export type ProductInfo = {
   id: string;
   base_currency: string;
@@ -26,6 +32,26 @@ export type ProductInfo = {
   status: string;
   status_message: string;
 };
+
+export type OrderBookLevel1 = {
+  sequence: number;
+  bids: [[string, string, number]];
+  asks: [[string, string, number]];
+};
+
+export type OrderBookLevel2 = {
+  sequence: number;
+  bids: [string, string, number][];
+  asks: [string, string, number][];
+};
+
+export type OrderBookLevel3 = {
+  sequence: number;
+  bids: [string, string, string][];
+  asks: [string, string, string][];
+};
+
+export type OrderBook = OrderBookLevel1 | OrderBookLevel2 | OrderBookLevel3;
 
 export type PublicClientOptions = {
   product_id?: string;
@@ -51,5 +77,12 @@ export class PublicClient extends RPC {
 
   getProducts(): Promise<ProductInfo[]> {
     return this.get({ uri: "/products" });
+  }
+
+  getOrderBook({
+    product_id = this.product_id,
+    ...qs
+  }: OrderBookArgs = {}): Promise<OrderBook> {
+    return this.get({ uri: "/products/" + product_id + "/book", qs });
   }
 }
