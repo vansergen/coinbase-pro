@@ -1,4 +1,6 @@
-import { PublicClient, PublicClientOptions } from "./public";
+import { PublicClient, PublicClientOptions, DefaultHeaders } from "./public";
+import { Signer } from "./signer";
+import { ParsedUrlQuery } from "querystring";
 
 export type AuthenticatedClientOptions = PublicClientOptions & {
   key: string;
@@ -21,5 +23,29 @@ export class AuthenticatedClient extends PublicClient {
     this.key = key;
     this.secret = secret;
     this.passphrase = passphrase;
+  }
+
+  request({
+    body = {},
+    method,
+    uri,
+    qs
+  }: {
+    body?: object;
+    method: string;
+    uri: string;
+    qs?: ParsedUrlQuery;
+  }): Promise<any> {
+    const signature = Signer({
+      method,
+      key: this.key,
+      secret: this.secret,
+      passphrase: this.passphrase,
+      body,
+      uri,
+      qs
+    });
+    const headers = { ...DefaultHeaders, ...signature };
+    return super.request({ qs, body, method, uri, headers });
   }
 }
