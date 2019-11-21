@@ -9,7 +9,8 @@ import {
   ProductInfo,
   OrderBook,
   Ticker,
-  Trade
+  Trade,
+  Candle
 } from "../index";
 import * as assert from "assert";
 
@@ -210,6 +211,38 @@ suite("PublicClient", () => {
       .query({ limit, after })
       .reply(200, response);
     const data = await client.getTrades({ after, limit });
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getHistoricRates()", async () => {
+    const granularity = 60;
+    const end = "2019-11-12T16:40:00-0500";
+    const start = "2019-11-12T16:37:00-0500";
+    const response: Candle[] = [
+      [1573594800, 8767.97, 8777.59, 8767.98, 8769.35, 12.02368428],
+      [1573594740, 8758.86, 8767.98, 8758.87, 8767.97, 1.6353693],
+      [1573594680, 8758.64, 8758.87, 8758.87, 8758.87, 2.30955483],
+      [1573594620, 8758.51, 8759.37, 8758.75, 8758.87, 3.03687967]
+    ];
+    nock(apiUri)
+      .get("/products/" + product_id + "/candles")
+      .query({ granularity, start, end })
+      .reply(200, response);
+    const data = await client.getHistoricRates({ granularity, start, end });
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getHistoricRates() (with no `start` and `end`)", async () => {
+    const granularity = 60;
+    const response: Candle[] = [
+      [1573594800, 8767.97, 8777.59, 8767.98, 8769.35, 12.02368428],
+      [1573594740, 8758.86, 8767.98, 8758.87, 8767.97, 1.6353693]
+    ];
+    nock(apiUri)
+      .get("/products/" + product_id + "/candles")
+      .query({ granularity })
+      .reply(200, response);
+    const data = await client.getHistoricRates({ granularity });
     assert.deepStrictEqual(data, response);
   });
 });
