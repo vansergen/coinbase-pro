@@ -30,3 +30,10 @@ const products = await client.getProducts();
 const level = 2;
 const book = await client.getOrderBook({ level });
 ```
+
+- [`getTicker`](https://docs.pro.coinbase.com/#get-product-ticker)
+
+```typescript
+const product_id = "ETH-BTC";
+const ticker = await client.getTicker({ product_id });
+```
