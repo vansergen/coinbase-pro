@@ -61,3 +61,10 @@ const candles = await client.getHistoricRates({
   granularity
 });
 ```
+
+- [`get24hrStats`](https://docs.pro.coinbase.com/#get-24hr-stats)
+
+```typescript
+const product_id = "ETH-BTC";
+const stats = await client.get24hrStats({ product_id });
+```
