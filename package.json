@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/vansergen/coinbase-pro#readme",
   "devDependencies": {
+    "@types/mocha": "^5.2.7",
     "@typescript-eslint/eslint-plugin": "^2.8.0",
     "@typescript-eslint/parser": "^2.8.0",
     "eslint": "^6.6.0",
