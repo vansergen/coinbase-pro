@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/vansergen/coinbase-pro/issues"
   },
-  "homepage": "https://github.com/vansergen/coinbase-pro#readme"
+  "homepage": "https://github.com/vansergen/coinbase-pro#readme",
+  "devDependencies": {
+    "typescript": "^3.7.2"
+  }
 }
