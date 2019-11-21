@@ -68,3 +68,9 @@ const candles = await client.getHistoricRates({
 const product_id = "ETH-BTC";
 const stats = await client.get24hrStats({ product_id });
 ```
+
+- [`getCurrencies`](https://docs.pro.coinbase.com/#get-currencies)
+
+```typescript
+const currencies = await client.getCurrencies();
+```
