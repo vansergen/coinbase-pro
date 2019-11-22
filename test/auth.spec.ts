@@ -473,4 +473,23 @@ suite("AuthenticatedClient", () => {
     const data = await client.depositCoinbase(params);
     assert.deepStrictEqual(data, response);
   });
+
+  test(".withdraw()", async () => {
+    const params: DepositParams = {
+      amount: 10,
+      currency: "BTC",
+      payment_method_id: "bc677162-d934-5f1a-968c-a496b1c1270b"
+    };
+    const response: DepositInfo = {
+      id: "593533d2-ff31-46e0-b22e-ca754147a96a",
+      amount: "10.00",
+      currency: "USD",
+      payout_at: "2016-08-20T00:31:09Z"
+    };
+    nock(apiUri)
+      .post("/withdrawals/payment-method", params)
+      .reply(200, response);
+    const data = await client.withdraw(params);
+    assert.deepStrictEqual(data, response);
+  });
 });
