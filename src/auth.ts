@@ -66,6 +66,8 @@ export type WithdrawCryptoParams = {
   no_destination_tag?: boolean;
 };
 
+export type ConvertParams = { from: string; to: string; amount: number };
+
 export type Account = {
   id: string;
   currency: string;
@@ -146,6 +148,15 @@ export type DepositInfo = {
   amount: string;
   currency: string;
   payout_at?: string;
+};
+
+export type Conversion = {
+  id: string;
+  amount: string;
+  from_account_id: string;
+  to_account_id: string;
+  from: string;
+  to: string;
 };
 
 export type AuthenticatedClientOptions = PublicClientOptions & {
@@ -274,5 +285,9 @@ export class AuthenticatedClient extends PublicClient {
 
   withdrawCrypto(body: WithdrawCryptoParams): Promise<DepositInfo> {
     return this.post({ uri: "/withdrawals/crypto", body });
+  }
+
+  convert(body: ConvertParams): Promise<Conversion> {
+    return this.post({ uri: "/conversions", body });
   }
 }
