@@ -278,6 +278,49 @@ export type BaseReportStatus = {
   status: string;
 };
 
+export type ReportStatus = BaseReportStatus & {
+  expires_at: string;
+  user_id: string;
+  file_url: string | null;
+  params: {
+    start_date: string;
+    end_date: string;
+    format: string;
+    account_id?: string;
+    product_id?: string;
+    profile_id: string;
+    user: {
+      created_at: string;
+      active_at: string;
+      terms_accepted?: string;
+      id: string;
+      name: string;
+      email: string;
+      roles: null;
+      is_banned: boolean;
+      permissions: null;
+      user_type: string;
+      fulfills_new_requirements: boolean;
+      flags: null | {
+        onboarding_group: string;
+      };
+      details: null;
+      default_profile_id: string;
+      oauth_client: string;
+      preferences: {
+        post_only_disabled?: boolean;
+        preferred_market: string;
+        market_fee_modal_skipped_at_in_utc: string;
+      };
+      has_default: boolean;
+    };
+    new_york_state: boolean;
+  };
+  file_count: null;
+  created_at: string;
+  completed_at?: string;
+};
+
 export type AuthenticatedClientOptions = PublicClientOptions & {
   key: string;
   secret: string;
@@ -429,5 +472,9 @@ export class AuthenticatedClient extends PublicClient {
       throw new Error("`account_id` is missing");
     }
     return this.post({ uri: "/reports", body });
+  }
+
+  getReport({ id }: { id: string }): Promise<ReportStatus> {
+    return this.get({ uri: "/reports/" + id });
   }
 }
