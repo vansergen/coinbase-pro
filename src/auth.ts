@@ -213,6 +213,48 @@ export type PaymentMethod = {
   cdv_status?: string;
 };
 
+export type CoinbaseAccount = {
+  id: string;
+  name: string;
+  balance: string;
+  currency: string;
+  type: "wallet" | "fiat";
+  wire_deposit_information?: {
+    account_number: string | null;
+    routing_number: string;
+    bank_name: string;
+    bank_address: string;
+    bank_country: { code: string; name: string };
+    account_name: string;
+    account_address: string;
+    reference: string;
+  };
+  swift_deposit_information?: null;
+  destination_tag_name?: string;
+  destination_tag_regex?: string;
+  primary: boolean;
+  active: boolean;
+  sepa_deposit_information?: {
+    iban: string;
+    swift: string;
+    bank_name: string;
+    bank_address: string;
+    bank_country_name: string;
+    account_name: string;
+    account_address: string;
+    reference: string;
+  };
+  uk_deposit_information?: {
+    sort_code: string;
+    account_name: string;
+    account_number: string;
+    bank_name: string;
+    reference: string;
+  };
+  hold_balance: string;
+  hold_currency: string;
+};
+
 export type AuthenticatedClientOptions = PublicClientOptions & {
   key: string;
   secret: string;
@@ -347,5 +389,9 @@ export class AuthenticatedClient extends PublicClient {
 
   getPaymentMethods(): Promise<PaymentMethod[]> {
     return this.get({ uri: "/payment-methods" });
+  }
+
+  getCoinbaseAccounts(): Promise<CoinbaseAccount[]> {
+    return this.get({ uri: "/coinbase-accounts" });
   }
 }
