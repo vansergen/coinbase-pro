@@ -71,4 +71,22 @@ suite("AuthenticatedClient", () => {
     const data = await client.getAccounts();
     assert.deepStrictEqual(data, response);
   });
+
+  test(".getAccount()", async () => {
+    const account_id = "71452118-efc7-4cc4-8780-a5e22d4baa53";
+    const response: Account = {
+      id: "71452118-efc7-4cc4-8780-a5e22d4baa53",
+      currency: "BTC",
+      balance: "0.0000000000000000",
+      available: "0.0000000000000000",
+      hold: "0.0000000000000000",
+      profile_id: "75da88c5-05bf-4f54-bc85-5c775bd68254",
+      trading_enabled: true
+    };
+    nock(apiUri)
+      .get("/accounts/" + account_id)
+      .reply(200, response);
+    const data = await client.getAccount({ account_id });
+    assert.deepStrictEqual(data, response);
+  });
 });
