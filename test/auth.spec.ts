@@ -205,4 +205,23 @@ suite("AuthenticatedClient", () => {
     const data = await client.placeOrder(params);
     assert.deepStrictEqual(data, response);
   });
+
+  test(".cancelOrder() (using `client_oid`)", async () => {
+    const client_oid = "144c6f8e-713f-4682-8435-5280fbe8b2b4";
+    const response = "254b263a-dc33-4eaf-88e8-0e0df212856d";
+    nock(apiUri)
+      .delete("/orders/client:" + client_oid)
+      .reply(200, response);
+    const data = await client.cancelOrder({ client_oid });
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".cancelOrder() (using `id`)", async () => {
+    const id = "254b263a-dc33-4eaf-88e8-0e0df212856d";
+    nock(apiUri)
+      .delete("/orders/" + id)
+      .reply(200, id);
+    const data = await client.cancelOrder({ id });
+    assert.deepStrictEqual(data, id);
+  });
 });
