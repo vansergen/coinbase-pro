@@ -259,4 +259,8 @@ export class AuthenticatedClient extends PublicClient {
   withdraw(body: DepositParams): Promise<DepositInfo> {
     return this.post({ uri: "/withdrawals/payment-method", body });
   }
+
+  withdrawCoinbase(body: DepositCoinbaseParams): Promise<DepositInfo> {
+    return this.post({ uri: "/withdrawals/coinbase-account", body });
+  }
 }
