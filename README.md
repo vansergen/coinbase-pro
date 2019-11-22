@@ -214,3 +214,12 @@ const deposit = await client.depositCoinbase({
   coinbase_account_id
 });
 ```
+
+- [`withdraw`](https://docs.pro.coinbase.com/#payment-method45)
+
+```typescript
+const amount = 10000;
+const currency = "USD";
+const payment_method_id = "bc677162-d934-5f1a-968c-a496b1c1270b";
+const withdraw = await client.withdraw({ amount, currency, payment_method_id });
+```
