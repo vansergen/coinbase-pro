@@ -17,7 +17,9 @@ import {
   Conversion,
   PaymentMethod,
   CoinbaseAccount,
-  Fees
+  Fees,
+  ReportParams,
+  BaseReportStatus
 } from "../index";
 
 const product_id = "ETH-BTC";
@@ -713,6 +715,26 @@ suite("AuthenticatedClient", () => {
       .get("/fees")
       .reply(200, response);
     const data = await client.getFees();
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".createReport()", async () => {
+    const params: ReportParams = {
+      type: "account",
+      start_date: "2019-01-06T10:34:47.000Z",
+      end_date: "2019-11-06T10:34:47.000Z",
+      account_id: "account_id",
+      format: "pdf"
+    };
+    const response: BaseReportStatus = {
+      id: "id",
+      type: "account",
+      status: "pending"
+    };
+    nock(apiUri)
+      .post("/reports", params)
+      .reply(200, response);
+    const data = await client.createReport(params);
     assert.deepStrictEqual(data, response);
   });
 });
