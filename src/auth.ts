@@ -181,4 +181,8 @@ export class AuthenticatedClient extends PublicClient {
       throw new Error("Either `id` or `client_oid` must be provided");
     }
   }
+
+  cancelAll(qs: ProductID = {}): Promise<string[]> {
+    return this.delete({ uri: "/orders", qs });
+  }
 }
