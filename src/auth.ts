@@ -93,6 +93,7 @@ export type OrderInfo = {
   created_at: string;
   done_at?: string;
   done_reason?: string;
+  reject_reason?: string;
   stop?: "loss" | "entry";
   stop_price?: string;
   fill_fees: string;
