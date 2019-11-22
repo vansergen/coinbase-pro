@@ -224,4 +224,24 @@ suite("AuthenticatedClient", () => {
     const data = await client.cancelOrder({ id });
     assert.deepStrictEqual(data, id);
   });
+
+  test(".cancelAll()", async () => {
+    const response = ["71452118-efc7-4cc4-8780-a5e22d4baa53"];
+    nock(apiUri)
+      .delete("/orders")
+      .reply(200, response);
+    const data = await client.cancelAll();
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".cancelAll() (using `product_id`)", async () => {
+    const product_id = "BTC-USD";
+    const response = ["71452118-efc7-4cc4-8780-a5e22d4baa53"];
+    nock(apiUri)
+      .delete("/orders")
+      .query({ product_id })
+      .reply(200, response);
+    const data = await client.cancelAll({ product_id });
+    assert.deepStrictEqual(data, response);
+  });
 });
