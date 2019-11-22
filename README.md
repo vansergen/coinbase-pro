@@ -278,3 +278,12 @@ const accounts = await client.getCoinbaseAccounts();
 ```typescript
 const fees = await client.getFees();
 ```
+
+- [`createReport`](https://docs.pro.coinbase.com/#create-a-new-report)
+
+```typescript
+const type = "fills";
+const start_date = "2019-01-01T00:00:00.000Z";
+const end_date = "2019-11-30T23:59:59.000Z";
+const report = await client.createReport({ type, start_date, end_date });
+```
