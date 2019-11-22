@@ -174,3 +174,13 @@ const status = ["done", "rejected"];
 const product_id = "BTC-USD";
 const orders = await client.getOrders({ after, product_id, limit, status });
 ```
+
+- [`getOrder`](https://docs.pro.coinbase.com/#get-an-order)
+
+```typescript
+const id = "71452118-efc7-4cc4-8780-a5e22d4baa53";
+let order = await client.getOrder({ id });
+// or by `client_oid`
+const client_oid = "5523db2a-f6cb-4680-86a5-23ff21d9f514";
+order = await client.getOrder({ client_oid });
+```
