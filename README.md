@@ -294,3 +294,9 @@ const report = await client.createReport({ type, start_date, end_date });
 const id = "0428b97b-bec1-429e-a94c-59232926778d";
 const report = await client.getReport({ id });
 ```
+
+- [`getTrailingVolume`](https://docs.pro.coinbase.com/#user-account)
+
+```typescript
+const volume = await client.getTrailingVolume();
+```
