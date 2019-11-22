@@ -184,3 +184,11 @@ let order = await client.getOrder({ id });
 const client_oid = "5523db2a-f6cb-4680-86a5-23ff21d9f514";
 order = await client.getOrder({ client_oid });
 ```
+
+- [`getFills`](https://docs.pro.coinbase.com/#list-fills)
+
+```typescript
+const product_id = "BTC-ETH";
+const before = 74;
+const fills = await client.getFills({ product_id, before });
+```
