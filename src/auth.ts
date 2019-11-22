@@ -46,6 +46,12 @@ export type GetOrdersParams = PagArgs &
 
 export type GetFillsParams = PagArgs & ProductID & { order_id?: string };
 
+export type DepositParams = {
+  amount: number;
+  currency: string;
+  payment_method_id: string;
+};
+
 export type Account = {
   id: string;
   currency: string;
@@ -119,6 +125,13 @@ export type Fill = {
   side: Side;
   settled: boolean;
   usd_volume?: string;
+};
+
+export type DepositInfo = {
+  id: string;
+  amount: string;
+  currency: string;
+  payout_at?: string;
 };
 
 export type AuthenticatedClientOptions = PublicClientOptions & {
@@ -227,5 +240,9 @@ export class AuthenticatedClient extends PublicClient {
       qs.product_id = this.product_id;
     }
     return this.get({ uri: "/fills", qs });
+  }
+
+  deposit(body: DepositParams): Promise<DepositInfo> {
+    return this.post({ uri: "/deposits/payment-method", body });
   }
 }
