@@ -8,7 +8,9 @@ import {
   AccountHold,
   OrderParams,
   OrderInfo,
-  Fill
+  Fill,
+  DepositParams,
+  DepositInfo
 } from "../index";
 
 const product_id = "ETH-BTC";
@@ -431,6 +433,25 @@ suite("AuthenticatedClient", () => {
       .query({ product_id, limit })
       .reply(200, response);
     const data = await client.getFills({ limit, product_id });
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".deposit()", async () => {
+    const params: DepositParams = {
+      amount: 10,
+      currency: "USD",
+      payment_method_id: "bc677162-d934-5f1a-968c-a496b1c1270b"
+    };
+    const response: DepositInfo = {
+      id: "593533d2-ff31-46e0-b22e-ca754147a96a",
+      amount: "10.00",
+      currency: "USD",
+      payout_at: "2016-08-20T00:31:09Z"
+    };
+    nock(apiUri)
+      .post("/deposits/payment-method", params)
+      .reply(200, response);
+    const data = await client.deposit(params);
     assert.deepStrictEqual(data, response);
   });
 });
