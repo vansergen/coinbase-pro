@@ -2,7 +2,9 @@ import {
   PublicClient,
   PublicClientOptions,
   DefaultHeaders,
-  PagArgs
+  PagArgs,
+  ProductID,
+  Side
 } from "./public";
 import { Signer } from "./signer";
 import { ParsedUrlQuery } from "querystring";
@@ -10,6 +12,29 @@ import { ParsedUrlQuery } from "querystring";
 export type AccountId = { account_id: string };
 
 export type AccountHistoryParams = AccountId & PagArgs;
+
+export type BaseOrder = ProductID & {
+  stp?: "dc" | "co" | "cn" | "cb";
+  client_oid?: string;
+  side: Side;
+};
+
+export type MarketOrder = BaseOrder & {
+  type: "market";
+} & ({ size: number; funds?: number } | { size?: number; funds: number });
+
+export type LimitOrder = BaseOrder & {
+  type: "limit";
+  price: number;
+  size: number;
+  time_in_force?: "GTC" | "GTT" | "IOC" | "FOK";
+  cancel_after?: "min" | "hour" | "day";
+  post_only?: boolean;
+  stop?: "loss" | "entry";
+  stop_price?: number;
+};
+
+export type OrderParams = MarketOrder | LimitOrder;
 
 export type Account = {
   id: string;
@@ -44,6 +69,29 @@ export type AccountHold = {
   amount: string;
   type: "order" | "transfer";
   ref: string;
+};
+
+export type OrderInfo = {
+  id: string;
+  price?: string;
+  size?: string;
+  funds?: string;
+  product_id: string;
+  side: Side;
+  stp?: "dc" | "co" | "cn" | "cb";
+  type: "limit" | "market";
+  time_in_force?: "GTC" | "GTT" | "IOC" | "FOK";
+  post_only: boolean;
+  created_at: string;
+  done_at?: string;
+  done_reason?: string;
+  stop?: "loss" | "entry";
+  stop_price?: string;
+  fill_fees: string;
+  filled_size: string;
+  executed_value: string;
+  status: "pending" | "rejected" | "open" | "done" | "active";
+  settled: boolean;
 };
 
 export type AuthenticatedClientOptions = PublicClientOptions & {
@@ -113,5 +161,9 @@ export class AuthenticatedClient extends PublicClient {
     ...qs
   }: AccountHistoryParams): Promise<AccountHold[]> {
     return this.get({ uri: "/accounts/" + account_id + "/holds", qs });
+  }
+
+  placeOrder(body: OrderParams): Promise<OrderInfo> {
+    return this.post({ uri: "/orders", body });
   }
 }
