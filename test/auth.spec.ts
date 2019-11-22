@@ -20,7 +20,8 @@ import {
   Fees,
   ReportParams,
   BaseReportStatus,
-  ReportStatus
+  ReportStatus,
+  TrailingVolume
 } from "../index";
 
 const product_id = "ETH-BTC";
@@ -762,6 +763,28 @@ suite("AuthenticatedClient", () => {
       .get("/reports/" + id)
       .reply(200, response);
     const data = await client.getReport({ id });
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getTrailingVolume()", async () => {
+    const response: TrailingVolume[] = [
+      {
+        product_id: "BTC-USD",
+        exchange_volume: "11800.00000000",
+        volume: "100.00000000",
+        recorded_at: "1973-11-29T00:05:01.123456Z"
+      },
+      {
+        product_id: "LTC-USD",
+        exchange_volume: "51010.04100000",
+        volume: "2010.04100000",
+        recorded_at: "1973-11-29T00:05:02.123456Z"
+      }
+    ];
+    nock(apiUri)
+      .get("/users/self/trailing-volume")
+      .reply(200, response);
+    const data = await client.getTrailingVolume();
     assert.deepStrictEqual(data, response);
   });
 });
