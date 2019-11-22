@@ -12,7 +12,9 @@ import {
   DepositParams,
   DepositInfo,
   DepositCoinbaseParams,
-  WithdrawCryptoParams
+  WithdrawCryptoParams,
+  ConvertParams,
+  Conversion
 } from "../index";
 
 const product_id = "ETH-BTC";
@@ -528,6 +530,27 @@ suite("AuthenticatedClient", () => {
       .post("/withdrawals/crypto", params)
       .reply(200, response);
     const data = await client.withdrawCrypto(params);
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".convert()", async () => {
+    const params: ConvertParams = {
+      from: "USD",
+      to: "USDC",
+      amount: 10000
+    };
+    const response: Conversion = {
+      id: "8942caee-f9d5-4600-a894-4811268545db",
+      amount: "10000.00",
+      from_account_id: "7849cc79-8b01-4793-9345-bc6b5f08acce",
+      to_account_id: "105c3e58-0898-4106-8283-dc5781cda07b",
+      from: "USD",
+      to: "USDC"
+    };
+    nock(apiUri)
+      .post("/conversions", params)
+      .reply(200, response);
+    const data = await client.convert(params);
     assert.deepStrictEqual(data, response);
   });
 });
