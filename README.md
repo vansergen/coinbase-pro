@@ -287,3 +287,10 @@ const start_date = "2019-01-01T00:00:00.000Z";
 const end_date = "2019-11-30T23:59:59.000Z";
 const report = await client.createReport({ type, start_date, end_date });
 ```
+
+- [`getReport`](https://docs.pro.coinbase.com/#get-report-status)
+
+```typescript
+const id = "0428b97b-bec1-429e-a94c-59232926778d";
+const report = await client.getReport({ id });
+```
