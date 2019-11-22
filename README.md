@@ -236,3 +236,18 @@ const withdraw = await client.withdrawCoinbase({
   coinbase_account_id
 });
 ```
+
+- [`withdrawCrypto`](https://docs.pro.coinbase.com/#crypto)
+
+```typescript
+const amount = 20000;
+const currency = "XRP";
+const crypto_address = "r4hzEbkVkAaFyK23ZkgED2LZDAyHTfnBJg";
+const no_destination_tag = true;
+const withdraw = await client.withdrawCrypto({
+  amount,
+  currency,
+  crypto_address,
+  no_destination_tag
+});
+```
