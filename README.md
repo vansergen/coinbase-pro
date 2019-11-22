@@ -260,3 +260,9 @@ const from = "USD";
 const to = "USDC";
 const conversion = await client.convert({ amount, from, to });
 ```
+
+- [`getPaymentMethods`](https://docs.pro.coinbase.com/#list-payment-methods)
+
+```typescript
+const methods = await client.getPaymentMethods();
+```
