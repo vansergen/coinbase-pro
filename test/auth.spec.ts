@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import * as nock from "nock";
-import { AuthenticatedClient, DefaultHeaders } from "../index";
+import { AuthenticatedClient, DefaultHeaders, Account } from "../index";
 
 const product_id = "ETH-BTC";
 const apiUri = "https://api.some-other-uri.com";
@@ -41,6 +41,34 @@ suite("AuthenticatedClient", () => {
       .get(uri)
       .reply(200, response);
     const data = await client.request({ uri: "/accounts", method });
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getAccounts()", async () => {
+    const response: Account[] = [
+      {
+        id: "id",
+        currency: "USDC",
+        balance: "100.2490600000000000",
+        available: "100.24906",
+        hold: "0.0000000000000000",
+        profile_id: "profile_id",
+        trading_enabled: true
+      },
+      {
+        id: "id",
+        currency: "LINK",
+        balance: "0.0000000000000000",
+        available: "0",
+        hold: "0.0000000000000000",
+        profile_id: "profile_id",
+        trading_enabled: true
+      }
+    ];
+    nock(apiUri)
+      .get("/accounts")
+      .reply(200, response);
+    const data = await client.getAccounts();
     assert.deepStrictEqual(data, response);
   });
 });
