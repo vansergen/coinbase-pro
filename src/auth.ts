@@ -68,6 +68,16 @@ export type WithdrawCryptoParams = {
 
 export type ConvertParams = { from: string; to: string; amount: number };
 
+export type ReportParams = {
+  type: "fills" | "account";
+  start_date: string;
+  end_date: string;
+  product_id?: string;
+  account_id?: string;
+  format?: "pdf" | "csv";
+  email?: string;
+};
+
 export type Account = {
   id: string;
   currency: string;
@@ -262,6 +272,12 @@ export type Fees = {
   usd_volume: string | null;
 };
 
+export type BaseReportStatus = {
+  id: string;
+  type: string;
+  status: string;
+};
+
 export type AuthenticatedClientOptions = PublicClientOptions & {
   key: string;
   secret: string;
@@ -404,5 +420,14 @@ export class AuthenticatedClient extends PublicClient {
 
   getFees(): Promise<Fees> {
     return this.get({ uri: "/fees" });
+  }
+
+  createReport(body: ReportParams): Promise<BaseReportStatus> {
+    if (body.type === "fills" && !body.product_id) {
+      body.product_id = this.product_id;
+    } else if (body.type === "account" && !body.account_id) {
+      throw new Error("`account_id` is missing");
+    }
+    return this.post({ uri: "/reports", body });
   }
 }
