@@ -192,4 +192,14 @@ export class AuthenticatedClient extends PublicClient {
   getOrders(qs: GetOrdersParams = {}): Promise<OrderInfo[]> {
     return this.get({ uri: "/orders", qs });
   }
+
+  getOrder({ client_oid, id }: CancelOrderParams): Promise<OrderInfo> {
+    if (client_oid) {
+      return this.get({ uri: "/orders/client:" + client_oid });
+    } else if (id) {
+      return this.get({ uri: "/orders/" + id });
+    } else {
+      throw new Error("Either `id` or `client_oid` must be provided");
+    }
+  }
 }
