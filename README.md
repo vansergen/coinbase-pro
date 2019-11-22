@@ -192,3 +192,12 @@ const product_id = "BTC-ETH";
 const before = 74;
 const fills = await client.getFills({ product_id, before });
 ```
+
+- [`deposit`](https://docs.pro.coinbase.com/#payment-method)
+
+```typescript
+const amount = 10000;
+const currency = "USD";
+const payment_method_id = "bc677162-d934-5f1a-968c-a496b1c1270b";
+const deposit = await client.deposit({ amount, currency, payment_method_id });
+```
