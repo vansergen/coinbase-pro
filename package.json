@@ -4,7 +4,6 @@
   "description": "Node.js library for Coinbase Pro",
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "type": "module",
   "engines": {
     "node": ">=8.16.2"
   },
