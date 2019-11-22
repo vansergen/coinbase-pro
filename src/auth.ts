@@ -177,10 +177,10 @@ export type PaymentMethod = {
   primary_sell: boolean;
   instant_buy?: boolean;
   instant_sell?: boolean;
-  created_at: string;
-  updated_at: string;
-  resource: string;
-  resource_path: string;
+  created_at?: string;
+  updated_at?: string;
+  resource?: string;
+  resource_path?: string;
   limits: {
     type?: string;
     name?: string;

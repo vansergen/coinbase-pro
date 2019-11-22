@@ -14,7 +14,8 @@ import {
   DepositCoinbaseParams,
   WithdrawCryptoParams,
   ConvertParams,
-  Conversion
+  Conversion,
+  PaymentMethod
 } from "../index";
 
 const product_id = "ETH-BTC";
@@ -551,6 +552,82 @@ suite("AuthenticatedClient", () => {
       .post("/conversions", params)
       .reply(200, response);
     const data = await client.convert(params);
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getPaymentMethods()", async () => {
+    const response: PaymentMethod[] = [
+      {
+        id: "bc6d7162-d984-5ffa-963c-a493b1c1370b",
+        type: "ach_bank_account",
+        name: "Bank of America - eBan... ********7134",
+        currency: "USD",
+        primary_buy: true,
+        primary_sell: true,
+        allow_buy: true,
+        allow_sell: true,
+        allow_deposit: true,
+        allow_withdraw: true,
+        limits: {
+          buy: [
+            {
+              period_in_days: 1,
+              total: {
+                amount: "10000.00",
+                currency: "USD"
+              },
+              remaining: {
+                amount: "10000.00",
+                currency: "USD"
+              }
+            }
+          ],
+          instant_buy: [
+            {
+              period_in_days: 7,
+              total: {
+                amount: "0.00",
+                currency: "USD"
+              },
+              remaining: {
+                amount: "0.00",
+                currency: "USD"
+              }
+            }
+          ],
+          sell: [
+            {
+              period_in_days: 1,
+              total: {
+                amount: "10000.00",
+                currency: "USD"
+              },
+              remaining: {
+                amount: "10000.00",
+                currency: "USD"
+              }
+            }
+          ],
+          deposit: [
+            {
+              period_in_days: 1,
+              total: {
+                amount: "10000.00",
+                currency: "USD"
+              },
+              remaining: {
+                amount: "10000.00",
+                currency: "USD"
+              }
+            }
+          ]
+        }
+      }
+    ];
+    nock(apiUri)
+      .get("/payment-methods")
+      .reply(200, response);
+    const data = await client.getPaymentMethods();
     assert.deepStrictEqual(data, response);
   });
 });
