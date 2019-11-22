@@ -4,7 +4,8 @@ import {
   AuthenticatedClient,
   DefaultHeaders,
   Account,
-  AccountHistory
+  AccountHistory,
+  AccountHold
 } from "../index";
 
 const product_id = "ETH-BTC";
@@ -131,6 +132,33 @@ suite("AuthenticatedClient", () => {
       .query({ after, before, limit })
       .reply(200, response);
     const data = await client.getAccountHistory({
+      account_id,
+      after,
+      before,
+      limit
+    });
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getHolds()", async () => {
+    const account_id = "account_id";
+    const after = "2019-11-13T16:48:43.849988Z";
+    const before = "2018-11-13T16:48:43.849988Z";
+    const limit = 2;
+    const response: AccountHold[] = [
+      {
+        created_at: "2019-11-13T16:48:43.849988Z",
+        id: "id",
+        amount: "0.1001500000000000",
+        type: "order",
+        ref: "ref"
+      }
+    ];
+    nock(apiUri)
+      .get("/accounts/" + account_id + "/holds")
+      .query({ after, before, limit })
+      .reply(200, response);
+    const data = await client.getHolds({
       account_id,
       after,
       before,
