@@ -244,4 +244,55 @@ suite("AuthenticatedClient", () => {
     const data = await client.cancelAll({ product_id });
     assert.deepStrictEqual(data, response);
   });
+
+  test(".getOrders()", async () => {
+    const limit = 2;
+    const after = "2019-09-29T19:16:37.991967Z";
+    const status = ["done", "rejected"];
+    const product_id = "BTC-USD";
+    const response: OrderInfo[] = [
+      {
+        id: "id1",
+        price: "20000.00000000",
+        size: "1.00000000",
+        product_id: "BTC-USD",
+        side: "buy",
+        type: "limit",
+        time_in_force: "GTC",
+        post_only: false,
+        created_at: "2019-09-29T19:16:34.518011Z",
+        done_at: "2019-09-29T19:16:36.305Z",
+        done_reason: "filled",
+        fill_fees: "0.0000000000000000",
+        filled_size: "1.00000000",
+        executed_value: "20000.0000000000000000",
+        status: "done",
+        settled: true
+      },
+      {
+        id: "id2",
+        price: "20000.00000000",
+        size: "1.00000000",
+        product_id: "BTC-USD",
+        side: "buy",
+        type: "limit",
+        time_in_force: "GTC",
+        post_only: false,
+        created_at: "2019-09-29T19:16:32.154026Z",
+        done_at: "2019-09-29T19:16:33.147Z",
+        done_reason: "filled",
+        fill_fees: "0.0000000000000000",
+        filled_size: "1.00000000",
+        executed_value: "20000.0000000000000000",
+        status: "done",
+        settled: true
+      }
+    ];
+    nock(apiUri)
+      .get("/orders")
+      .query({ product_id, after, limit, status })
+      .reply(200, response);
+    const data = await client.getOrders({ after, product_id, limit, status });
+    assert.deepStrictEqual(data, response);
+  });
 });
