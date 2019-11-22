@@ -36,6 +36,11 @@ export type LimitOrder = BaseOrder & {
 
 export type OrderParams = MarketOrder | LimitOrder;
 
+export type CancelOrderParams = {
+  client_oid?: string;
+  id?: string;
+};
+
 export type Account = {
   id: string;
   currency: string;
@@ -165,5 +170,15 @@ export class AuthenticatedClient extends PublicClient {
 
   placeOrder(body: OrderParams): Promise<OrderInfo> {
     return this.post({ uri: "/orders", body });
+  }
+
+  cancelOrder({ client_oid, id }: CancelOrderParams): Promise<string> {
+    if (client_oid) {
+      return this.delete({ uri: "/orders/client:" + client_oid });
+    } else if (id) {
+      return this.delete({ uri: "/orders/" + id });
+    } else {
+      throw new Error("Either `id` or `client_oid` must be provided");
+    }
   }
 }
