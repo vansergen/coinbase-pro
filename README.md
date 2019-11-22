@@ -80,3 +80,19 @@ const currencies = await client.getCurrencies();
 ```typescript
 const time = await client.getTime();
 ```
+
+### AuthenticatedClient
+
+```typescript
+import { AuthenticatedClient } from "coinbase-pro-node-api";
+const key = "CoinbaseProAPIKey";
+const secret = "CoinbaseProAPISecret";
+const passphrase = "CoinbaseProAPIPassphrase";
+const client = new AuthenticatedClient({ key, secret, passphrase });
+```
+
+- [`getAccounts`](https://docs.pro.coinbase.com/?javascript#list-accounts)
+
+```typescript
+const accounts = await client.getAccounts();
+```
