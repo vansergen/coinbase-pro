@@ -322,6 +322,13 @@ export type ReportStatus = BaseReportStatus & {
   completed_at?: string;
 };
 
+export type TrailingVolume = {
+  product_id: string;
+  volume: string;
+  exchange_volume: string;
+  recorded_at: string;
+};
+
 export type AuthenticatedClientOptions = PublicClientOptions & {
   key: string;
   secret: string;
@@ -477,5 +484,9 @@ export class AuthenticatedClient extends PublicClient {
 
   getReport({ id }: { id: string }): Promise<ReportStatus> {
     return this.get({ uri: "/reports/" + id });
+  }
+
+  getTrailingVolume(): Promise<TrailingVolume[]> {
+    return this.get({ uri: "/users/self/trailing-volume" });
   }
 }
