@@ -5,7 +5,9 @@ import {
   DefaultHeaders,
   Account,
   AccountHistory,
-  AccountHold
+  AccountHold,
+  OrderParams,
+  OrderInfo
 } from "../index";
 
 const product_id = "ETH-BTC";
@@ -164,6 +166,43 @@ suite("AuthenticatedClient", () => {
       before,
       limit
     });
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".placeOrder()", async () => {
+    const params: OrderParams = {
+      product_id: "BTC-USD",
+      type: "limit",
+      side: "sell",
+      price: 100000,
+      size: 1,
+      stop: "loss",
+      stop_price: 20000,
+      stp: "dc"
+    };
+    const response: OrderInfo = {
+      id: "id",
+      price: "100000",
+      size: "1",
+      product_id: "BTC-USD",
+      side: "sell",
+      stp: "dc",
+      type: "limit",
+      time_in_force: "GTC",
+      post_only: false,
+      created_at: "2019-11-14T08:26:50.846073Z",
+      stop: "loss",
+      stop_price: "20000",
+      fill_fees: "0",
+      filled_size: "0",
+      executed_value: "0",
+      status: "pending",
+      settled: false
+    };
+    nock(apiUri)
+      .post("/orders", params)
+      .reply(200, response);
+    const data = await client.placeOrder(params);
     assert.deepStrictEqual(data, response);
   });
 });
