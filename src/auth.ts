@@ -159,6 +159,60 @@ export type Conversion = {
   to: string;
 };
 
+export type PaymentMethodLimit = {
+  period_in_days: number;
+  total: { amount: string; currency: string };
+  remaining: { amount: string; currency: string };
+  description?: string;
+  label?: string;
+  next_requirement?: null;
+};
+
+export type PaymentMethod = {
+  id: string;
+  type: string;
+  name: string;
+  currency: string;
+  primary_buy: boolean;
+  primary_sell: boolean;
+  instant_buy?: boolean;
+  instant_sell?: boolean;
+  created_at: string;
+  updated_at: string;
+  resource: string;
+  resource_path: string;
+  limits: {
+    type?: string;
+    name?: string;
+    buy?: PaymentMethodLimit[];
+    deposit?: PaymentMethodLimit[];
+    sell?: PaymentMethodLimit[];
+    instant_buy?: PaymentMethodLimit[];
+  };
+  fiat_account?: {
+    id: string;
+    resource: string;
+  };
+  allow_buy?: boolean;
+  allow_sell?: boolean;
+  allow_deposit?: boolean;
+  allow_withdraw?: boolean;
+  verified?: boolean;
+  picker_data?: {
+    symbol: string;
+    customer_name: string;
+    account_name: string;
+    account_number: string;
+    account_type: string;
+    institution_code: string;
+    institution_name: string;
+  };
+  hold_business_days?: number;
+  hold_days?: number;
+  verification_method?: string;
+  cdv_status?: string;
+};
+
 export type AuthenticatedClientOptions = PublicClientOptions & {
   key: string;
   secret: string;
@@ -289,5 +343,9 @@ export class AuthenticatedClient extends PublicClient {
 
   convert(body: ConvertParams): Promise<Conversion> {
     return this.post({ uri: "/conversions", body });
+  }
+
+  getPaymentMethods(): Promise<PaymentMethod[]> {
+    return this.get({ uri: "/payment-methods" });
   }
 }
