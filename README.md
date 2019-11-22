@@ -157,3 +157,10 @@ let result = await client.cancelOrder({ id });
 const client_oid = "5523db2a-f6cb-4680-86a5-23ff21d9f514";
 result = await client.cancelOrder({ client_oid });
 ```
+
+- [`cancelAll`](https://docs.pro.coinbase.com/#cancel-all)
+
+```typescript
+const product_id = "BTC-USD";
+const result = await client.cancelAll({ product_id });
+```
