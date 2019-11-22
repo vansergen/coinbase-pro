@@ -103,3 +103,12 @@ const accounts = await client.getAccounts();
 const account_id = "71452118-efc7-4cc4-8780-a5e22d4baa53";
 const account = await client.getAccount({ account_id });
 ```
+
+- [`getAccountHistory`](https://docs.pro.coinbase.com/?javascript#get-account-history)
+
+```typescript
+const account_id = "71452118-efc7-4cc4-8780-a5e22d4baa53";
+const after = "100";
+const limit = 5;
+const history = await client.getAccountHistory({ account_id, after, limit });
+```
