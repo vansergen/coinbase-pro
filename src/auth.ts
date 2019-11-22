@@ -41,6 +41,9 @@ export type CancelOrderParams = {
   id?: string;
 };
 
+export type GetOrdersParams = PagArgs &
+  ProductID & { status?: string | string[] };
+
 export type Account = {
   id: string;
   currency: string;
@@ -184,5 +187,9 @@ export class AuthenticatedClient extends PublicClient {
 
   cancelAll(qs: ProductID = {}): Promise<string[]> {
     return this.delete({ uri: "/orders", qs });
+  }
+
+  getOrders(qs: GetOrdersParams = {}): Promise<OrderInfo[]> {
+    return this.get({ uri: "/orders", qs });
   }
 }
