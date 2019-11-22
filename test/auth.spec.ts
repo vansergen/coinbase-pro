@@ -11,7 +11,8 @@ import {
   Fill,
   DepositParams,
   DepositInfo,
-  DepositCoinbaseParams
+  DepositCoinbaseParams,
+  WithdrawCryptoParams
 } from "../index";
 
 const product_id = "ETH-BTC";
@@ -508,6 +509,25 @@ suite("AuthenticatedClient", () => {
       .post("/withdrawals/coinbase-account", params)
       .reply(200, response);
     const data = await client.withdrawCoinbase(params);
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".withdrawCrypto()", async () => {
+    const params: WithdrawCryptoParams = {
+      amount: 20000,
+      currency: "XRP",
+      crypto_address: "r4hzEbkVkAaFyK23ZkgED2LZDAyHTfnBJg",
+      no_destination_tag: true
+    };
+    const response: DepositInfo = {
+      id: "593533d2-ff31-46e0-b22e-ca754147a96a",
+      amount: "20000.00",
+      currency: "XRP"
+    };
+    nock(apiUri)
+      .post("/withdrawals/crypto", params)
+      .reply(200, response);
+    const data = await client.withdrawCrypto(params);
     assert.deepStrictEqual(data, response);
   });
 });
