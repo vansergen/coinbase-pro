@@ -58,6 +58,14 @@ export type DepositCoinbaseParams = {
   coinbase_account_id: string;
 };
 
+export type WithdrawCryptoParams = {
+  amount: number;
+  currency: string;
+  crypto_address: string;
+  destination_tag?: string | number;
+  no_destination_tag?: boolean;
+};
+
 export type Account = {
   id: string;
   currency: string;
@@ -262,5 +270,9 @@ export class AuthenticatedClient extends PublicClient {
 
   withdrawCoinbase(body: DepositCoinbaseParams): Promise<DepositInfo> {
     return this.post({ uri: "/withdrawals/coinbase-account", body });
+  }
+
+  withdrawCrypto(body: WithdrawCryptoParams): Promise<DepositInfo> {
+    return this.post({ uri: "/withdrawals/crypto", body });
   }
 }
