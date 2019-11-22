@@ -289,7 +289,7 @@ export type ReportStatus = BaseReportStatus & {
     account_id?: string;
     product_id?: string;
     profile_id: string;
-    user: {
+    user?: {
       created_at: string;
       active_at: string;
       terms_accepted?: string;
@@ -311,12 +311,13 @@ export type ReportStatus = BaseReportStatus & {
         post_only_disabled?: boolean;
         preferred_market: string;
         market_fee_modal_skipped_at_in_utc: string;
+        mobile_app_discoverability_modal_closed_at_in_utc?: string;
       };
       has_default: boolean;
     };
     new_york_state: boolean;
   };
-  file_count: null;
+  file_count?: null;
   created_at: string;
   completed_at?: string;
 };

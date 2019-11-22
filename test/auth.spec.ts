@@ -19,7 +19,8 @@ import {
   CoinbaseAccount,
   Fees,
   ReportParams,
-  BaseReportStatus
+  BaseReportStatus,
+  ReportStatus
 } from "../index";
 
 const product_id = "ETH-BTC";
@@ -735,6 +736,32 @@ suite("AuthenticatedClient", () => {
       .post("/reports", params)
       .reply(200, response);
     const data = await client.createReport(params);
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getReport()", async () => {
+    const id = "0428b97b-bec1-429e-a94c-59232926778d";
+    const response: ReportStatus = {
+      id: "0428b97b-bec1-429e-a94c-59232926778d",
+      user_id: "5844eceecf7e803e259d0365",
+      type: "fills",
+      status: "ready",
+      created_at: "2015-01-06T10:34:47.000Z",
+      completed_at: "2015-01-06T10:35:47.000Z",
+      expires_at: "2015-01-13T10:35:47.000Z",
+      file_url: "https://example.com/0428b97b.../fills.pdf",
+      params: {
+        format: "pdf",
+        start_date: "2014-11-01T00:00:00.000Z",
+        end_date: "2014-11-30T23:59:59.000Z",
+        profile_id: "75da88c5-05bf-4f54-bc85-5c775bd68254",
+        new_york_state: false
+      }
+    };
+    nock(apiUri)
+      .get("/reports/" + id)
+      .reply(200, response);
+    const data = await client.getReport({ id });
     assert.deepStrictEqual(data, response);
   });
 });
