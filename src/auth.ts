@@ -52,6 +52,12 @@ export type DepositParams = {
   payment_method_id: string;
 };
 
+export type DepositCoinbaseParams = {
+  amount: number;
+  currency: string;
+  coinbase_account_id: string;
+};
+
 export type Account = {
   id: string;
   currency: string;
@@ -244,5 +250,9 @@ export class AuthenticatedClient extends PublicClient {
 
   deposit(body: DepositParams): Promise<DepositInfo> {
     return this.post({ uri: "/deposits/payment-method", body });
+  }
+
+  depositCoinbase(body: DepositCoinbaseParams): Promise<DepositInfo> {
+    return this.post({ uri: "/deposits/coinbase-account", body });
   }
 }
