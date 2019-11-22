@@ -96,3 +96,10 @@ const client = new AuthenticatedClient({ key, secret, passphrase });
 ```typescript
 const accounts = await client.getAccounts();
 ```
+
+- [`getAccount`](https://docs.pro.coinbase.com/?javascript#get-an-account)
+
+```typescript
+const account_id = "71452118-efc7-4cc4-8780-a5e22d4baa53";
+const account = await client.getAccount({ account_id });
+```
