@@ -256,6 +256,12 @@ export type CoinbaseAccount = {
   available_on_consumer?: boolean;
 };
 
+export type Fees = {
+  maker_fee_rate: string;
+  taker_fee_rate: string;
+  usd_volume: string | null;
+};
+
 export type AuthenticatedClientOptions = PublicClientOptions & {
   key: string;
   secret: string;
@@ -394,5 +400,9 @@ export class AuthenticatedClient extends PublicClient {
 
   getCoinbaseAccounts(): Promise<CoinbaseAccount[]> {
     return this.get({ uri: "/coinbase-accounts" });
+  }
+
+  getFees(): Promise<Fees> {
+    return this.get({ uri: "/fees" });
   }
 }
