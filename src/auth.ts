@@ -2,6 +2,16 @@ import { PublicClient, PublicClientOptions, DefaultHeaders } from "./public";
 import { Signer } from "./signer";
 import { ParsedUrlQuery } from "querystring";
 
+export type Account = {
+  id: string;
+  currency: string;
+  balance: string;
+  available: string;
+  hold: string;
+  profile_id: string;
+  trading_enabled: boolean;
+};
+
 export type AuthenticatedClientOptions = PublicClientOptions & {
   key: string;
   secret: string;
@@ -47,5 +57,9 @@ export class AuthenticatedClient extends PublicClient {
     });
     const headers = { ...DefaultHeaders, ...signature };
     return super.request({ qs, body, method, uri, headers });
+  }
+
+  getAccounts(): Promise<Account[]> {
+    return this.get({ uri: "/accounts" });
   }
 }
