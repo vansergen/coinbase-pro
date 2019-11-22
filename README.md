@@ -201,3 +201,16 @@ const currency = "USD";
 const payment_method_id = "bc677162-d934-5f1a-968c-a496b1c1270b";
 const deposit = await client.deposit({ amount, currency, payment_method_id });
 ```
+
+- [`depositCoinbase`](https://docs.pro.coinbase.com/#coinbase)
+
+```typescript
+const amount = 10;
+const currency = "BTC";
+const coinbase_account_id = "c13cd0fc-72ca-55e9-843b-b84ef628c198";
+const deposit = await client.depositCoinbase({
+  amount,
+  currency,
+  coinbase_account_id
+});
+```
