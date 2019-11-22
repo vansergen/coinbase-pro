@@ -272,3 +272,9 @@ const methods = await client.getPaymentMethods();
 ```typescript
 const accounts = await client.getCoinbaseAccounts();
 ```
+
+- [`getFees`](https://docs.pro.coinbase.com/#get-current-fees)
+
+```typescript
+const fees = await client.getFees();
+```
