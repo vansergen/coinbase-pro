@@ -1,6 +1,11 @@
 import * as assert from "assert";
 import * as nock from "nock";
-import { AuthenticatedClient, DefaultHeaders, Account } from "../index";
+import {
+  AuthenticatedClient,
+  DefaultHeaders,
+  Account,
+  AccountHistory
+} from "../index";
 
 const product_id = "ETH-BTC";
 const apiUri = "https://api.some-other-uri.com";
@@ -87,6 +92,50 @@ suite("AuthenticatedClient", () => {
       .get("/accounts/" + account_id)
       .reply(200, response);
     const data = await client.getAccount({ account_id });
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getAccountHistory()", async () => {
+    const account_id = "account_id";
+    const after = "100";
+    const before = "97";
+    const limit = 2;
+    const response: AccountHistory[] = [
+      {
+        created_at: "2019-06-11T18:55:16.086797Z",
+        id: "99",
+        amount: "-25.0000000000000000",
+        balance: "100.3314000000000000",
+        type: "match",
+        details: {
+          order_id: "order_id",
+          trade_id: "trade_id",
+          product_id: "BAT-USDC"
+        }
+      },
+      {
+        created_at: "2019-06-11T18:52:53.599609Z",
+        id: "98",
+        amount: "-25.0000000000000000",
+        balance: "100.3314000000000000",
+        type: "match",
+        details: {
+          order_id: "order_id",
+          trade_id: "trade_id",
+          product_id: "BAT-USDC"
+        }
+      }
+    ];
+    nock(apiUri)
+      .get("/accounts/" + account_id + "/ledger")
+      .query({ after, before, limit })
+      .reply(200, response);
+    const data = await client.getAccountHistory({
+      account_id,
+      after,
+      before,
+      limit
+    });
     assert.deepStrictEqual(data, response);
   });
 });
