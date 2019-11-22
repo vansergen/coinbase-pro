@@ -251,8 +251,9 @@ export type CoinbaseAccount = {
     bank_name: string;
     reference: string;
   };
-  hold_balance: string;
-  hold_currency: string;
+  hold_balance?: string;
+  hold_currency?: string;
+  available_on_consumer?: boolean;
 };
 
 export type AuthenticatedClientOptions = PublicClientOptions & {
