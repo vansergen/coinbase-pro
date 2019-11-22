@@ -1,4 +1,4 @@
-# coinbase-pro [![Build Status](https://travis-ci.com/vansergen/coinbase-pro.svg?token=cg5dVMovG8Db6p5Qzzps&branch=master)](https://travis-ci.com/vansergen/coinbase-pro)
+# coinbase-pro [![Build Status](https://travis-ci.com/vansergen/coinbase-pro.svg?branch=master)](https://travis-ci.com/vansergen/coinbase-pro) [![GitHub version](https://badge.fury.io/gh/vansergen%2Fcoinbase-pro.svg)](https://github.com/vansergen/coinbase-pro) ![node](https://img.shields.io/node/v/coinbase-pro-node-api) ![NPM](https://img.shields.io/npm/l/coinbase-pro-node-api) ![npm](https://img.shields.io/npm/dt/coinbase-pro-node-api) ![GitHub top language](https://img.shields.io/github/languages/top/vansergen/coinbase-pro)
 
 Node.js library for [Coinbase Pro](https://pro.coinbase.com/)
 
