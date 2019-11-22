@@ -1,8 +1,15 @@
-import { PublicClient, PublicClientOptions, DefaultHeaders } from "./public";
+import {
+  PublicClient,
+  PublicClientOptions,
+  DefaultHeaders,
+  PagArgs
+} from "./public";
 import { Signer } from "./signer";
 import { ParsedUrlQuery } from "querystring";
 
 export type AccountId = { account_id: string };
+
+export type AccountHistoryParams = AccountId & PagArgs;
 
 export type Account = {
   id: string;
@@ -12,6 +19,22 @@ export type Account = {
   hold: string;
   profile_id: string;
   trading_enabled: boolean;
+};
+
+export type AccountHistory = {
+  created_at: string;
+  id: string;
+  amount: string;
+  balance: string;
+  type: "transfer" | "match" | "fee" | "conversion" | "rebate";
+  details: {
+    transfer_id?: string;
+    transfer_type?: "deposit" | "withdraw";
+    order_id?: string;
+    trade_id?: string;
+    product_id?: string;
+    conversion_id?: string;
+  };
 };
 
 export type AuthenticatedClientOptions = PublicClientOptions & {
@@ -67,5 +90,12 @@ export class AuthenticatedClient extends PublicClient {
 
   getAccount({ account_id }: AccountId): Promise<Account> {
     return this.get({ uri: "/accounts/" + account_id });
+  }
+
+  getAccountHistory({
+    account_id,
+    ...qs
+  }: AccountHistoryParams): Promise<AccountHistory[]> {
+    return this.get({ uri: "/accounts/" + account_id + "/ledger", qs });
   }
 }
