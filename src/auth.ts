@@ -44,6 +44,8 @@ export type CancelOrderParams = {
 export type GetOrdersParams = PagArgs &
   ProductID & { status?: string | string[] };
 
+export type GetFillsParams = PagArgs & ProductID & { order_id?: string };
+
 export type Account = {
   id: string;
   currency: string;
@@ -101,6 +103,22 @@ export type OrderInfo = {
   executed_value: string;
   status: "pending" | "rejected" | "open" | "done" | "active";
   settled: boolean;
+};
+
+export type Fill = {
+  created_at: string;
+  trade_id: number;
+  product_id: string;
+  order_id: string;
+  user_id: string;
+  profile_id: string;
+  liquidity: "T" | "M";
+  price: string;
+  size: string;
+  fee: string;
+  side: Side;
+  settled: boolean;
+  usd_volume?: string;
 };
 
 export type AuthenticatedClientOptions = PublicClientOptions & {
@@ -202,5 +220,12 @@ export class AuthenticatedClient extends PublicClient {
     } else {
       throw new Error("Either `id` or `client_oid` must be provided");
     }
+  }
+
+  getFills(qs: GetFillsParams = {}): Promise<Fill[]> {
+    if (!qs.order_id && !qs.product_id) {
+      qs.product_id = this.product_id;
+    }
+    return this.get({ uri: "/fills", qs });
   }
 }
