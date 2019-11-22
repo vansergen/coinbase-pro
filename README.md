@@ -266,3 +266,9 @@ const conversion = await client.convert({ amount, from, to });
 ```typescript
 const methods = await client.getPaymentMethods();
 ```
+
+- [`getCoinbaseAccounts`](https://docs.pro.coinbase.com/#list-accounts53)
+
+```typescript
+const accounts = await client.getCoinbaseAccounts();
+```
