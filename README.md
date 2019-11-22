@@ -91,24 +91,34 @@ const passphrase = "CoinbaseProAPIPassphrase";
 const client = new AuthenticatedClient({ key, secret, passphrase });
 ```
 
-- [`getAccounts`](https://docs.pro.coinbase.com/?javascript#list-accounts)
+- [`getAccounts`](https://docs.pro.coinbase.com/#list-accounts)
 
 ```typescript
 const accounts = await client.getAccounts();
 ```
 
-- [`getAccount`](https://docs.pro.coinbase.com/?javascript#get-an-account)
+- [`getAccount`](https://docs.pro.coinbase.com/#get-an-account)
 
 ```typescript
 const account_id = "71452118-efc7-4cc4-8780-a5e22d4baa53";
 const account = await client.getAccount({ account_id });
 ```
 
-- [`getAccountHistory`](https://docs.pro.coinbase.com/?javascript#get-account-history)
+- [`getAccountHistory`](https://docs.pro.coinbase.com/#get-account-history)
 
 ```typescript
 const account_id = "71452118-efc7-4cc4-8780-a5e22d4baa53";
 const after = "100";
 const limit = 5;
 const history = await client.getAccountHistory({ account_id, after, limit });
+```
+
+- [`getHolds`](https://docs.pro.coinbase.com/#get-holds)
+
+```typescript
+const account_id = "71452118-efc7-4cc4-8780-a5e22d4baa53";
+const after = "2019-11-22T14:33:58.093436Z";
+const before = "2019-11-21T14:33:58.093436Z";
+const limit = 40;
+const holds = await client.getHolds({ account_id, after, before, limit });
 ```
