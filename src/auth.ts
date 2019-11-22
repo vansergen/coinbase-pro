@@ -37,6 +37,15 @@ export type AccountHistory = {
   };
 };
 
+export type AccountHold = {
+  created_at: string;
+  updated_at?: string;
+  id: string;
+  amount: string;
+  type: "order" | "transfer";
+  ref: string;
+};
+
 export type AuthenticatedClientOptions = PublicClientOptions & {
   key: string;
   secret: string;
@@ -97,5 +106,12 @@ export class AuthenticatedClient extends PublicClient {
     ...qs
   }: AccountHistoryParams): Promise<AccountHistory[]> {
     return this.get({ uri: "/accounts/" + account_id + "/ledger", qs });
+  }
+
+  getHolds({
+    account_id,
+    ...qs
+  }: AccountHistoryParams): Promise<AccountHold[]> {
+    return this.get({ uri: "/accounts/" + account_id + "/holds", qs });
   }
 }
