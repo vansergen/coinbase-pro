@@ -122,3 +122,28 @@ const before = "2019-11-21T14:33:58.093436Z";
 const limit = 40;
 const holds = await client.getHolds({ account_id, after, before, limit });
 ```
+
+- [`placeOrder`](https://docs.pro.coinbase.com/#place-a-new-order)
+
+```typescript
+const client_oid = "71452118-efc7-4cc4-8780-a5e22d4baa53";
+const type = "limit";
+const side = "buy";
+const product_id = "BTC-USD";
+const stp = "cb";
+const price = 10000;
+const size = 1;
+const post_only = true;
+const cancel_after = "hour";
+const order = await client.placeOrder({
+  client_oid,
+  type,
+  side,
+  product_id,
+  stp,
+  price,
+  size,
+  post_only,
+  cancel_after
+});
+```
