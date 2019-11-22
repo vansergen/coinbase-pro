@@ -10,7 +10,8 @@ import {
   OrderInfo,
   Fill,
   DepositParams,
-  DepositInfo
+  DepositInfo,
+  DepositCoinbaseParams
 } from "../index";
 
 const product_id = "ETH-BTC";
@@ -452,6 +453,24 @@ suite("AuthenticatedClient", () => {
       .post("/deposits/payment-method", params)
       .reply(200, response);
     const data = await client.deposit(params);
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".depositCoinbase()", async () => {
+    const params: DepositCoinbaseParams = {
+      amount: 10,
+      currency: "BTC",
+      coinbase_account_id: "c13cd0fc-72ca-55e9-843b-b84ef628c198"
+    };
+    const response: DepositInfo = {
+      id: "593533d2-ff31-46e0-b22e-ca754147a96a",
+      amount: "10.00",
+      currency: "BTC"
+    };
+    nock(apiUri)
+      .post("/deposits/coinbase-account", params)
+      .reply(200, response);
+    const data = await client.depositCoinbase(params);
     assert.deepStrictEqual(data, response);
   });
 });
