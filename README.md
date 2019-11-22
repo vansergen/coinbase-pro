@@ -251,3 +251,12 @@ const withdraw = await client.withdrawCrypto({
   no_destination_tag
 });
 ```
+
+- [`convert`](https://docs.pro.coinbase.com/#create-conversion)
+
+```typescript
+const amount = 100;
+const from = "USD";
+const to = "USDC";
+const conversion = await client.convert({ amount, from, to });
+```
