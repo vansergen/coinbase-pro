@@ -223,3 +223,16 @@ const currency = "USD";
 const payment_method_id = "bc677162-d934-5f1a-968c-a496b1c1270b";
 const withdraw = await client.withdraw({ amount, currency, payment_method_id });
 ```
+
+- [`withdrawCoinbase`](https://docs.pro.coinbase.com/#coinbase46)
+
+```typescript
+const amount = 10;
+const currency = "BTC";
+const coinbase_account_id = "c13cd0fc-72ca-55e9-843b-b84ef628c198";
+const withdraw = await client.withdrawCoinbase({
+  amount,
+  currency,
+  coinbase_account_id
+});
+```
