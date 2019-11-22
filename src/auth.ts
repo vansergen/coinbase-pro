@@ -2,6 +2,8 @@ import { PublicClient, PublicClientOptions, DefaultHeaders } from "./public";
 import { Signer } from "./signer";
 import { ParsedUrlQuery } from "querystring";
 
+export type AccountId = { account_id: string };
+
 export type Account = {
   id: string;
   currency: string;
@@ -61,5 +63,9 @@ export class AuthenticatedClient extends PublicClient {
 
   getAccounts(): Promise<Account[]> {
     return this.get({ uri: "/accounts" });
+  }
+
+  getAccount({ account_id }: AccountId): Promise<Account> {
+    return this.get({ uri: "/accounts/" + account_id });
   }
 }
