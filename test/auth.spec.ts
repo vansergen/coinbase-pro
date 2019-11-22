@@ -16,7 +16,8 @@ import {
   ConvertParams,
   Conversion,
   PaymentMethod,
-  CoinbaseAccount
+  CoinbaseAccount,
+  Fees
 } from "../index";
 
 const product_id = "ETH-BTC";
@@ -699,6 +700,19 @@ suite("AuthenticatedClient", () => {
       .get("/coinbase-accounts")
       .reply(200, response);
     const data = await client.getCoinbaseAccounts();
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getFees()", async () => {
+    const response: Fees = {
+      maker_fee_rate: "0.0000",
+      taker_fee_rate: "0.0004",
+      usd_volume: "1278902322.97"
+    };
+    nock(apiUri)
+      .get("/fees")
+      .reply(200, response);
+    const data = await client.getFees();
     assert.deepStrictEqual(data, response);
   });
 });
