@@ -7,7 +7,8 @@ import {
   AccountHistory,
   AccountHold,
   OrderParams,
-  OrderInfo
+  OrderInfo,
+  Fill
 } from "../index";
 
 const product_id = "ETH-BTC";
@@ -346,6 +347,90 @@ suite("AuthenticatedClient", () => {
       .get("/orders/client:" + client_oid)
       .reply(200, response);
     const data = await client.getOrder({ client_oid });
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getFills()", async () => {
+    const response: Fill[] = [
+      {
+        created_at: "2019-11-14T10:31:34.255Z",
+        trade_id: 1,
+        product_id: "BTC-USD",
+        order_id: "order_id",
+        user_id: "user_id",
+        profile_id: "profile_id",
+        liquidity: "T",
+        price: "8658.14000000",
+        size: "0.16000000",
+        fee: "2.0779536000000000",
+        side: "buy",
+        settled: true,
+        usd_volume: "1385.3024000000000000"
+      },
+      {
+        created_at: "2019-11-14T10:31:34.255Z",
+        trade_id: 2,
+        product_id: "BTC-USD",
+        order_id: "order_id",
+        user_id: "user_id",
+        profile_id: "profile_id",
+        liquidity: "M",
+        price: "8658.14000000",
+        size: "0.84000000",
+        fee: "10.9092564000000000",
+        side: "buy",
+        settled: true,
+        usd_volume: "7272.8376000000000000"
+      }
+    ];
+    nock(apiUri)
+      .get("/fills")
+      .query({ product_id })
+      .reply(200, response);
+    const data = await client.getFills();
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getFills() (using `limit`)", async () => {
+    const limit = 2;
+    const product_id = "BTC-USD";
+    const response: Fill[] = [
+      {
+        created_at: "2019-11-14T10:31:34.255Z",
+        trade_id: 3,
+        product_id: "BTC-USD",
+        order_id: "order_id",
+        user_id: "user_id",
+        profile_id: "profile_id",
+        liquidity: "T",
+        price: "8658.14000000",
+        size: "0.16000000",
+        fee: "2.0779536000000000",
+        side: "buy",
+        settled: true,
+        usd_volume: "1385.3024000000000000"
+      },
+      {
+        created_at: "2019-11-14T10:31:34.255Z",
+        trade_id: 5,
+        product_id: "BTC-USD",
+        order_id: "order_id",
+        user_id: "user_id",
+        profile_id: "profile_id",
+        liquidity: "T",
+        price: "8658.14000000",
+        size: "0.84000000",
+        fee: "10.9092564000000000",
+        side: "buy",
+        settled: true,
+        usd_volume: "7272.8376000000000000"
+      }
+    ];
+    nock(apiUri)
+      .get("/fills")
+      .query({ product_id, limit })
+      .reply(200, response);
+    const data = await client.getFills({ limit, product_id });
     assert.deepStrictEqual(data, response);
   });
 });
