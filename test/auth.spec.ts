@@ -492,4 +492,22 @@ suite("AuthenticatedClient", () => {
     const data = await client.withdraw(params);
     assert.deepStrictEqual(data, response);
   });
+
+  test(".withdrawCoinbase()", async () => {
+    const params: DepositCoinbaseParams = {
+      amount: 10,
+      currency: "BTC",
+      coinbase_account_id: "c13cd0fc-72ca-55e9-843b-b84ef628c198"
+    };
+    const response: DepositInfo = {
+      id: "593533d2-ff31-46e0-b22e-ca754147a96a",
+      amount: "10.00",
+      currency: "BTC"
+    };
+    nock(apiUri)
+      .post("/withdrawals/coinbase-account", params)
+      .reply(200, response);
+    const data = await client.withdrawCoinbase(params);
+    assert.deepStrictEqual(data, response);
+  });
 });
