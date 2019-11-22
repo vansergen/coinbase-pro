@@ -164,3 +164,13 @@ result = await client.cancelOrder({ client_oid });
 const product_id = "BTC-USD";
 const result = await client.cancelAll({ product_id });
 ```
+
+- [`getOrders`](https://docs.pro.coinbase.com/#list-orders)
+
+```typescript
+const limit = 2;
+const after = "2019-09-29T19:16:37.991967Z";
+const status = ["done", "rejected"];
+const product_id = "BTC-USD";
+const orders = await client.getOrders({ after, product_id, limit, status });
+```
