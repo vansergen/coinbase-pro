@@ -327,3 +327,18 @@ const websocket = new WebsocketClient({
   sandbox
 });
 ```
+
+- [`subscribe`](https://docs.pro.coinbase.com/#subscribe)
+
+```typescript
+const product_ids = ["ETH-USD", "ETH-EUR"];
+const channels = [
+  "level2",
+  "heartbeat",
+  {
+    name: "ticker",
+    product_ids: ["ETH-BTC", "ETH-USD"]
+  }
+];
+websocket.subscribe({ channels, product_ids });
+```
