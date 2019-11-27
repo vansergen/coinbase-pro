@@ -68,6 +68,10 @@ export class WebsocketClient extends EventEmitter {
     this.send({ ...product_ids, channels, type: "subscribe" });
   }
 
+  unsubscribe({ channels, ...product_ids }: SubscribeParams): void {
+    this.send({ ...product_ids, channels, type: "unsubscribe" });
+  }
+
   send({ type, channels, ...product_ids }: Subscription): void {
     if (!this.ws) {
       throw new Error("Websocket is not initialized");
