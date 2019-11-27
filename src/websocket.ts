@@ -64,6 +64,41 @@ export class WebsocketClient extends EventEmitter {
     }
   }
 
+  connect(): void {
+    if (this.ws) {
+      switch (this.ws.readyState) {
+        case Websocket.OPEN:
+          return;
+        case Websocket.CLOSING:
+        case Websocket.CONNECTING:
+          throw new Error("Could not connect. State: " + this.ws.readyState);
+      }
+    }
+
+    this.ws = new Websocket(this.wsUri);
+    this.ws.on("open", () => {
+      this.emit("open");
+      this.subscribe({
+        channels: this.channels,
+        product_ids: this.product_ids
+      });
+    });
+    this.ws.on("close", () => {
+      this.emit("close");
+    });
+    this.ws.on("error", error => {
+      this.emit("error", error);
+    });
+    this.ws.on("message", (data: string) => {
+      const message = JSON.parse(data);
+      if (message.type === "error") {
+        this.emit("error", message);
+      } else {
+        this.emit("message", message);
+      }
+    });
+  }
+
   subscribe({ channels, ...product_ids }: SubscribeParams): void {
     this.send({ ...product_ids, channels, type: "subscribe" });
   }
