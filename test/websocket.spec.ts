@@ -69,4 +69,17 @@ suite("WebsocketClient", () => {
     });
     client.connect();
   });
+
+  test(".disconnect()", done => {
+    const server = WSS();
+    const client = new WebsocketClient({ wsUri });
+    client.once("open", () => {
+      client.disconnect();
+    });
+    client.once("close", () => {
+      server.close();
+      done();
+    });
+    client.connect();
+  });
 });
