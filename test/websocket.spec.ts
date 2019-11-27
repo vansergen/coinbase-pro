@@ -6,7 +6,7 @@ import {
   DefaultProductIds
 } from "../index";
 import * as assert from "assert";
-import { Port } from "./lib/wss";
+import { Port, WSS } from "./lib/wss";
 
 const port = Port;
 const wsUri = "ws://localhost:" + port;
@@ -58,5 +58,15 @@ suite("WebsocketClient", () => {
     assert.deepStrictEqual(websocket.key, key);
     assert.deepStrictEqual(websocket.secret, secret);
     assert.deepStrictEqual(websocket.passphrase, passphrase);
+  });
+
+  test(".connect()", done => {
+    const server = WSS();
+    const client = new WebsocketClient({ wsUri });
+    client.once("open", () => {
+      server.close();
+      done();
+    });
+    client.connect();
   });
 });
