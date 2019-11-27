@@ -334,6 +334,12 @@ const websocket = new WebsocketClient({
 websocket.connect();
 ```
 
+- [`disconnect`](https://docs.pro.coinbase.com/#websocket-feed)
+
+```typescript
+websocket.disconnect();
+```
+
 - [`subscribe`](https://docs.pro.coinbase.com/#subscribe)
 
 ```typescript
