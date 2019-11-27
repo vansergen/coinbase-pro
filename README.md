@@ -342,3 +342,11 @@ const channels = [
 ];
 websocket.subscribe({ channels, product_ids });
 ```
+
+- [`unsubscribe`](https://docs.pro.coinbase.com/#subscribe)
+
+```typescript
+const product_ids = ["ETH-USD", "ETH-EUR"];
+const channels = ["ticker"];
+websocket.unsubscribe({ channels, product_ids });
+```
