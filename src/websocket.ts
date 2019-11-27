@@ -99,6 +99,21 @@ export class WebsocketClient extends EventEmitter {
     });
   }
 
+  disconnect(): void {
+    if (!this.ws) {
+      return;
+    }
+    switch (this.ws.readyState) {
+      case Websocket.CLOSED:
+        return;
+      case Websocket.CLOSING:
+      case Websocket.CONNECTING:
+        throw new Error("Could not connect. State: " + this.ws.readyState);
+    }
+
+    this.ws.close();
+  }
+
   subscribe({ channels, ...product_ids }: SubscribeParams): void {
     this.send({ ...product_ids, channels, type: "subscribe" });
   }
