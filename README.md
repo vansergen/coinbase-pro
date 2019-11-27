@@ -328,6 +328,12 @@ const websocket = new WebsocketClient({
 });
 ```
 
+- [`connect`](https://docs.pro.coinbase.com/#websocket-feed)
+
+```typescript
+websocket.connect();
+```
+
 - [`subscribe`](https://docs.pro.coinbase.com/#subscribe)
 
 ```typescript
