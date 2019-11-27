@@ -1,6 +1,6 @@
 import { EventEmitter } from "events";
 import * as Websocket from "ws";
-import { Signer } from "../index";
+import { Signer, ProductInfo, CurrencyDetails, Side } from "../index";
 
 export const WsUri = "wss://ws-feed.pro.coinbase.com";
 export const SandboxWsUri = "wss://ws-feed-public.sandbox.pro.coinbase.com";
@@ -25,6 +25,191 @@ export type SignedMessage = Subscription & {
   passphrase?: string;
 };
 
+export type WSMessageHeartbeat = {
+  type: "heartbeat";
+  sequence: number;
+  last_trade_id: number;
+  product_id: string;
+  time: string;
+};
+
+export type WSMessageSnapshot = {
+  type: "snapshot";
+  product_id: string;
+  bids: [string, string][];
+  asks: [string, string][];
+};
+
+export type WSMessageL2Update = {
+  type: "l2update";
+  product_id: string;
+  changes: [string, string, string][];
+  time: string;
+};
+
+export type WSMessageReceived = {
+  type: "received";
+  side: Side;
+  product_id: string;
+  time: string;
+  sequence: number;
+  order_id: string;
+  order_type: "limit" | "market";
+  client_oid?: string;
+  size?: string;
+  price?: string;
+  funds?: string;
+  profile_id?: string;
+  user_id?: string;
+};
+
+export type WSMessageOpen = {
+  type: "open";
+  side: Side;
+  product_id: string;
+  time: string;
+  sequence: number;
+  price: string;
+  order_id: string;
+  remaining_size: string;
+  profile_id?: string;
+  user_id?: string;
+};
+
+export type WSMessageMatch = {
+  type: "match";
+  trade_id: number;
+  maker_order_id: string;
+  taker_order_id: string;
+  side: Side;
+  size: string;
+  price: string;
+  product_id: string;
+  sequence: number;
+  time: string;
+};
+
+export type WSMessageChange = {
+  type: "change";
+  side: Side;
+  product_id: string;
+  time: string;
+  sequence: number;
+  price: string;
+  order_id: string;
+  new_size?: string;
+  old_size?: string;
+  new_funds?: string;
+  old_funds?: string;
+  profile_id?: string;
+  user_id?: string;
+};
+
+export type WSMessageDone = {
+  type: "done";
+  side: Side;
+  product_id: string;
+  time: string;
+  sequence: number;
+  order_id: string;
+  reason: "filled" | "canceled";
+  price?: string;
+  remaining_size?: string;
+  profile_id?: string;
+  user_id?: string;
+};
+
+export type WSMessageActivate = {
+  type: "activate";
+  side: Side;
+  product_id: string;
+  time: string;
+  sequence: number;
+  order_id: string;
+  client_oid?: string;
+  stop_price: string;
+  limit_price: string;
+  size: string;
+  taker_fee_rate?: string;
+  stop_type: string;
+  profile_id?: string;
+  user_id?: string;
+};
+
+export type WSMessageTicker = {
+  type: "ticker";
+  sequence: number;
+  product_id: string;
+  price: string;
+  open_24h: string;
+  volume_24h: string;
+  low_24h: string;
+  high_24h: string;
+  volume_30d: string;
+  best_bid: string;
+  best_ask: string;
+  side: Side;
+  time: string;
+  trade_id: number;
+  last_size: string;
+};
+
+export type WSMessageLastMatch = {
+  type: "last_match";
+  trade_id: number;
+  maker_order_id: string;
+  taker_order_id: string;
+  side: Side;
+  size: string;
+  price: string;
+  product_id: string;
+  sequence: number;
+  time: string;
+};
+
+export type WSMessageSubscriptions = {
+  type: "subscriptions";
+  channels: {
+    name: string;
+    product_ids: string[];
+  }[];
+};
+
+export type WSMessageStatus = {
+  type: "status";
+  currencies: {
+    id: string;
+    name: string;
+    min_size: string;
+    status: string;
+    funding_account_id: string;
+    status_message: string;
+    max_precision: string;
+    convertible_to: string[];
+    details: CurrencyDetails;
+  }[];
+  products: (ProductInfo & { type: string })[];
+};
+
+export type WSMessage =
+  | WSMessageHeartbeat
+  | WSMessageSnapshot
+  | WSMessageL2Update
+  | WSMessageReceived
+  | WSMessageOpen
+  | WSMessageMatch
+  | WSMessageChange
+  | WSMessageDone
+  | WSMessageActivate
+  | WSMessageTicker
+  | WSMessageLastMatch
+  | WSMessageSubscriptions
+  | WSMessageStatus;
+
+export type WSError =
+  | Error
+  | { type: "error"; message: string; reason: string };
+
 export type WebsocketClientOptions = {
   product_ids?: string | string[];
   wsUri?: string;
@@ -34,6 +219,18 @@ export type WebsocketClientOptions = {
   passphrase?: string;
   sandbox?: boolean;
 };
+
+export declare interface WebsocketClient {
+  on(event: "open", eventListener: () => void): this;
+  on(event: "close", eventListener: () => void): this;
+  on(event: "message", eventListener: (data: WSMessage) => void): this;
+  on(event: "error", eventListener: (error: WSError) => void): this;
+
+  once(event: "open", eventListener: () => void): this;
+  once(event: "close", eventListener: () => void): this;
+  once(event: "message", eventListener: (data: WSMessage) => void): this;
+  once(event: "error", eventListener: (error: WSError) => void): this;
+}
 
 export class WebsocketClient extends EventEmitter {
   ws?: Websocket;
