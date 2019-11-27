@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.2.0] - 2019-11-27
+
+### Added
+
+- `WebsocketClient` methods:
+  - `connect`
+  - `disconnect`
+  - `subscribe`
+  - `unsubscribe`
+
+### Fixed
+
+- `AuthenticatedClient`
+
+  - `placeOrder` method: allow to omit the `product_id`.
+
+### Added
+
 ## [1.1.0] - 2019-11-23
 
 ### Added
@@ -42,5 +60,6 @@
   - `getCurrencies`
   - `getTime`
 
+[1.2.0]: https://github.com/vansergen/coinbase-pro/releases/tag/v1.2.0
 [1.1.0]: https://github.com/vansergen/coinbase-pro/releases/tag/v1.1.0
 [1.0.0]: https://github.com/vansergen/coinbase-pro/releases/tag/v1.0.0
