@@ -399,6 +399,9 @@ export class AuthenticatedClient extends PublicClient {
   }
 
   placeOrder(body: OrderParams): Promise<OrderInfo> {
+    if (!body.product_id) {
+      body.product_id = this.product_id;
+    }
     return this.post({ uri: "/orders", body });
   }
 

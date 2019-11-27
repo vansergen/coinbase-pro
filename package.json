@@ -1,6 +1,6 @@
 {
   "name": "coinbase-pro-node-api",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Node.js library for Coinbase Pro",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -36,11 +36,11 @@
   "homepage": "https://github.com/vansergen/coinbase-pro#readme",
   "devDependencies": {
     "@types/mocha": "^5.2.7",
-    "@typescript-eslint/eslint-plugin": "^2.8.0",
-    "@typescript-eslint/parser": "^2.8.0",
-    "eslint": "^6.6.0",
+    "@typescript-eslint/eslint-plugin": "^2.9.0",
+    "@typescript-eslint/parser": "^2.9.0",
+    "eslint": "^6.7.1",
     "husky": "^3.1.0",
-    "lint-staged": "^9.4.3",
+    "lint-staged": "^9.5.0",
     "mocha": "^6.2.2",
     "nock": "^11.7.0",
     "prettier": "^1.19.1",
@@ -63,7 +63,9 @@
     ]
   },
   "dependencies": {
-    "rpc-request": "^3.1.2"
+    "@types/ws": "^6.0.4",
+    "rpc-request": "^3.1.2",
+    "ws": "^7.2.0"
   },
   "funding": {
     "type": "Coinbase Commerce",

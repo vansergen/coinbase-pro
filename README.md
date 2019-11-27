@@ -300,3 +300,65 @@ const report = await client.getReport({ id });
 ```typescript
 const volume = await client.getTrailingVolume();
 ```
+
+### WebsocketClient
+
+```typescript
+import { WebsocketClient } from "coinbase-pro-node-api";
+const sandbox = false;
+const key = "CoinbaseProAPIKey";
+const secret = "CoinbaseProAPISecret";
+const passphrase = "CoinbaseProAPIPassphrase";
+const product_ids = ["BTC-USD", "BAT-USDC", "ETH-BTC"];
+const channels = [
+  "user",
+  "full",
+  {
+    name: "level2",
+    product_ids: ["BTC-EUR", "BTC-GBP"]
+  }
+];
+const websocket = new WebsocketClient({
+  key,
+  secret,
+  passphrase,
+  product_ids,
+  channels,
+  sandbox
+});
+```
+
+- [`connect`](https://docs.pro.coinbase.com/#websocket-feed)
+
+```typescript
+websocket.connect();
+```
+
+- [`disconnect`](https://docs.pro.coinbase.com/#websocket-feed)
+
+```typescript
+websocket.disconnect();
+```
+
+- [`subscribe`](https://docs.pro.coinbase.com/#subscribe)
+
+```typescript
+const product_ids = ["ETH-USD", "ETH-EUR"];
+const channels = [
+  "level2",
+  "heartbeat",
+  {
+    name: "ticker",
+    product_ids: ["ETH-BTC", "ETH-USD"]
+  }
+];
+websocket.subscribe({ channels, product_ids });
+```
+
+- [`unsubscribe`](https://docs.pro.coinbase.com/#subscribe)
+
+```typescript
+const product_ids = ["ETH-USD", "ETH-EUR"];
+const channels = ["ticker"];
+websocket.unsubscribe({ channels, product_ids });
+```
