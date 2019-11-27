@@ -1,5 +1,6 @@
 import { EventEmitter } from "events";
 import * as Websocket from "ws";
+import { Signer } from "../index";
 
 export const WsUri = "wss://ws-feed.pro.coinbase.com";
 export const SandboxWsUri = "wss://ws-feed-public.sandbox.pro.coinbase.com";
@@ -7,6 +8,22 @@ export const DefaultChannels = ["full", "heartbeat", "status"];
 export const DefaultProductIds = ["BTC-USD"];
 
 export type Channel = string | { name: string; product_ids?: string[] };
+
+export type SubscribeParams = {
+  product_ids?: string | string[];
+  channels: Channel | Channel[];
+};
+
+export type Subscription = SubscribeParams & {
+  type: "subscribe" | "unsubscribe";
+};
+
+export type SignedMessage = Subscription & {
+  key?: string;
+  signature?: string;
+  timestamp?: number;
+  passphrase?: string;
+};
 
 export type WebsocketClientOptions = {
   product_ids?: string | string[];
@@ -45,5 +62,33 @@ export class WebsocketClient extends EventEmitter {
       this.secret = secret;
       this.passphrase = passphrase;
     }
+  }
+
+  send({ type, channels, ...product_ids }: Subscription): void {
+    if (!this.ws) {
+      throw new Error("Websocket is not initialized");
+    }
+
+    const message: SignedMessage = {
+      type,
+      channels,
+      ...product_ids
+    };
+    if (this.key && this.secret && this.passphrase) {
+      const signature = Signer({
+        body: "",
+        method: "GET",
+        uri: "/users/self/verify",
+        key: this.key,
+        secret: this.secret,
+        passphrase: this.passphrase
+      });
+      message.key = signature["CB-ACCESS-KEY"];
+      message.signature = signature["CB-ACCESS-SIGN"];
+      message.timestamp = signature["CB-ACCESS-TIMESTAMP"];
+      message.passphrase = signature["CB-ACCESS-PASSPHRASE"];
+    }
+
+    this.ws.send(JSON.stringify(message));
   }
 }
