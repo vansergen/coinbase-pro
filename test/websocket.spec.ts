@@ -82,4 +82,28 @@ suite("WebsocketClient", () => {
     });
     client.connect();
   });
+
+  test(".subscribe()", done => {
+    const server = WSS();
+    const channels = [
+      {
+        name: "ticker",
+        product_ids: ["BTC-USD"]
+      }
+    ];
+    const client = new WebsocketClient({
+      wsUri,
+      channels
+    });
+    client.once("message", message => {
+      if (message.type === "subscriptions") {
+        assert.deepStrictEqual(message.channels, channels);
+        server.close();
+        done();
+      } else {
+        assert.fail();
+      }
+    });
+    client.connect();
+  });
 });
