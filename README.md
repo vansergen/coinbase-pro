@@ -1,4 +1,4 @@
-# coinbase-pro [![Build Status](https://travis-ci.com/vansergen/coinbase-pro.svg?branch=master)](https://travis-ci.com/vansergen/coinbase-pro) [![GitHub version](https://badge.fury.io/gh/vansergen%2Fcoinbase-pro.svg)](https://github.com/vansergen/coinbase-pro) ![node](https://img.shields.io/node/v/coinbase-pro-node-api) ![NPM](https://img.shields.io/npm/l/coinbase-pro-node-api) ![npm](https://img.shields.io/npm/dt/coinbase-pro-node-api) ![GitHub top language](https://img.shields.io/github/languages/top/vansergen/coinbase-pro)
+# coinbase-pro-node-api [![Build Status](https://travis-ci.com/vansergen/coinbase-pro.svg?branch=master)](https://travis-ci.com/vansergen/coinbase-pro) [![GitHub version](https://badge.fury.io/gh/vansergen%2Fcoinbase-pro.svg)](https://github.com/vansergen/coinbase-pro) ![node](https://img.shields.io/node/v/coinbase-pro-node-api) ![NPM](https://img.shields.io/npm/l/coinbase-pro-node-api) ![npm](https://img.shields.io/npm/dt/coinbase-pro-node-api) ![GitHub top language](https://img.shields.io/github/languages/top/vansergen/coinbase-pro)
 
 Node.js library for [Coinbase Pro](https://pro.coinbase.com/)
 
@@ -295,6 +295,29 @@ const id = "0428b97b-bec1-429e-a94c-59232926778d";
 const report = await client.getReport({ id });
 ```
 
+- [`getProfiles`](https://docs.pro.coinbase.com/#list-profiles)
+
+```typescript
+const profiles = await client.getProfiles();
+```
+
+- [`getProfile`](https://docs.pro.coinbase.com/#get-a-profile)
+
+```typescript
+const id = "86602c68-306a-4500-ac73-4ce56a91d83c";
+const profile = await client.getProfile({ id });
+```
+
+- [`transfer`](https://docs.pro.coinbase.com/#create-profile-transfer)
+
+```typescript
+const from = "86602c68-306a-4500-ac73-4ce56a91d83c";
+const to = "e87429d3-f0a7-4f28-8dff-8dd93d383de1";
+const currency = "ETH";
+const amount = 100;
+const result = await client.transfer({ from, to, currency, amount });
+```
+
 - [`getTrailingVolume`](https://docs.pro.coinbase.com/#user-account)
 
 ```typescript
@@ -313,10 +336,7 @@ const product_ids = ["BTC-USD", "BAT-USDC", "ETH-BTC"];
 const channels = [
   "user",
   "full",
-  {
-    name: "level2",
-    product_ids: ["BTC-EUR", "BTC-GBP"]
-  }
+  { name: "level2", product_ids: ["BTC-EUR", "BTC-GBP"] }
 ];
 const websocket = new WebsocketClient({
   key,
@@ -347,10 +367,7 @@ const product_ids = ["ETH-USD", "ETH-EUR"];
 const channels = [
   "level2",
   "heartbeat",
-  {
-    name: "ticker",
-    product_ids: ["ETH-BTC", "ETH-USD"]
-  }
+  { name: "ticker", product_ids: ["ETH-BTC", "ETH-USD"] }
 ];
 websocket.subscribe({ channels, product_ids });
 ```

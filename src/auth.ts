@@ -36,10 +36,7 @@ export type LimitOrder = BaseOrder & {
 
 export type OrderParams = MarketOrder | LimitOrder;
 
-export type CancelOrderParams = {
-  client_oid?: string;
-  id?: string;
-};
+export type CancelOrderParams = { client_oid?: string; id?: string };
 
 export type GetOrdersParams = PagArgs &
   ProductID & { status?: string | string[] };
@@ -76,6 +73,13 @@ export type ReportParams = {
   account_id?: string;
   format?: "pdf" | "csv";
   email?: string;
+};
+
+export type TransferParams = {
+  from: string;
+  to: string;
+  currency: string;
+  amount: number;
 };
 
 export type Account = {
@@ -272,11 +276,7 @@ export type Fees = {
   usd_volume: string | null;
 };
 
-export type BaseReportStatus = {
-  id: string;
-  type: string;
-  status: string;
-};
+export type BaseReportStatus = { id: string; type: string; status: string };
 
 export type ReportStatus = BaseReportStatus & {
   expires_at: string;
@@ -301,9 +301,7 @@ export type ReportStatus = BaseReportStatus & {
       permissions: null;
       user_type: string;
       fulfills_new_requirements: boolean;
-      flags: null | {
-        onboarding_group: string;
-      };
+      flags: null | { onboarding_group: string };
       details: null;
       default_profile_id: string;
       oauth_client: string;
@@ -320,6 +318,15 @@ export type ReportStatus = BaseReportStatus & {
   file_count?: null;
   created_at: string;
   completed_at?: string;
+};
+
+export type Profile = {
+  id: string;
+  user_id: string;
+  name: string;
+  active: boolean;
+  is_default: boolean;
+  created_at: string;
 };
 
 export type TrailingVolume = {
@@ -376,6 +383,9 @@ export class AuthenticatedClient extends PublicClient {
     return super.request({ qs, body, method, uri, headers });
   }
 
+  /**
+   * Get a list of trading accounts from the profile of the API key.
+   */
   getAccounts(): Promise<Account[]> {
     return this.get({ uri: "/accounts" });
   }
@@ -384,6 +394,9 @@ export class AuthenticatedClient extends PublicClient {
     return this.get({ uri: "/accounts/" + account_id });
   }
 
+  /**
+   * List account activity of the API key’s profile.
+   */
   getAccountHistory({
     account_id,
     ...qs
@@ -391,6 +404,9 @@ export class AuthenticatedClient extends PublicClient {
     return this.get({ uri: "/accounts/" + account_id + "/ledger", qs });
   }
 
+  /**
+   * List holds of an account that belong to the same profile as the API key.
+   */
   getHolds({
     account_id,
     ...qs
@@ -489,6 +505,30 @@ export class AuthenticatedClient extends PublicClient {
     return this.get({ uri: "/reports/" + id });
   }
 
+  /**
+   * List your profiles.
+   */
+  getProfiles(): Promise<Profile[]> {
+    return this.get({ uri: "/profiles" });
+  }
+
+  /**
+   * Get a single profile by profile id.
+   */
+  getProfile({ id }: { id: string }): Promise<Profile> {
+    return this.get({ uri: "/profiles/" + id });
+  }
+
+  /**
+   * Transfer funds from API key’s profile to another user owned profile.
+   */
+  transfer(body: TransferParams): Promise<"OK"> {
+    return this.post({ uri: "/profiles/transfer", body });
+  }
+
+  /**
+   * Get your 30-day trailing volume for all products of the API key’s profile.
+   */
   getTrailingVolume(): Promise<TrailingVolume[]> {
     return this.get({ uri: "/users/self/trailing-volume" });
   }

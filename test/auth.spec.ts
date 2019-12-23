@@ -21,6 +21,7 @@ import {
   ReportParams,
   BaseReportStatus,
   ReportStatus,
+  Profile,
   TrailingVolume
 } from "../index";
 
@@ -763,6 +764,54 @@ suite("AuthenticatedClient", () => {
       .get("/reports/" + id)
       .reply(200, response);
     const data = await client.getReport({ id });
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getProfiles()", async () => {
+    const response: Profile[] = [
+      {
+        id: "86602c68-306a-4500-ac73-4ce56a91d83c",
+        user_id: "5844eceecf7e803e259d0365",
+        name: "default",
+        active: true,
+        is_default: true,
+        created_at: "2019-11-18T15:08:40.236309Z"
+      }
+    ];
+    nock(apiUri)
+      .get("/profiles")
+      .reply(200, response);
+    const data = await client.getProfiles();
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getProfile()", async () => {
+    const id = "86602c68-306a-4500-ac73-4ce56a91d83c";
+    const response: Profile = {
+      id: "86602c68-306a-4500-ac73-4ce56a91d83c",
+      user_id: "5844eceecf7e803e259d0365",
+      name: "default",
+      active: true,
+      is_default: true,
+      created_at: "2019-11-18T15:08:40.236309Z"
+    };
+    nock(apiUri)
+      .get("/profiles/" + id)
+      .reply(200, response);
+    const data = await client.getProfile({ id });
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".transfer()", async () => {
+    const from = "86602c68-306a-4500-ac73-4ce56a91d83c";
+    const to = "e87429d3-f0a7-4f28-8dff-8dd93d383de1";
+    const currency = "ETH";
+    const amount = 100;
+    const response: "OK" = "OK";
+    nock(apiUri)
+      .post("/profiles/transfer", { from, to, currency, amount })
+      .reply(200, response);
+    const data = await client.transfer({ from, to, currency, amount });
     assert.deepStrictEqual(data, response);
   });
 

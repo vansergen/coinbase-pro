@@ -1,4 +1,4 @@
-import * as crypto from "crypto";
+import { createHmac } from "crypto";
 import { stringify, ParsedUrlQuery } from "querystring";
 
 export type SignerOptions = {
@@ -34,8 +34,7 @@ export function Signer({
   }
   return {
     "CB-ACCESS-KEY": key,
-    "CB-ACCESS-SIGN": crypto
-      .createHmac("sha256", Buffer.from(secret, "base64"))
+    "CB-ACCESS-SIGN": createHmac("sha256", Buffer.from(secret, "base64"))
       .update(timestamp + method + uri + (body ? JSON.stringify(body) : ""))
       .digest("base64"),
     "CB-ACCESS-TIMESTAMP": timestamp,

@@ -4,14 +4,17 @@ import { Signer, ProductInfo, CurrencyDetails, Side } from "../index";
 
 export const WsUri = "wss://ws-feed.pro.coinbase.com";
 export const SandboxWsUri = "wss://ws-feed-public.sandbox.pro.coinbase.com";
-export const DefaultChannels = ["full", "heartbeat", "status"];
-export const DefaultProductIds = ["BTC-USD"];
+export const DefaultChannels = [
+  { name: "full", product_ids: ["BTC-USD"] },
+  { name: "heartbeat", product_ids: ["BTC-USD"] },
+  { name: "status", product_ids: ["BTC-USD"] }
+];
 
 export type Channel = string | { name: string; product_ids?: string[] };
 
 export type SubscribeParams = {
-  product_ids?: string | string[];
-  channels: Channel | Channel[];
+  product_ids?: string[];
+  channels: Channel[];
 };
 
 export type Subscription = SubscribeParams & {
@@ -169,10 +172,7 @@ export type WSMessageLastMatch = {
 
 export type WSMessageSubscriptions = {
   type: "subscriptions";
-  channels: {
-    name: string;
-    product_ids: string[];
-  }[];
+  channels: { name: string; product_ids: string[] }[];
 };
 
 export type WSMessageStatus = {
@@ -211,9 +211,9 @@ export type WSError =
   | { type: "error"; message: string; reason: string };
 
 export type WebsocketClientOptions = {
-  product_ids?: string | string[];
+  product_ids?: string[];
   wsUri?: string;
-  channels?: Channel | Channel[];
+  channels?: Channel[];
   key?: string;
   secret?: string;
   passphrase?: string;
@@ -233,7 +233,7 @@ export declare interface WebsocketClient {
 }
 
 export class WebsocketClient extends EventEmitter {
-  ws?: Websocket;
+  private ws?: Websocket;
   readonly channels: Channel[];
   readonly product_ids: string[];
   readonly key?: string;
@@ -243,16 +243,16 @@ export class WebsocketClient extends EventEmitter {
 
   constructor({
     channels = DefaultChannels,
-    product_ids = DefaultProductIds,
+    product_ids = [],
     key,
     secret,
     passphrase,
-    sandbox,
+    sandbox = false,
     wsUri = sandbox ? SandboxWsUri : WsUri
   }: WebsocketClientOptions = {}) {
     super();
-    this.channels = Array.isArray(channels) ? channels : [channels];
-    this.product_ids = Array.isArray(product_ids) ? product_ids : [product_ids];
+    this.channels = channels;
+    this.product_ids = product_ids;
     this.wsUri = wsUri;
     if (key && secret && passphrase) {
       this.key = key;
@@ -275,17 +275,11 @@ export class WebsocketClient extends EventEmitter {
     this.ws = new Websocket(this.wsUri);
     this.ws.on("open", () => {
       this.emit("open");
-      this.subscribe({
-        channels: this.channels,
-        product_ids: this.product_ids
-      });
+      const { product_ids } = this;
+      this.subscribe({ channels: this.channels, product_ids });
     });
-    this.ws.on("close", () => {
-      this.emit("close");
-    });
-    this.ws.on("error", error => {
-      this.emit("error", error);
-    });
+    this.ws.on("close", () => this.emit("close"));
+    this.ws.on("error", error => this.emit("error", error));
     this.ws.on("message", (data: string) => {
       const message = JSON.parse(data);
       if (message.type === "error") {
@@ -311,24 +305,20 @@ export class WebsocketClient extends EventEmitter {
     this.ws.close();
   }
 
-  subscribe({ channels, ...product_ids }: SubscribeParams): void {
-    this.send({ ...product_ids, channels, type: "subscribe" });
+  subscribe(params: SubscribeParams): void {
+    this.send({ ...params, type: "subscribe" });
   }
 
-  unsubscribe({ channels, ...product_ids }: SubscribeParams): void {
-    this.send({ ...product_ids, channels, type: "unsubscribe" });
+  unsubscribe(params: SubscribeParams): void {
+    this.send({ ...params, type: "unsubscribe" });
   }
 
-  send({ type, channels, ...product_ids }: Subscription): void {
+  private send(params: Subscription): void {
     if (!this.ws) {
       throw new Error("Websocket is not initialized");
     }
 
-    const message: SignedMessage = {
-      type,
-      channels,
-      ...product_ids
-    };
+    const message: SignedMessage = params;
     if (this.key && this.secret && this.passphrase) {
       const signature = Signer({
         body: "",
