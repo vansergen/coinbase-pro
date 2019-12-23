@@ -802,6 +802,19 @@ suite("AuthenticatedClient", () => {
     assert.deepStrictEqual(data, response);
   });
 
+  test(".transfer()", async () => {
+    const from = "86602c68-306a-4500-ac73-4ce56a91d83c";
+    const to = "e87429d3-f0a7-4f28-8dff-8dd93d383de1";
+    const currency = "ETH";
+    const amount = 100;
+    const response: "OK" = "OK";
+    nock(apiUri)
+      .post("/profiles/transfer", { from, to, currency, amount })
+      .reply(200, response);
+    const data = await client.transfer({ from, to, currency, amount });
+    assert.deepStrictEqual(data, response);
+  });
+
   test(".getTrailingVolume()", async () => {
     const response: TrailingVolume[] = [
       {
