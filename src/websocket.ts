@@ -4,8 +4,11 @@ import { Signer, ProductInfo, CurrencyDetails, Side } from "../index";
 
 export const WsUri = "wss://ws-feed.pro.coinbase.com";
 export const SandboxWsUri = "wss://ws-feed-public.sandbox.pro.coinbase.com";
-export const DefaultChannels = ["full", "heartbeat", "status"];
-export const DefaultProductIds = ["BTC-USD"];
+export const DefaultChannels = [
+  { name: "full", product_ids: ["BTC-USD"] },
+  { name: "heartbeat", product_ids: ["BTC-USD"] },
+  { name: "status", product_ids: ["BTC-USD"] }
+];
 
 export type Channel = string | { name: string; product_ids?: string[] };
 
@@ -240,7 +243,7 @@ export class WebsocketClient extends EventEmitter {
 
   constructor({
     channels = DefaultChannels,
-    product_ids = DefaultProductIds,
+    product_ids = [],
     key,
     secret,
     passphrase,
