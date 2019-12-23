@@ -211,9 +211,9 @@ export type WSError =
   | { type: "error"; message: string; reason: string };
 
 export type WebsocketClientOptions = {
-  product_ids?: string | string[];
+  product_ids?: string[];
   wsUri?: string;
-  channels?: Channel | Channel[];
+  channels?: Channel[];
   key?: string;
   secret?: string;
   passphrase?: string;
@@ -251,8 +251,8 @@ export class WebsocketClient extends EventEmitter {
     wsUri = sandbox ? SandboxWsUri : WsUri
   }: WebsocketClientOptions = {}) {
     super();
-    this.channels = Array.isArray(channels) ? channels : [channels];
-    this.product_ids = Array.isArray(product_ids) ? product_ids : [product_ids];
+    this.channels = channels;
+    this.product_ids = product_ids;
     this.wsUri = wsUri;
     if (key && secret && passphrase) {
       this.key = key;
