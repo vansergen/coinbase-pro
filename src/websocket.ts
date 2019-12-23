@@ -10,8 +10,8 @@ export const DefaultProductIds = ["BTC-USD"];
 export type Channel = string | { name: string; product_ids?: string[] };
 
 export type SubscribeParams = {
-  product_ids?: string | string[];
-  channels: Channel | Channel[];
+  product_ids?: string[];
+  channels: Channel[];
 };
 
 export type Subscription = SubscribeParams & {
@@ -169,10 +169,7 @@ export type WSMessageLastMatch = {
 
 export type WSMessageSubscriptions = {
   type: "subscriptions";
-  channels: {
-    name: string;
-    product_ids: string[];
-  }[];
+  channels: { name: string; product_ids: string[] }[];
 };
 
 export type WSMessageStatus = {
@@ -247,7 +244,7 @@ export class WebsocketClient extends EventEmitter {
     key,
     secret,
     passphrase,
-    sandbox,
+    sandbox = false,
     wsUri = sandbox ? SandboxWsUri : WsUri
   }: WebsocketClientOptions = {}) {
     super();
@@ -275,17 +272,11 @@ export class WebsocketClient extends EventEmitter {
     this.ws = new Websocket(this.wsUri);
     this.ws.on("open", () => {
       this.emit("open");
-      this.subscribe({
-        channels: this.channels,
-        product_ids: this.product_ids
-      });
+      const {product_ids} = this;
+      this.subscribe({ channels: this.channels, product_ids });
     });
-    this.ws.on("close", () => {
-      this.emit("close");
-    });
-    this.ws.on("error", error => {
-      this.emit("error", error);
-    });
+    this.ws.on("close", () => this.emit("close"));
+    this.ws.on("error", error => this.emit("error", error));
     this.ws.on("message", (data: string) => {
       const message = JSON.parse(data);
       if (message.type === "error") {
@@ -311,24 +302,20 @@ export class WebsocketClient extends EventEmitter {
     this.ws.close();
   }
 
-  subscribe({ channels, ...product_ids }: SubscribeParams): void {
-    this.send({ ...product_ids, channels, type: "subscribe" });
+  subscribe(params: SubscribeParams): void {
+    this.send({ ...params, type: "subscribe" });
   }
 
-  unsubscribe({ channels, ...product_ids }: SubscribeParams): void {
-    this.send({ ...product_ids, channels, type: "unsubscribe" });
+  unsubscribe(params: SubscribeParams): void {
+    this.send({ ...params, type: "unsubscribe" });
   }
 
-  send({ type, channels, ...product_ids }: Subscription): void {
+  send(params: Subscription): void {
     if (!this.ws) {
       throw new Error("Websocket is not initialized");
     }
 
-    const message: SignedMessage = {
-      type,
-      channels,
-      ...product_ids
-    };
+    const message: SignedMessage = params;
     if (this.key && this.secret && this.passphrase) {
       const signature = Signer({
         body: "",
