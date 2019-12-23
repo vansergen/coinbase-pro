@@ -272,7 +272,7 @@ export class WebsocketClient extends EventEmitter {
     this.ws = new Websocket(this.wsUri);
     this.ws.on("open", () => {
       this.emit("open");
-      const {product_ids} = this;
+      const { product_ids } = this;
       this.subscribe({ channels: this.channels, product_ids });
     });
     this.ws.on("close", () => this.emit("close"));
@@ -310,7 +310,7 @@ export class WebsocketClient extends EventEmitter {
     this.send({ ...params, type: "unsubscribe" });
   }
 
-  send(params: Subscription): void {
+  private send(params: Subscription): void {
     if (!this.ws) {
       throw new Error("Websocket is not initialized");
     }
