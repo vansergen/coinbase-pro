@@ -230,7 +230,7 @@ export declare interface WebsocketClient {
 }
 
 export class WebsocketClient extends EventEmitter {
-  ws?: Websocket;
+  private ws?: Websocket;
   readonly channels: Channel[];
   readonly product_ids: string[];
   readonly key?: string;
