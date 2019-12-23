@@ -336,10 +336,7 @@ const product_ids = ["BTC-USD", "BAT-USDC", "ETH-BTC"];
 const channels = [
   "user",
   "full",
-  {
-    name: "level2",
-    product_ids: ["BTC-EUR", "BTC-GBP"]
-  }
+  { name: "level2", product_ids: ["BTC-EUR", "BTC-GBP"] }
 ];
 const websocket = new WebsocketClient({
   key,
@@ -370,10 +367,7 @@ const product_ids = ["ETH-USD", "ETH-EUR"];
 const channels = [
   "level2",
   "heartbeat",
-  {
-    name: "ticker",
-    product_ids: ["ETH-BTC", "ETH-USD"]
-  }
+  { name: "ticker", product_ids: ["ETH-BTC", "ETH-USD"] }
 ];
 websocket.subscribe({ channels, product_ids });
 ```
