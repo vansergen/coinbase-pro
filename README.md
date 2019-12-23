@@ -301,6 +301,13 @@ const report = await client.getReport({ id });
 const profiles = await client.getProfiles();
 ```
 
+- [`getProfile`](https://docs.pro.coinbase.com/#get-a-profile)
+
+```typescript
+const id = "86602c68-306a-4500-ac73-4ce56a91d83c";
+const profile = await client.getProfile({ id });
+```
+
 - [`getTrailingVolume`](https://docs.pro.coinbase.com/#user-account)
 
 ```typescript
