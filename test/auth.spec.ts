@@ -21,6 +21,7 @@ import {
   ReportParams,
   BaseReportStatus,
   ReportStatus,
+  Profile,
   TrailingVolume
 } from "../index";
 
@@ -763,6 +764,24 @@ suite("AuthenticatedClient", () => {
       .get("/reports/" + id)
       .reply(200, response);
     const data = await client.getReport({ id });
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getProfiles()", async () => {
+    const response: Profile[] = [
+      {
+        id: "86602c68-306a-4500-ac73-4ce56a91d83c",
+        user_id: "5844eceecf7e803e259d0365",
+        name: "default",
+        active: true,
+        is_default: true,
+        created_at: "2019-11-18T15:08:40.236309Z"
+      }
+    ];
+    nock(apiUri)
+      .get("/profiles")
+      .reply(200, response);
+    const data = await client.getProfiles();
     assert.deepStrictEqual(data, response);
   });
 
