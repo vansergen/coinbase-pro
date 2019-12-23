@@ -785,6 +785,23 @@ suite("AuthenticatedClient", () => {
     assert.deepStrictEqual(data, response);
   });
 
+  test(".getProfile()", async () => {
+    const id = "86602c68-306a-4500-ac73-4ce56a91d83c";
+    const response: Profile = {
+      id: "86602c68-306a-4500-ac73-4ce56a91d83c",
+      user_id: "5844eceecf7e803e259d0365",
+      name: "default",
+      active: true,
+      is_default: true,
+      created_at: "2019-11-18T15:08:40.236309Z"
+    };
+    nock(apiUri)
+      .get("/profiles/" + id)
+      .reply(200, response);
+    const data = await client.getProfile({ id });
+    assert.deepStrictEqual(data, response);
+  });
+
   test(".getTrailingVolume()", async () => {
     const response: TrailingVolume[] = [
       {
