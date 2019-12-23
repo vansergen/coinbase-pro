@@ -36,10 +36,7 @@ export type LimitOrder = BaseOrder & {
 
 export type OrderParams = MarketOrder | LimitOrder;
 
-export type CancelOrderParams = {
-  client_oid?: string;
-  id?: string;
-};
+export type CancelOrderParams = { client_oid?: string; id?: string };
 
 export type GetOrdersParams = PagArgs &
   ProductID & { status?: string | string[] };
@@ -272,11 +269,7 @@ export type Fees = {
   usd_volume: string | null;
 };
 
-export type BaseReportStatus = {
-  id: string;
-  type: string;
-  status: string;
-};
+export type BaseReportStatus = { id: string; type: string; status: string };
 
 export type ReportStatus = BaseReportStatus & {
   expires_at: string;
@@ -301,9 +294,7 @@ export type ReportStatus = BaseReportStatus & {
       permissions: null;
       user_type: string;
       fulfills_new_requirements: boolean;
-      flags: null | {
-        onboarding_group: string;
-      };
+      flags: null | { onboarding_group: string };
       details: null;
       default_profile_id: string;
       oauth_client: string;
@@ -320,6 +311,15 @@ export type ReportStatus = BaseReportStatus & {
   file_count?: null;
   created_at: string;
   completed_at?: string;
+};
+
+export type Profile = {
+  id: string;
+  user_id: string;
+  name: string;
+  active: boolean;
+  is_default: boolean;
+  created_at: string;
 };
 
 export type TrailingVolume = {
@@ -487,6 +487,10 @@ export class AuthenticatedClient extends PublicClient {
 
   getReport({ id }: { id: string }): Promise<ReportStatus> {
     return this.get({ uri: "/reports/" + id });
+  }
+
+  getProfiles(): Promise<Profile[]> {
+    return this.get({ uri: "/profiles" });
   }
 
   getTrailingVolume(): Promise<TrailingVolume[]> {

@@ -4,13 +4,9 @@ export const ApiUri = "https://api.pro.coinbase.com";
 export const SandboxApiUri = "https://api-public.sandbox.pro.coinbase.com";
 export const DefaultProductID = "BTC-USD";
 export const DefaultTimeout = 30000;
-export const DefaultHeaders = {
-  "User-Agent": "coinbase-pro-node-api-client"
-};
+export const DefaultHeaders = { "User-Agent": "coinbase-pro-node-api-client" };
 
-export type ProductID = {
-  product_id?: string;
-};
+export type ProductID = { product_id?: string };
 
 export type PagArgs = {
   before?: number | string;
@@ -124,10 +120,7 @@ export type CurrencyInfo = {
   convertible_to?: string[];
 };
 
-export type Time = {
-  iso: string;
-  epoch: number;
-};
+export type Time = { iso: string; epoch: number };
 
 export type PublicClientOptions = {
   product_id?: string;
