@@ -2,20 +2,19 @@ import {
   WebsocketClient,
   WsUri,
   SandboxWsUri,
-  DefaultChannels,
-  DefaultProductIds
+  DefaultChannels
 } from "../index";
 import * as assert from "assert";
-import { Port, WSS } from "./lib/wss";
+import { Server } from "ws";
 
-const port = Port;
+const port = 10000;
 const wsUri = "ws://localhost:" + port;
-const websocket = new WebsocketClient({ wsUri });
 
 suite("WebsocketClient", () => {
   test("constructor", () => {
+    const websocket = new WebsocketClient({ wsUri });
     assert.deepStrictEqual(websocket.channels, DefaultChannels);
-    assert.deepStrictEqual(websocket.product_ids, DefaultProductIds);
+    assert.deepStrictEqual(websocket.product_ids, []);
     assert.deepStrictEqual(websocket.wsUri, wsUri);
     assert.deepStrictEqual(websocket.key, undefined);
     assert.deepStrictEqual(websocket.secret, undefined);
@@ -25,7 +24,7 @@ suite("WebsocketClient", () => {
   test("constructor (with sandbox flag)", () => {
     const websocket = new WebsocketClient({ sandbox: true });
     assert.deepStrictEqual(websocket.channels, DefaultChannels);
-    assert.deepStrictEqual(websocket.product_ids, DefaultProductIds);
+    assert.deepStrictEqual(websocket.product_ids, []);
     assert.deepStrictEqual(websocket.wsUri, SandboxWsUri);
     assert.deepStrictEqual(websocket.key, undefined);
     assert.deepStrictEqual(websocket.secret, undefined);
@@ -61,81 +60,82 @@ suite("WebsocketClient", () => {
   });
 
   test(".connect()", done => {
-    const server = WSS();
+    const server = new Server({ port });
     const client = new WebsocketClient({ wsUri });
-    client.once("open", () => {
-      server.close();
-      done();
+    server.on("connection", ws => {
+      ws.once("message", data => {
+        assert.deepStrictEqual(JSON.parse(data), {
+          type: "subscribe",
+          channels: DefaultChannels,
+          product_ids: []
+        });
+        server.close(done);
+      });
     });
     client.connect();
   });
 
   test(".disconnect()", done => {
-    const server = WSS();
+    const server = new Server({ port });
     const client = new WebsocketClient({ wsUri });
-    client.once("open", () => {
-      client.disconnect();
+    server.on("connection", ws => {
+      ws.once("message", data => {
+        assert.deepStrictEqual(JSON.parse(data), {
+          type: "subscribe",
+          channels: DefaultChannels,
+          product_ids: []
+        });
+        client.disconnect();
+      });
     });
-    client.once("close", () => {
-      server.close();
-      done();
-    });
+    client.once("close", () => server.close(done));
     client.connect();
   });
 
   test(".subscribe()", done => {
-    const server = WSS();
-    const channels = [
-      {
-        name: "ticker",
-        product_ids: ["BTC-USD"]
-      }
-    ];
-    const client = new WebsocketClient({
-      wsUri,
-      channels
-    });
-    client.once("message", message => {
-      if (message.type === "subscriptions") {
-        assert.deepStrictEqual(message.channels, channels);
-        server.close();
-        done();
-      } else {
-        assert.fail();
-      }
+    const server = new Server({ port });
+    const client = new WebsocketClient({ wsUri });
+    const channels = [{ name: "ticker", product_ids: ["BTC-USD"] }];
+    server.on("connection", ws => {
+      ws.once("message", data => {
+        assert.deepStrictEqual(JSON.parse(data), {
+          type: "subscribe",
+          channels: DefaultChannels,
+          product_ids: []
+        });
+        ws.once("message", data => {
+          assert.deepStrictEqual(JSON.parse(data), {
+            type: "subscribe",
+            channels: channels
+          });
+          server.close(done);
+        });
+        client.subscribe({ channels });
+      });
     });
     client.connect();
   });
 
   test(".unsubscribe()", done => {
-    const server = WSS();
-    const channels = [
-      {
-        name: "ticker",
-        product_ids: ["BTC-USD"]
-      }
-    ];
-    const client = new WebsocketClient({
-      wsUri,
-      channels
-    });
-    client.once("message", message => {
-      if (message.type === "subscriptions") {
-        assert.deepStrictEqual(message.channels, channels);
-        client.unsubscribe({ channels });
-        client.once("message", message => {
-          if (message.type === "subscriptions") {
-            assert.deepStrictEqual(message.type, "subscriptions");
-            assert.deepStrictEqual(message.channels, []);
-            server.close();
-            done();
-          } else {
-            assert.fail();
-          }
+    const server = new Server({ port });
+    const client = new WebsocketClient({ wsUri });
+    const channels = [{ name: "ticker", product_ids: ["BTC-USD"] }];
+    server.on("connection", ws => {
+      ws.once("message", data => {
+        assert.deepStrictEqual(JSON.parse(data), {
+          type: "subscribe",
+          channels: DefaultChannels,
+          product_ids: []
         });
-      } else {
-        assert.fail();
-      }
+        ws.once("message", data => {
+          assert.deepStrictEqual(JSON.parse(data), {
+            type: "unsubscribe",
+            channels: channels
+          });
+          server.close(done);
+        });
+        client.unsubscribe({ channels });
+      });
     });
     client.connect();
   });
