@@ -308,6 +308,16 @@ const id = "86602c68-306a-4500-ac73-4ce56a91d83c";
 const profile = await client.getProfile({ id });
 ```
 
+- [`transfer`](https://docs.pro.coinbase.com/#create-profile-transfer)
+
+```typescript
+const from = "86602c68-306a-4500-ac73-4ce56a91d83c";
+const to = "e87429d3-f0a7-4f28-8dff-8dd93d383de1";
+const currency = "ETH";
+const amount = 100;
+const result = await client.transfer({ from, to, currency, amount });
+```
+
 - [`getTrailingVolume`](https://docs.pro.coinbase.com/#user-account)
 
 ```typescript
