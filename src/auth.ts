@@ -493,6 +493,10 @@ export class AuthenticatedClient extends PublicClient {
     return this.get({ uri: "/profiles" });
   }
 
+  getProfile({ id }: { id: string }): Promise<Profile> {
+    return this.get({ uri: "/profiles/" + id });
+  }
+
   getTrailingVolume(): Promise<TrailingVolume[]> {
     return this.get({ uri: "/users/self/trailing-volume" });
   }
