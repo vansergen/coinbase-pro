@@ -8,6 +8,7 @@ import {
 } from "./public";
 import { Signer } from "./signer";
 import { ParsedUrlQuery } from "querystring";
+import { RequestPromise } from "request-promise-native";
 
 export type AccountId = { account_id: string };
 
@@ -369,7 +370,7 @@ export class AuthenticatedClient extends PublicClient {
     method: string;
     uri: string;
     qs?: ParsedUrlQuery;
-  }): Promise<any> {
+  }): RequestPromise<any> {
     const signature = Signer({
       method,
       key: this.key,
