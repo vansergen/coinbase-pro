@@ -221,6 +221,42 @@ suite("AuthenticatedClient", () => {
     assert.deepStrictEqual(data, response);
   });
 
+  test(".placeOrder() (with missing `product_id`)", async () => {
+    const params: OrderParams = {
+      type: "limit",
+      side: "sell",
+      price: 100000,
+      size: 1,
+      stop: "loss",
+      stop_price: 20000,
+      stp: "dc"
+    };
+    const response: OrderInfo = {
+      id: "id",
+      price: "100000",
+      size: "1",
+      product_id: "ETH-BTC",
+      side: "sell",
+      stp: "dc",
+      type: "limit",
+      time_in_force: "GTC",
+      post_only: false,
+      created_at: "2019-11-14T08:26:50.846073Z",
+      stop: "loss",
+      stop_price: "20000",
+      fill_fees: "0",
+      filled_size: "0",
+      executed_value: "0",
+      status: "pending",
+      settled: false
+    };
+    nock(apiUri)
+      .post("/orders", { ...params, product_id })
+      .reply(200, response);
+    const data = await client.placeOrder(params);
+    assert.deepStrictEqual(data, response);
+  });
+
   test(".cancelOrder() (using `client_oid`)", async () => {
     const client_oid = "144c6f8e-713f-4682-8435-5280fbe8b2b4";
     const response = "254b263a-dc33-4eaf-88e8-0e0df212856d";
@@ -238,6 +274,11 @@ suite("AuthenticatedClient", () => {
       .reply(200, id);
     const data = await client.cancelOrder({ id });
     assert.deepStrictEqual(data, id);
+  });
+
+  test(".cancelOrder() (without `id` and `client_oid`)", () => {
+    const error = new Error("Either `id` or `client_oid` must be provided");
+    assert.throws(() => client.cancelOrder({}), error);
   });
 
   test(".cancelAll()", async () => {
@@ -311,6 +352,52 @@ suite("AuthenticatedClient", () => {
     assert.deepStrictEqual(data, response);
   });
 
+  test(".getOrders() (with no arguments)", async () => {
+    const response: OrderInfo[] = [
+      {
+        id: "id1",
+        price: "20000.00000000",
+        size: "1.00000000",
+        product_id: "BTC-USD",
+        side: "buy",
+        type: "limit",
+        time_in_force: "GTC",
+        post_only: false,
+        created_at: "2019-09-29T19:16:34.518011Z",
+        done_at: "2019-09-29T19:16:36.305Z",
+        done_reason: "filled",
+        fill_fees: "0.0000000000000000",
+        filled_size: "1.00000000",
+        executed_value: "20000.0000000000000000",
+        status: "done",
+        settled: true
+      },
+      {
+        id: "id2",
+        price: "20000.00000000",
+        size: "1.00000000",
+        product_id: "BTC-USD",
+        side: "buy",
+        type: "limit",
+        time_in_force: "GTC",
+        post_only: false,
+        created_at: "2019-09-29T19:16:32.154026Z",
+        done_at: "2019-09-29T19:16:33.147Z",
+        done_reason: "filled",
+        fill_fees: "0.0000000000000000",
+        filled_size: "1.00000000",
+        executed_value: "20000.0000000000000000",
+        status: "done",
+        settled: true
+      }
+    ];
+    nock(apiUri)
+      .get("/orders")
+      .reply(200, response);
+    const data = await client.getOrders();
+    assert.deepStrictEqual(data, response);
+  });
+
   test(".getOrder() (using `id`)", async () => {
     const id = "71452118-efc7-4cc4-8780-a5e22d4baa53";
     const response: OrderInfo = {
@@ -362,6 +449,11 @@ suite("AuthenticatedClient", () => {
       .reply(200, response);
     const data = await client.getOrder({ client_oid });
     assert.deepStrictEqual(data, response);
+  });
+
+  test(".getOrder() (without `id` and `client_oid`)", () => {
+    const error = new Error("Either `id` or `client_oid` must be provided");
+    assert.throws(() => client.getOrder({}), error);
   });
 
   test(".getFills()", async () => {
@@ -739,6 +831,37 @@ suite("AuthenticatedClient", () => {
       .reply(200, response);
     const data = await client.createReport(params);
     assert.deepStrictEqual(data, response);
+  });
+
+  test(".createReport() (fils with missing `product_id`)", async () => {
+    const params: ReportParams = {
+      type: "fills",
+      start_date: "2019-01-06T10:34:47.000Z",
+      end_date: "2019-11-06T10:34:47.000Z",
+      format: "pdf",
+      email: "email@email.com"
+    };
+    const response: BaseReportStatus = {
+      id: "id",
+      type: "fills",
+      status: "pending"
+    };
+    nock(apiUri)
+      .post("/reports", { ...params, product_id })
+      .reply(200, response);
+    const data = await client.createReport(params);
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".createReport() (account with missing `account_id`)", () => {
+    const params: ReportParams = {
+      type: "account",
+      start_date: "2019-01-06T10:34:47.000Z",
+      end_date: "2019-11-06T10:34:47.000Z",
+      format: "pdf"
+    };
+    const error = new Error("`account_id` is missing");
+    assert.throws(() => client.createReport(params), error);
   });
 
   test(".getReport()", async () => {
