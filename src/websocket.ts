@@ -233,7 +233,7 @@ export declare interface WebsocketClient {
 }
 
 export class WebsocketClient extends EventEmitter {
-  private ws?: Websocket;
+  public ws?: Websocket;
   readonly channels: Channel[];
   readonly product_ids: string[];
   readonly key?: string;
@@ -275,8 +275,8 @@ export class WebsocketClient extends EventEmitter {
     this.ws = new Websocket(this.wsUri);
     this.ws.on("open", () => {
       this.emit("open");
-      const { product_ids } = this;
-      this.subscribe({ channels: this.channels, product_ids });
+      const { product_ids, channels } = this;
+      this.subscribe({ channels, product_ids });
     });
     this.ws.on("close", () => this.emit("close"));
     this.ws.on("error", error => this.emit("error", error));
@@ -299,7 +299,7 @@ export class WebsocketClient extends EventEmitter {
         return;
       case Websocket.CLOSING:
       case Websocket.CONNECTING:
-        throw new Error("Could not connect. State: " + this.ws.readyState);
+        throw new Error("Could not disconnect. State: " + this.ws.readyState);
     }
 
     this.ws.close();
