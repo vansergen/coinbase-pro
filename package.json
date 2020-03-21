@@ -1,6 +1,6 @@
 {
   "name": "coinbase-pro-node-api",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Node.js library for Coinbase Pro",
   "type": "commonjs",
   "main": "build/index.js",
@@ -13,7 +13,7 @@
     "node": ">=10.18.1"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "rm -fr build && tsc",
     "prepublishOnly": "npm run prettier && npm run lint && npm run build && npm run prettier-write && npm run lint-fix",
     "postpublish": "rm -fr build",
     "test": "mocha -r ts-node/register --full-trace --ui tdd --bail --extension ts",
@@ -43,19 +43,19 @@
   },
   "homepage": "https://github.com/vansergen/coinbase-pro#readme",
   "devDependencies": {
-    "@types/mocha": "^7.0.0",
-    "@typescript-eslint/eslint-plugin": "^2.20.0",
-    "@typescript-eslint/parser": "^2.17.0",
-    "coveralls": "^3.0.9",
+    "@types/mocha": "^7.0.2",
+    "@typescript-eslint/eslint-plugin": "^2.24.0",
+    "@typescript-eslint/parser": "^2.24.0",
+    "coveralls": "^3.0.11",
     "eslint": "^6.8.0",
-    "husky": "^4.2.0",
-    "lint-staged": "^10.0.7",
-    "mocha": "^7.0.0",
-    "nock": "^12.0.0",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.8",
+    "mocha": "^7.1.1",
+    "nock": "^12.0.3",
     "nyc": "^15.0.0",
     "prettier": "^1.19.1",
-    "ts-node": "^8.6.2",
-    "typescript": "^3.7.5"
+    "ts-node": "^8.7.0",
+    "typescript": "^3.8.3"
   },
   "husky": {
     "hooks": {
@@ -73,9 +73,9 @@
     ]
   },
   "dependencies": {
-    "@types/ws": "^7.2.1",
-    "rpc-request": "^4.0.7",
-    "ws": "^7.2.1"
+    "@types/ws": "^7.2.3",
+    "rpc-request": "^4.0.9",
+    "ws": "^7.2.3"
   },
   "funding": {
     "type": "Coinbase Commerce",
