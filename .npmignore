@@ -1,0 +1,8 @@
+.github/
+src/
+test/
+.eslintrc.json
+.travis.yml
+CODE_OF_CONDUCT.md
+index.ts
+tsconfig.json
