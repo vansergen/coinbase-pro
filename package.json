@@ -73,7 +73,7 @@
     ]
   },
   "dependencies": {
-    "@types/ws": "^7.2.3",
+    "@types/ws": "^7.2.4",
     "rpc-request": "^4.0.9",
     "ws": "^7.2.3"
   },
