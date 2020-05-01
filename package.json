@@ -23,7 +23,9 @@
     "prettier": "prettier -c \"**/*.{js,md,ts,json}\"",
     "prettier-write": "npm run prettier -- --write",
     "lint": "eslint --ext .ts,.js ./",
-    "lint-fix": "npm run lint -- --fix"
+    "lint-fix": "npm run lint -- --fix",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -75,10 +77,12 @@
   "dependencies": {
     "@types/ws": "^7.2.3",
     "rpc-request": "^4.0.9",
-    "ws": "^7.2.3"
+    "ws": "^7.2.3",
+    "snyk": "^1.316.1"
   },
   "funding": {
     "type": "Coinbase Commerce",
     "url": "https://commerce.coinbase.com/checkout/ce079fed-047e-4280-bb3d-3cf865a3c309"
-  }
+  },
+  "snyk": true
 }
