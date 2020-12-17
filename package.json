@@ -52,6 +52,7 @@
   },
   "homepage": "https://github.com/vansergen/coinbase-pro#readme",
   "devDependencies": {
+    "@b2broker/tsconfig": "^1.0.3",
     "@types/mocha": "^8.2.0",
     "@typescript-eslint/eslint-plugin": "^4.10.0",
     "@typescript-eslint/parser": "^4.10.0",
