@@ -1,0 +1,8 @@
+{
+  "out": "docs",
+  "mode": "file",
+  "name": "coinbase-pro-node-api",
+  "exclude": "test/**/*",
+  "hideGenerator": true,
+  "includeVersion": true
+}
