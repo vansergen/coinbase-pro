@@ -136,7 +136,7 @@ export class PublicClient extends RPC {
     product_id = DefaultProductID,
     sandbox = false,
     apiUri = sandbox ? SandboxApiUri : ApiUri,
-    timeout = DefaultTimeout
+    timeout = DefaultTimeout,
   }: PublicClientOptions = {}) {
     const useQuerystring = true;
     const headers = DefaultHeaders;
@@ -173,9 +173,9 @@ export class PublicClient extends RPC {
     return this.get({ uri: "/products/" + product_id + "/candles", qs });
   }
 
-  get24hrStats({ product_id = this.product_id }: ProductID = {}): Promise<
-    ProductStats
-  > {
+  get24hrStats({
+    product_id = this.product_id,
+  }: ProductID = {}): Promise<ProductStats> {
     return this.get({ uri: "/products/" + product_id + "/stats" });
   }
 

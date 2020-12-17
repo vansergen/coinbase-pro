@@ -22,7 +22,7 @@ import {
   BaseReportStatus,
   ReportStatus,
   Profile,
-  TrailingVolume
+  TrailingVolume,
 } from "../index";
 
 const product_id = "ETH-BTC";
@@ -38,7 +38,7 @@ const client = new AuthenticatedClient({
   passphrase,
   apiUri,
   product_id,
-  timeout
+  timeout,
 });
 
 suite("AuthenticatedClient", () => {
@@ -48,7 +48,7 @@ suite("AuthenticatedClient", () => {
       headers: DefaultHeaders,
       baseUrl: apiUri,
       timeout,
-      json: true
+      json: true,
     });
     assert.deepStrictEqual(client.product_id, product_id);
     assert.deepStrictEqual(client.key, key);
@@ -60,9 +60,7 @@ suite("AuthenticatedClient", () => {
     const uri = "/accounts";
     const method = "GET";
     const response = "response";
-    nock(apiUri)
-      .get(uri)
-      .reply(200, response);
+    nock(apiUri).get(uri).reply(200, response);
     const data = await client.request({ uri: "/accounts", method });
     assert.deepStrictEqual(data, response);
   });
@@ -76,7 +74,7 @@ suite("AuthenticatedClient", () => {
         available: "100.24906",
         hold: "0.0000000000000000",
         profile_id: "profile_id",
-        trading_enabled: true
+        trading_enabled: true,
       },
       {
         id: "id",
@@ -85,12 +83,10 @@ suite("AuthenticatedClient", () => {
         available: "0",
         hold: "0.0000000000000000",
         profile_id: "profile_id",
-        trading_enabled: true
-      }
+        trading_enabled: true,
+      },
     ];
-    nock(apiUri)
-      .get("/accounts")
-      .reply(200, response);
+    nock(apiUri).get("/accounts").reply(200, response);
     const data = await client.getAccounts();
     assert.deepStrictEqual(data, response);
   });
@@ -104,7 +100,7 @@ suite("AuthenticatedClient", () => {
       available: "0.0000000000000000",
       hold: "0.0000000000000000",
       profile_id: "75da88c5-05bf-4f54-bc85-5c775bd68254",
-      trading_enabled: true
+      trading_enabled: true,
     };
     nock(apiUri)
       .get("/accounts/" + account_id)
@@ -128,8 +124,8 @@ suite("AuthenticatedClient", () => {
         details: {
           order_id: "order_id",
           trade_id: "trade_id",
-          product_id: "BAT-USDC"
-        }
+          product_id: "BAT-USDC",
+        },
       },
       {
         created_at: "2019-06-11T18:52:53.599609Z",
@@ -140,9 +136,9 @@ suite("AuthenticatedClient", () => {
         details: {
           order_id: "order_id",
           trade_id: "trade_id",
-          product_id: "BAT-USDC"
-        }
-      }
+          product_id: "BAT-USDC",
+        },
+      },
     ];
     nock(apiUri)
       .get("/accounts/" + account_id + "/ledger")
@@ -152,7 +148,7 @@ suite("AuthenticatedClient", () => {
       account_id,
       after,
       before,
-      limit
+      limit,
     });
     assert.deepStrictEqual(data, response);
   });
@@ -168,8 +164,8 @@ suite("AuthenticatedClient", () => {
         id: "id",
         amount: "0.1001500000000000",
         type: "order",
-        ref: "ref"
-      }
+        ref: "ref",
+      },
     ];
     nock(apiUri)
       .get("/accounts/" + account_id + "/holds")
@@ -179,7 +175,7 @@ suite("AuthenticatedClient", () => {
       account_id,
       after,
       before,
-      limit
+      limit,
     });
     assert.deepStrictEqual(data, response);
   });
@@ -193,7 +189,7 @@ suite("AuthenticatedClient", () => {
       size: 1,
       stop: "loss",
       stop_price: 20000,
-      stp: "dc"
+      stp: "dc",
     };
     const response: OrderInfo = {
       id: "id",
@@ -212,11 +208,9 @@ suite("AuthenticatedClient", () => {
       filled_size: "0",
       executed_value: "0",
       status: "pending",
-      settled: false
+      settled: false,
     };
-    nock(apiUri)
-      .post("/orders", params)
-      .reply(200, response);
+    nock(apiUri).post("/orders", params).reply(200, response);
     const data = await client.placeOrder(params);
     assert.deepStrictEqual(data, response);
   });
@@ -229,7 +223,7 @@ suite("AuthenticatedClient", () => {
       size: 1,
       stop: "loss",
       stop_price: 20000,
-      stp: "dc"
+      stp: "dc",
     };
     const response: OrderInfo = {
       id: "id",
@@ -248,7 +242,7 @@ suite("AuthenticatedClient", () => {
       filled_size: "0",
       executed_value: "0",
       status: "pending",
-      settled: false
+      settled: false,
     };
     nock(apiUri)
       .post("/orders", { ...params, product_id })
@@ -283,9 +277,7 @@ suite("AuthenticatedClient", () => {
 
   test(".cancelAll()", async () => {
     const response = ["71452118-efc7-4cc4-8780-a5e22d4baa53"];
-    nock(apiUri)
-      .delete("/orders")
-      .reply(200, response);
+    nock(apiUri).delete("/orders").reply(200, response);
     const data = await client.cancelAll();
     assert.deepStrictEqual(data, response);
   });
@@ -293,10 +285,7 @@ suite("AuthenticatedClient", () => {
   test(".cancelAll() (using `product_id`)", async () => {
     const product_id = "BTC-USD";
     const response = ["71452118-efc7-4cc4-8780-a5e22d4baa53"];
-    nock(apiUri)
-      .delete("/orders")
-      .query({ product_id })
-      .reply(200, response);
+    nock(apiUri).delete("/orders").query({ product_id }).reply(200, response);
     const data = await client.cancelAll({ product_id });
     assert.deepStrictEqual(data, response);
   });
@@ -323,7 +312,7 @@ suite("AuthenticatedClient", () => {
         filled_size: "1.00000000",
         executed_value: "20000.0000000000000000",
         status: "done",
-        settled: true
+        settled: true,
       },
       {
         id: "id2",
@@ -341,8 +330,8 @@ suite("AuthenticatedClient", () => {
         filled_size: "1.00000000",
         executed_value: "20000.0000000000000000",
         status: "done",
-        settled: true
-      }
+        settled: true,
+      },
     ];
     nock(apiUri)
       .get("/orders")
@@ -370,7 +359,7 @@ suite("AuthenticatedClient", () => {
         filled_size: "1.00000000",
         executed_value: "20000.0000000000000000",
         status: "done",
-        settled: true
+        settled: true,
       },
       {
         id: "id2",
@@ -388,12 +377,10 @@ suite("AuthenticatedClient", () => {
         filled_size: "1.00000000",
         executed_value: "20000.0000000000000000",
         status: "done",
-        settled: true
-      }
+        settled: true,
+      },
     ];
-    nock(apiUri)
-      .get("/orders")
-      .reply(200, response);
+    nock(apiUri).get("/orders").reply(200, response);
     const data = await client.getOrders();
     assert.deepStrictEqual(data, response);
   });
@@ -416,7 +403,7 @@ suite("AuthenticatedClient", () => {
       filled_size: "1.00000000",
       executed_value: "20000.0000000000000000",
       status: "done",
-      settled: true
+      settled: true,
     };
     nock(apiUri)
       .get("/orders/" + id)
@@ -442,7 +429,7 @@ suite("AuthenticatedClient", () => {
       filled_size: "0.00000000",
       executed_value: "0.0000000000000000",
       status: "rejected",
-      settled: true
+      settled: true,
     };
     nock(apiUri)
       .get("/orders/client:" + client_oid)
@@ -471,7 +458,7 @@ suite("AuthenticatedClient", () => {
         fee: "2.0779536000000000",
         side: "buy",
         settled: true,
-        usd_volume: "1385.3024000000000000"
+        usd_volume: "1385.3024000000000000",
       },
       {
         created_at: "2019-11-14T10:31:34.255Z",
@@ -486,13 +473,10 @@ suite("AuthenticatedClient", () => {
         fee: "10.9092564000000000",
         side: "buy",
         settled: true,
-        usd_volume: "7272.8376000000000000"
-      }
+        usd_volume: "7272.8376000000000000",
+      },
     ];
-    nock(apiUri)
-      .get("/fills")
-      .query({ product_id })
-      .reply(200, response);
+    nock(apiUri).get("/fills").query({ product_id }).reply(200, response);
     const data = await client.getFills();
     assert.deepStrictEqual(data, response);
   });
@@ -514,7 +498,7 @@ suite("AuthenticatedClient", () => {
         fee: "2.0779536000000000",
         side: "buy",
         settled: true,
-        usd_volume: "1385.3024000000000000"
+        usd_volume: "1385.3024000000000000",
       },
       {
         created_at: "2019-11-14T10:31:34.255Z",
@@ -529,8 +513,8 @@ suite("AuthenticatedClient", () => {
         fee: "10.9092564000000000",
         side: "buy",
         settled: true,
-        usd_volume: "7272.8376000000000000"
-      }
+        usd_volume: "7272.8376000000000000",
+      },
     ];
     nock(apiUri)
       .get("/fills")
@@ -544,17 +528,15 @@ suite("AuthenticatedClient", () => {
     const params: DepositParams = {
       amount: 10,
       currency: "USD",
-      payment_method_id: "bc677162-d934-5f1a-968c-a496b1c1270b"
+      payment_method_id: "bc677162-d934-5f1a-968c-a496b1c1270b",
     };
     const response: DepositInfo = {
       id: "593533d2-ff31-46e0-b22e-ca754147a96a",
       amount: "10.00",
       currency: "USD",
-      payout_at: "2016-08-20T00:31:09Z"
+      payout_at: "2016-08-20T00:31:09Z",
     };
-    nock(apiUri)
-      .post("/deposits/payment-method", params)
-      .reply(200, response);
+    nock(apiUri).post("/deposits/payment-method", params).reply(200, response);
     const data = await client.deposit(params);
     assert.deepStrictEqual(data, response);
   });
@@ -563,12 +545,12 @@ suite("AuthenticatedClient", () => {
     const params: DepositCoinbaseParams = {
       amount: 10,
       currency: "BTC",
-      coinbase_account_id: "c13cd0fc-72ca-55e9-843b-b84ef628c198"
+      coinbase_account_id: "c13cd0fc-72ca-55e9-843b-b84ef628c198",
     };
     const response: DepositInfo = {
       id: "593533d2-ff31-46e0-b22e-ca754147a96a",
       amount: "10.00",
-      currency: "BTC"
+      currency: "BTC",
     };
     nock(apiUri)
       .post("/deposits/coinbase-account", params)
@@ -581,13 +563,13 @@ suite("AuthenticatedClient", () => {
     const params: DepositParams = {
       amount: 10,
       currency: "BTC",
-      payment_method_id: "bc677162-d934-5f1a-968c-a496b1c1270b"
+      payment_method_id: "bc677162-d934-5f1a-968c-a496b1c1270b",
     };
     const response: DepositInfo = {
       id: "593533d2-ff31-46e0-b22e-ca754147a96a",
       amount: "10.00",
       currency: "USD",
-      payout_at: "2016-08-20T00:31:09Z"
+      payout_at: "2016-08-20T00:31:09Z",
     };
     nock(apiUri)
       .post("/withdrawals/payment-method", params)
@@ -600,12 +582,12 @@ suite("AuthenticatedClient", () => {
     const params: DepositCoinbaseParams = {
       amount: 10,
       currency: "BTC",
-      coinbase_account_id: "c13cd0fc-72ca-55e9-843b-b84ef628c198"
+      coinbase_account_id: "c13cd0fc-72ca-55e9-843b-b84ef628c198",
     };
     const response: DepositInfo = {
       id: "593533d2-ff31-46e0-b22e-ca754147a96a",
       amount: "10.00",
-      currency: "BTC"
+      currency: "BTC",
     };
     nock(apiUri)
       .post("/withdrawals/coinbase-account", params)
@@ -619,16 +601,14 @@ suite("AuthenticatedClient", () => {
       amount: 20000,
       currency: "XRP",
       crypto_address: "r4hzEbkVkAaFyK23ZkgED2LZDAyHTfnBJg",
-      no_destination_tag: true
+      no_destination_tag: true,
     };
     const response: DepositInfo = {
       id: "593533d2-ff31-46e0-b22e-ca754147a96a",
       amount: "20000.00",
-      currency: "XRP"
+      currency: "XRP",
     };
-    nock(apiUri)
-      .post("/withdrawals/crypto", params)
-      .reply(200, response);
+    nock(apiUri).post("/withdrawals/crypto", params).reply(200, response);
     const data = await client.withdrawCrypto(params);
     assert.deepStrictEqual(data, response);
   });
@@ -637,7 +617,7 @@ suite("AuthenticatedClient", () => {
     const params: ConvertParams = {
       from: "USD",
       to: "USDC",
-      amount: 10000
+      amount: 10000,
     };
     const response: Conversion = {
       id: "8942caee-f9d5-4600-a894-4811268545db",
@@ -645,11 +625,9 @@ suite("AuthenticatedClient", () => {
       from_account_id: "7849cc79-8b01-4793-9345-bc6b5f08acce",
       to_account_id: "105c3e58-0898-4106-8283-dc5781cda07b",
       from: "USD",
-      to: "USDC"
+      to: "USDC",
     };
-    nock(apiUri)
-      .post("/conversions", params)
-      .reply(200, response);
+    nock(apiUri).post("/conversions", params).reply(200, response);
     const data = await client.convert(params);
     assert.deepStrictEqual(data, response);
   });
@@ -673,59 +651,57 @@ suite("AuthenticatedClient", () => {
               period_in_days: 1,
               total: {
                 amount: "10000.00",
-                currency: "USD"
+                currency: "USD",
               },
               remaining: {
                 amount: "10000.00",
-                currency: "USD"
-              }
-            }
+                currency: "USD",
+              },
+            },
           ],
           instant_buy: [
             {
               period_in_days: 7,
               total: {
                 amount: "0.00",
-                currency: "USD"
+                currency: "USD",
               },
               remaining: {
                 amount: "0.00",
-                currency: "USD"
-              }
-            }
+                currency: "USD",
+              },
+            },
           ],
           sell: [
             {
               period_in_days: 1,
               total: {
                 amount: "10000.00",
-                currency: "USD"
+                currency: "USD",
               },
               remaining: {
                 amount: "10000.00",
-                currency: "USD"
-              }
-            }
+                currency: "USD",
+              },
+            },
           ],
           deposit: [
             {
               period_in_days: 1,
               total: {
                 amount: "10000.00",
-                currency: "USD"
+                currency: "USD",
               },
               remaining: {
                 amount: "10000.00",
-                currency: "USD"
-              }
-            }
-          ]
-        }
-      }
+                currency: "USD",
+              },
+            },
+          ],
+        },
+      },
     ];
-    nock(apiUri)
-      .get("/payment-methods")
-      .reply(200, response);
+    nock(apiUri).get("/payment-methods").reply(200, response);
     const data = await client.getPaymentMethods();
     assert.deepStrictEqual(data, response);
   });
@@ -739,7 +715,7 @@ suite("AuthenticatedClient", () => {
         currency: "ETH",
         type: "wallet",
         primary: false,
-        active: true
+        active: true,
       },
       {
         id: "2ae3354e-f1c3-5771-8a37-6228e9d239db",
@@ -756,12 +732,12 @@ suite("AuthenticatedClient", () => {
           bank_address: "99 Park Ave 4th Fl New York, NY 10016",
           bank_country: {
             code: "US",
-            name: "United States"
+            name: "United States",
           },
           account_name: "Coinbase, Inc",
           account_address: "548 Market Street, #23008, San Francisco, CA 94104",
-          reference: "BAOCAEUX"
-        }
+          reference: "BAOCAEUX",
+        },
       },
       {
         id: "1bfad868-5223-5d3c-8a22-b5ed371e55cb",
@@ -770,7 +746,7 @@ suite("AuthenticatedClient", () => {
         currency: "BTC",
         type: "wallet",
         primary: true,
-        active: true
+        active: true,
       },
       {
         id: "2a11354e-f133-5771-8a37-622be9b239db",
@@ -789,13 +765,11 @@ suite("AuthenticatedClient", () => {
           account_name: "Coinbase UK, Ltd.",
           account_address:
             "9th Floor, 107 Cheapside, London, EC2V 6DN, United Kingdom",
-          reference: "CBAEUXOVFXOXYX"
-        }
-      }
+          reference: "CBAEUXOVFXOXYX",
+        },
+      },
     ];
-    nock(apiUri)
-      .get("/coinbase-accounts")
-      .reply(200, response);
+    nock(apiUri).get("/coinbase-accounts").reply(200, response);
     const data = await client.getCoinbaseAccounts();
     assert.deepStrictEqual(data, response);
   });
@@ -804,11 +778,9 @@ suite("AuthenticatedClient", () => {
     const response: Fees = {
       maker_fee_rate: "0.0000",
       taker_fee_rate: "0.0004",
-      usd_volume: "1278902322.97"
+      usd_volume: "1278902322.97",
     };
-    nock(apiUri)
-      .get("/fees")
-      .reply(200, response);
+    nock(apiUri).get("/fees").reply(200, response);
     const data = await client.getFees();
     assert.deepStrictEqual(data, response);
   });
@@ -819,16 +791,14 @@ suite("AuthenticatedClient", () => {
       start_date: "2019-01-06T10:34:47.000Z",
       end_date: "2019-11-06T10:34:47.000Z",
       account_id: "account_id",
-      format: "pdf"
+      format: "pdf",
     };
     const response: BaseReportStatus = {
       id: "id",
       type: "account",
-      status: "pending"
+      status: "pending",
     };
-    nock(apiUri)
-      .post("/reports", params)
-      .reply(200, response);
+    nock(apiUri).post("/reports", params).reply(200, response);
     const data = await client.createReport(params);
     assert.deepStrictEqual(data, response);
   });
@@ -839,12 +809,12 @@ suite("AuthenticatedClient", () => {
       start_date: "2019-01-06T10:34:47.000Z",
       end_date: "2019-11-06T10:34:47.000Z",
       format: "pdf",
-      email: "email@email.com"
+      email: "email@email.com",
     };
     const response: BaseReportStatus = {
       id: "id",
       type: "fills",
-      status: "pending"
+      status: "pending",
     };
     nock(apiUri)
       .post("/reports", { ...params, product_id })
@@ -858,7 +828,7 @@ suite("AuthenticatedClient", () => {
       type: "account",
       start_date: "2019-01-06T10:34:47.000Z",
       end_date: "2019-11-06T10:34:47.000Z",
-      format: "pdf"
+      format: "pdf",
     };
     const error = new Error("`account_id` is missing");
     assert.throws(() => client.createReport(params), error);
@@ -880,8 +850,8 @@ suite("AuthenticatedClient", () => {
         start_date: "2014-11-01T00:00:00.000Z",
         end_date: "2014-11-30T23:59:59.000Z",
         profile_id: "75da88c5-05bf-4f54-bc85-5c775bd68254",
-        new_york_state: false
-      }
+        new_york_state: false,
+      },
     };
     nock(apiUri)
       .get("/reports/" + id)
@@ -898,12 +868,10 @@ suite("AuthenticatedClient", () => {
         name: "default",
         active: true,
         is_default: true,
-        created_at: "2019-11-18T15:08:40.236309Z"
-      }
+        created_at: "2019-11-18T15:08:40.236309Z",
+      },
     ];
-    nock(apiUri)
-      .get("/profiles")
-      .reply(200, response);
+    nock(apiUri).get("/profiles").reply(200, response);
     const data = await client.getProfiles();
     assert.deepStrictEqual(data, response);
   });
@@ -916,7 +884,7 @@ suite("AuthenticatedClient", () => {
       name: "default",
       active: true,
       is_default: true,
-      created_at: "2019-11-18T15:08:40.236309Z"
+      created_at: "2019-11-18T15:08:40.236309Z",
     };
     nock(apiUri)
       .get("/profiles/" + id)
@@ -944,18 +912,16 @@ suite("AuthenticatedClient", () => {
         product_id: "BTC-USD",
         exchange_volume: "11800.00000000",
         volume: "100.00000000",
-        recorded_at: "1973-11-29T00:05:01.123456Z"
+        recorded_at: "1973-11-29T00:05:01.123456Z",
       },
       {
         product_id: "LTC-USD",
         exchange_volume: "51010.04100000",
         volume: "2010.04100000",
-        recorded_at: "1973-11-29T00:05:02.123456Z"
-      }
+        recorded_at: "1973-11-29T00:05:02.123456Z",
+      },
     ];
-    nock(apiUri)
-      .get("/users/self/trailing-volume")
-      .reply(200, response);
+    nock(apiUri).get("/users/self/trailing-volume").reply(200, response);
     const data = await client.getTrailingVolume();
     assert.deepStrictEqual(data, response);
   });

@@ -4,7 +4,7 @@ import {
   DefaultHeaders,
   PagArgs,
   ProductID,
-  Side
+  Side,
 } from "./public";
 import { Signer } from "./signer";
 import { ParsedUrlQuery } from "querystring";
@@ -363,7 +363,7 @@ export class AuthenticatedClient extends PublicClient {
     body = {},
     method,
     uri,
-    qs
+    qs,
   }: {
     body?: object;
     method: string;
@@ -378,7 +378,7 @@ export class AuthenticatedClient extends PublicClient {
       passphrase: this.passphrase,
       body,
       uri,
-      qs
+      qs,
     });
     const headers = { ...DefaultHeaders, ...signature };
     return super.request({ qs, body, method, uri, headers });

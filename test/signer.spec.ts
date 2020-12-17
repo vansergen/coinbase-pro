@@ -22,14 +22,14 @@ suite("Signer", () => {
       method,
       uri,
       body,
-      timestamp
+      timestamp,
     });
     const sign = "xBQCYBLmE0rX9tKUzNL4vgeuX7kIlpMdqILMftUiFzU=";
     const expectedSignature = {
       "CB-ACCESS-KEY": key,
       "CB-ACCESS-SIGN": sign,
       "CB-ACCESS-TIMESTAMP": timestamp,
-      "CB-ACCESS-PASSPHRASE": passphrase
+      "CB-ACCESS-PASSPHRASE": passphrase,
     };
     assert.deepStrictEqual(signature, expectedSignature);
   });
@@ -48,14 +48,14 @@ suite("Signer", () => {
       secret,
       method,
       uri,
-      timestamp
+      timestamp,
     });
     const sign = "kfsE0njHsT+XDlLurLW2XjZxeHaDtReZbYLMpGf7Cyo=";
     const expectedSignature = {
       "CB-ACCESS-KEY": key,
       "CB-ACCESS-SIGN": sign,
       "CB-ACCESS-TIMESTAMP": timestamp,
-      "CB-ACCESS-PASSPHRASE": passphrase
+      "CB-ACCESS-PASSPHRASE": passphrase,
     };
     assert.deepStrictEqual(signature, expectedSignature);
   });
@@ -76,14 +76,14 @@ suite("Signer", () => {
       method,
       uri,
       body,
-      timestamp
+      timestamp,
     });
     const sign = "EMszpon/Yv43GqmRLemmJgTBB2i5YRWnKV0+gXUe8Xc=";
     const expectedSignature = {
       "CB-ACCESS-KEY": key,
       "CB-ACCESS-SIGN": sign,
       "CB-ACCESS-TIMESTAMP": timestamp,
-      "CB-ACCESS-PASSPHRASE": passphrase
+      "CB-ACCESS-PASSPHRASE": passphrase,
     };
     assert.deepStrictEqual(signature, expectedSignature);
   });

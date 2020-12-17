@@ -58,7 +58,7 @@ const candles = await client.getHistoricRates({
   product_id,
   end,
   start,
-  granularity
+  granularity,
 });
 ```
 
@@ -144,7 +144,7 @@ const order = await client.placeOrder({
   price,
   size,
   post_only,
-  cancel_after
+  cancel_after,
 });
 ```
 
@@ -211,7 +211,7 @@ const coinbase_account_id = "c13cd0fc-72ca-55e9-843b-b84ef628c198";
 const deposit = await client.depositCoinbase({
   amount,
   currency,
-  coinbase_account_id
+  coinbase_account_id,
 });
 ```
 
@@ -233,7 +233,7 @@ const coinbase_account_id = "c13cd0fc-72ca-55e9-843b-b84ef628c198";
 const withdraw = await client.withdrawCoinbase({
   amount,
   currency,
-  coinbase_account_id
+  coinbase_account_id,
 });
 ```
 
@@ -248,7 +248,7 @@ const withdraw = await client.withdrawCrypto({
   amount,
   currency,
   crypto_address,
-  no_destination_tag
+  no_destination_tag,
 });
 ```
 
@@ -336,7 +336,7 @@ const product_ids = ["BTC-USD", "BAT-USDC", "ETH-BTC"];
 const channels = [
   "user",
   "full",
-  { name: "level2", product_ids: ["BTC-EUR", "BTC-GBP"] }
+  { name: "level2", product_ids: ["BTC-EUR", "BTC-GBP"] },
 ];
 const websocket = new WebsocketClient({
   key,
@@ -344,7 +344,7 @@ const websocket = new WebsocketClient({
   passphrase,
   product_ids,
   channels,
-  sandbox
+  sandbox,
 });
 ```
 
@@ -367,7 +367,7 @@ const product_ids = ["ETH-USD", "ETH-EUR"];
 const channels = [
   "level2",
   "heartbeat",
-  { name: "ticker", product_ids: ["ETH-BTC", "ETH-USD"] }
+  { name: "ticker", product_ids: ["ETH-BTC", "ETH-USD"] },
 ];
 websocket.subscribe({ channels, product_ids });
 ```

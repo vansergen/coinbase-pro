@@ -7,7 +7,7 @@ export const SandboxWsUri = "wss://ws-feed-public.sandbox.pro.coinbase.com";
 export const DefaultChannels = [
   { name: "full", product_ids: ["BTC-USD"] },
   { name: "heartbeat", product_ids: ["BTC-USD"] },
-  { name: "status", product_ids: ["BTC-USD"] }
+  { name: "status", product_ids: ["BTC-USD"] },
 ];
 
 export type Channel = string | { name: string; product_ids?: string[] };
@@ -248,7 +248,7 @@ export class WebsocketClient extends EventEmitter {
     secret,
     passphrase,
     sandbox = false,
-    wsUri = sandbox ? SandboxWsUri : WsUri
+    wsUri = sandbox ? SandboxWsUri : WsUri,
   }: WebsocketClientOptions = {}) {
     super();
     this.channels = channels;
@@ -279,7 +279,7 @@ export class WebsocketClient extends EventEmitter {
       this.subscribe({ channels, product_ids });
     });
     this.ws.on("close", () => this.emit("close"));
-    this.ws.on("error", error => this.emit("error", error));
+    this.ws.on("error", (error) => this.emit("error", error));
     this.ws.on("message", (data: string) => {
       const message = JSON.parse(data);
       if (message.type === "error") {
@@ -326,7 +326,7 @@ export class WebsocketClient extends EventEmitter {
         uri: "/users/self/verify",
         key: this.key,
         secret: this.secret,
-        passphrase: this.passphrase
+        passphrase: this.passphrase,
       });
       message.key = signature["CB-ACCESS-KEY"];
       message.signature = signature["CB-ACCESS-SIGN"];

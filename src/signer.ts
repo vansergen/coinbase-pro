@@ -27,7 +27,7 @@ export function Signer({
   secret,
   passphrase,
   timestamp = Date.now() / 1000,
-  qs
+  qs,
 }: SignerOptions): SignedHeaders {
   if (qs && Object.keys(qs).length) {
     uri += "?" + stringify(qs);
@@ -38,6 +38,6 @@ export function Signer({
       .update(timestamp + method + uri + (body ? JSON.stringify(body) : ""))
       .digest("base64"),
     "CB-ACCESS-TIMESTAMP": timestamp,
-    "CB-ACCESS-PASSPHRASE": passphrase
+    "CB-ACCESS-PASSPHRASE": passphrase,
   };
 }
