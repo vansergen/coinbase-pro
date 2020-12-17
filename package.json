@@ -16,6 +16,8 @@
     "build": "npm run build:remove && tsc",
     "build:remove": "rm -rf ./build",
     "build:test": "npm run build && npm run build:remove",
+    "commitlint": "commitlint --verbose",
+    "commitlint:all": "npm run commitlint -- --from=75eae5e229071ec797cb07606bccbb71de33dc49",
     "coverage": "nyc npm test && nyc report --reporter=lcov",
     "coverage-ci": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
     "install:clean": "rm -fr node_modules && rm -f package-lock.json && npm install",
@@ -50,6 +52,7 @@
     "@types/mocha": "^8.2.0",
     "@typescript-eslint/eslint-plugin": "^4.10.0",
     "@typescript-eslint/parser": "^4.10.0",
+    "commitlint-config-b2broker": "^1.0.0",
     "coveralls": "^3.1.0",
     "eslint": "^7.15.0",
     "husky": "^4.2.3",
@@ -60,11 +63,6 @@
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.3"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "dependencies": {
     "@types/ws": "^7.4.0",
