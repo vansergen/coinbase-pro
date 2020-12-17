@@ -77,12 +77,10 @@
   "dependencies": {
     "@types/ws": "^7.2.3",
     "rpc-request": "^4.0.9",
-    "ws": "^7.2.3",
-    "snyk": "^1.316.2"
+    "ws": "^7.2.3"
   },
   "funding": {
     "type": "Coinbase Commerce",
     "url": "https://commerce.coinbase.com/checkout/ce079fed-047e-4280-bb3d-3cf865a3c309"
-  },
-  "snyk": true
+  }
 }
