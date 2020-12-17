@@ -68,7 +68,7 @@
   },
   "dependencies": {
     "@types/ws": "^7.4.0",
-    "rpc-request": "^4.0.9",
+    "rpc-request": "^5.0.0",
     "ws": "^7.4.1"
   },
   "funding": {
