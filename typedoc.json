@@ -4,5 +4,5 @@
   "name": "coinbase-pro-node-api",
   "exclude": "test/**/*",
   "hideGenerator": true,
-  "includeVersion": true
+  "gitRevision": "master"
 }
