@@ -1,9 +1,7 @@
-import * as nock from "nock";
+import nock from "nock";
 import {
   PublicClient,
   DefaultProductID,
-  DefaultTimeout,
-  DefaultHeaders,
   ApiUri,
   SandboxApiUri,
   ProductInfo,
@@ -15,56 +13,98 @@ import {
   CurrencyInfo,
   Time,
 } from "../index";
-import * as assert from "assert";
+import assert from "assert";
+import http from "http";
+import { FetchError } from "node-fetch";
 
 const product_id = "ETH-BTC";
 const apiUri = "https://api.some-other-uri.com";
-const timeout = 20000;
-const client = new PublicClient({ product_id, apiUri, timeout });
+const client = new PublicClient({ product_id, apiUri });
 
 suite("PublicClient", () => {
   test("constructor", () => {
-    assert.deepStrictEqual(client._rpoptions, {
-      useQuerystring: true,
-      headers: DefaultHeaders,
-      baseUrl: apiUri,
-      timeout,
-      json: true,
-    });
     assert.deepStrictEqual(client.product_id, product_id);
+    assert.deepStrictEqual(client.apiUri, new URL(apiUri));
   });
 
   test("constructor (default options)", () => {
-    const client = new PublicClient();
-    assert.deepStrictEqual(client._rpoptions, {
-      useQuerystring: true,
-      headers: DefaultHeaders,
-      baseUrl: ApiUri,
-      timeout: DefaultTimeout,
-      json: true,
-    });
-    assert.deepStrictEqual(client.product_id, DefaultProductID);
+    const otherClient = new PublicClient();
+    assert.deepStrictEqual(otherClient.product_id, DefaultProductID);
+    assert.deepStrictEqual(otherClient.apiUri, new URL(ApiUri));
   });
 
   test("constructor (with sandox flag)", () => {
     const sandbox = true;
-    const client = new PublicClient({ product_id, sandbox, timeout });
-    assert.deepStrictEqual(client._rpoptions, {
-      useQuerystring: true,
-      headers: DefaultHeaders,
-      baseUrl: SandboxApiUri,
-      timeout,
-      json: true,
+    const otherClient = new PublicClient({ product_id, sandbox });
+    assert.deepStrictEqual(otherClient.product_id, product_id);
+    assert.deepStrictEqual(otherClient.apiUri, new URL(SandboxApiUri));
+  });
+
+  test(".fetch()", async () => {
+    const response = "response";
+    const uri = "/products";
+    nock(apiUri).get(uri).reply(200, JSON.stringify({ response }));
+
+    const data = await client.fetch(uri);
+    assert.deepStrictEqual(data, { response });
+  });
+
+  test(".get() (reject non 2xx responses)", async () => {
+    const uri = "/some/path";
+    const response = { message: "Not Found" };
+    nock(apiUri).get(uri).delay(1).reply(404, response);
+
+    await assert.rejects(client.get(uri), new Error(response.message));
+  });
+
+  test(".get() (reject non 2xx responses with invalid JSON response) ", async () => {
+    const uri = "/some/path";
+    const response = "Not valid JSON";
+    nock(apiUri).get(uri).delay(1).reply(404, response);
+
+    await assert.rejects(client.get(uri), new Error(response));
+  });
+
+  test(".get() (reject on errors)", async () => {
+    const port = 28080;
+    const otherUrl = `http://127.0.0.1:${port}`;
+    const server = await new Promise<http.Server>((resolve) => {
+      const _server = new http.Server((_request, response) => {
+        response.destroy();
+      });
+      _server
+        .on("listening", () => {
+          resolve(_server);
+        })
+        .listen(port);
     });
-    assert.deepStrictEqual(client.product_id, product_id);
+
+    const otherClient = new PublicClient({ apiUri: otherUrl });
+    const uri = "/some/path";
+    try {
+      await otherClient.get(uri);
+      assert.fail("Should throw an error");
+    } catch (error) {
+      assert.ok(error instanceof FetchError);
+    }
+    await new Promise<void>((resolve, reject) => {
+      server.close((error) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+      });
+    });
   });
 
   test(".get()", async () => {
     const response = "response";
     const uri = "/products";
-    nock(apiUri).get(uri).reply(200, response);
-    const data = await client.get({ uri });
-    assert.deepStrictEqual(data, response);
+    nock(apiUri).get(uri).reply(200, JSON.stringify({ response }));
+
+    const data = await client.get(uri);
+    assert.deepStrictEqual(data, { response });
   });
 
   test(".getProducts()", async () => {
@@ -117,9 +157,7 @@ suite("PublicClient", () => {
       bids: [["8736.97", "21.90409501", 6]],
       asks: [["8736.98", "1.182", 1]],
     };
-    nock(apiUri)
-      .get("/products/" + product_id + "/book")
-      .reply(200, response);
+    nock(apiUri).get(`/products/${product_id}/book`).reply(200, response);
     const data = await client.getOrderBook();
     assert.deepStrictEqual(data, response);
   });
@@ -138,7 +176,7 @@ suite("PublicClient", () => {
       ],
     };
     nock(apiUri)
-      .get("/products/" + product_id + "/book")
+      .get(`/products/${product_id}/book`)
       .query({ level })
       .reply(200, response);
     const data = await client.getOrderBook({ level });
@@ -155,9 +193,7 @@ suite("PublicClient", () => {
       ask: "8735.01",
       volume: "6079.45359045",
     };
-    nock(apiUri)
-      .get("/products/" + product_id + "/ticker")
-      .reply(200, response);
+    nock(apiUri).get(`/products/${product_id}/ticker`).reply(200, response);
     const data = await client.getTicker();
     assert.deepStrictEqual(data, response);
   });
@@ -179,9 +215,7 @@ suite("PublicClient", () => {
         side: "sell",
       },
     ];
-    nock(apiUri)
-      .get("/products/" + product_id + "/trades")
-      .reply(200, response);
+    nock(apiUri).get(`/products/${product_id}/trades`).reply(200, response);
     const data = await client.getTrades();
     assert.deepStrictEqual(data, response);
   });
@@ -206,7 +240,7 @@ suite("PublicClient", () => {
       },
     ];
     nock(apiUri)
-      .get("/products/" + product_id + "/trades")
+      .get(`/products/${product_id}/trades`)
       .query({ limit, after })
       .reply(200, response);
     const data = await client.getTrades({ after, limit });
@@ -224,7 +258,7 @@ suite("PublicClient", () => {
       [1573594620, 8758.51, 8759.37, 8758.75, 8758.87, 3.03687967],
     ];
     nock(apiUri)
-      .get("/products/" + product_id + "/candles")
+      .get(`/products/${product_id}/candles`)
       .query({ granularity, start, end })
       .reply(200, response);
     const data = await client.getHistoricRates({ granularity, start, end });
@@ -238,7 +272,7 @@ suite("PublicClient", () => {
       [1573594740, 8758.86, 8767.98, 8758.87, 8767.97, 1.6353693],
     ];
     nock(apiUri)
-      .get("/products/" + product_id + "/candles")
+      .get(`/products/${product_id}/candles`)
       .query({ granularity })
       .reply(200, response);
     const data = await client.getHistoricRates({ granularity });
@@ -254,9 +288,7 @@ suite("PublicClient", () => {
       last: "0.02115000",
       volume_30day: "392055.30746805",
     };
-    nock(apiUri)
-      .get("/products/" + product_id + "/stats")
-      .reply(200, response);
+    nock(apiUri).get(`/products/${product_id}/stats`).reply(200, response);
     const data = await client.get24hrStats({ product_id });
     assert.deepStrictEqual(data, response);
   });
@@ -270,9 +302,7 @@ suite("PublicClient", () => {
       last: "0.02115000",
       volume_30day: "392055.30746805",
     };
-    nock(apiUri)
-      .get("/products/" + product_id + "/stats")
-      .reply(200, response);
+    nock(apiUri).get(`/products/${product_id}/stats`).reply(200, response);
     const data = await client.get24hrStats();
     assert.deepStrictEqual(data, response);
   });
