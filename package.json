@@ -10,22 +10,29 @@
     "test": "test"
   },
   "engines": {
-    "node": ">=10.18.1"
+    "node": ">=14.15.4"
   },
   "scripts": {
-    "build": "rm -fr build && tsc",
-    "prepublishOnly": "npm run prettier && npm run lint && npm run build && npm run prettier-write && npm run lint-fix",
-    "postpublish": "rm -fr build",
-    "test": "mocha -r ts-node/register --full-trace --ui tdd --bail --extension ts",
+    "build": "npm run build:remove && tsc",
+    "build:remove": "rm -rf ./build",
+    "build:test": "npm run build && npm run build:remove",
+    "commitlint": "commitlint --verbose",
+    "commitlint:all": "npm run commitlint -- --from=75eae5e229071ec797cb07606bccbb71de33dc49",
     "coverage": "nyc npm test && nyc report --reporter=lcov",
-    "coverage-ci": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
-    "fresh-install": "rm -fr node_modules && rm -f package-lock.json && npm install",
-    "prettier": "prettier -c \"**/*.{js,md,ts,json}\"",
-    "prettier-write": "npm run prettier -- --write",
-    "lint": "eslint --ext .ts,.js ./",
-    "lint-fix": "npm run lint -- --fix",
-    "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "docs:build": "npm run docs:remove && typedoc && npm run prettier:write -- --ignore-path .prettierignore_docs",
+    "docs:remove": "rm -rf ./docs",
+    "docs:test": "npm run docs:build && npm run docs:remove",
+    "install:clean": "rm -fr node_modules && rm -f package-lock.json && npm install",
+    "lint": "eslint --ext .ts ./",
+    "lint:fix": "npm run lint -- --fix",
+    "postpublish": "npm run build:remove",
+    "prepublishOnly": "npm run build && npm run lint:fix && npm run prettier:write",
+    "prettier": "prettier -c .",
+    "prettier:write": "npm run prettier -- --write",
+    "publish:test": "npm run prepublishOnly && npm pack --dry-run && npm run postpublish",
+    "release": "semantic-release",
+    "test": "mocha -r ts-node/register --full-trace --ui tdd --bail ./test/*.spec.ts",
+    "test:js": "npm run build && mocha --full-trace --ui tdd --bail ./build/test/**/*.spec.js && npm run build:remove"
   },
   "repository": {
     "type": "git",
@@ -45,44 +52,31 @@
   },
   "homepage": "https://github.com/vansergen/coinbase-pro#readme",
   "devDependencies": {
-    "@types/mocha": "^7.0.2",
-    "@typescript-eslint/eslint-plugin": "^2.24.0",
-    "@typescript-eslint/parser": "^2.24.0",
-    "coveralls": "^3.0.11",
-    "eslint": "^6.8.0",
-    "husky": "^4.2.3",
-    "lint-staged": "^10.0.8",
-    "mocha": "^7.1.1",
-    "nock": "^12.0.3",
-    "nyc": "^15.0.0",
-    "prettier": "^1.19.1",
-    "ts-node": "^8.7.0",
-    "typescript": "^3.8.3"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,ts,json,md}": [
-      "prettier --write",
-      "git add"
-    ],
-    "*.{ts,js}": [
-      "eslint --fix",
-      "git add"
-    ]
+    "@b2broker/tsconfig": "^1.0.3",
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/exec": "^5.0.0",
+    "@semantic-release/git": "^9.0.0",
+    "@types/mocha": "^8.2.0",
+    "commitlint-config-b2broker": "^1.0.0",
+    "coveralls": "^3.1.0",
+    "eslint-config-b2broker-ts": "^1.0.0",
+    "husky": "^4.3.8",
+    "lint-staged": "^10.5.4",
+    "mocha": "^8.2.1",
+    "nock": "^13.0.7",
+    "nyc": "^15.1.0",
+    "prettier": "^2.2.1",
+    "semantic-release": "^17.3.7",
+    "ts-node": "^9.1.1",
+    "typedoc": "^0.20.23"
   },
   "dependencies": {
-    "@types/ws": "^7.2.3",
-    "rpc-request": "^4.0.9",
-    "ws": "^7.2.3",
-    "snyk": "^1.316.2"
+    "@types/ws": "^7.4.0",
+    "rpc-request": "^5.0.1",
+    "ws": "^7.4.3"
   },
   "funding": {
     "type": "Coinbase Commerce",
     "url": "https://commerce.coinbase.com/checkout/ce079fed-047e-4280-bb3d-3cf865a3c309"
-  },
-  "snyk": true
+  }
 }

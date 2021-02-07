@@ -1,43 +1,38 @@
 import { createHmac } from "crypto";
-import { stringify, ParsedUrlQuery } from "querystring";
 
-export type SignerOptions = {
+export interface SignerOptions {
   method: string;
-  uri: string;
-  body?: object | "";
+  url: URL;
+  body?: string;
   key: string;
   secret: string;
   passphrase: string;
-  timestamp?: number;
-  qs?: ParsedUrlQuery;
-};
+  timestamp: number | string;
+}
 
-export type SignedHeaders = {
+export interface SignedHeaders {
   "CB-ACCESS-KEY": string;
   "CB-ACCESS-SIGN": string;
-  "CB-ACCESS-TIMESTAMP": number;
+  "CB-ACCESS-TIMESTAMP": string;
   "CB-ACCESS-PASSPHRASE": string;
-};
+}
 
 export function Signer({
   method,
-  uri,
-  body = {},
+  url,
+  body = "",
   key,
   secret,
   passphrase,
-  timestamp = Date.now() / 1000,
-  qs
+  timestamp,
 }: SignerOptions): SignedHeaders {
-  if (qs && Object.keys(qs).length) {
-    uri += "?" + stringify(qs);
-  }
+  const hmac = createHmac("sha256", Buffer.from(secret, "base64"));
+  const message = `${timestamp}${method}${url.pathname}${url.search}${body}`;
+  const sign = hmac.update(message).digest("base64");
   return {
     "CB-ACCESS-KEY": key,
-    "CB-ACCESS-SIGN": createHmac("sha256", Buffer.from(secret, "base64"))
-      .update(timestamp + method + uri + (body ? JSON.stringify(body) : ""))
-      .digest("base64"),
-    "CB-ACCESS-TIMESTAMP": timestamp,
-    "CB-ACCESS-PASSPHRASE": passphrase
+    "CB-ACCESS-SIGN": sign,
+    "CB-ACCESS-TIMESTAMP": `${timestamp}`,
+    "CB-ACCESS-PASSPHRASE": passphrase,
   };
 }

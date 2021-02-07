@@ -1,31 +1,36 @@
-import { RPC } from "rpc-request";
+import { FetchClient } from "rpc-request";
+import { RequestInit, Response, Headers } from "node-fetch";
+import { stringify } from "querystring";
 
 export const ApiUri = "https://api.pro.coinbase.com";
 export const SandboxApiUri = "https://api-public.sandbox.pro.coinbase.com";
 export const DefaultProductID = "BTC-USD";
-export const DefaultTimeout = 30000;
-export const DefaultHeaders = { "User-Agent": "coinbase-pro-node-api-client" };
+export const DefaultHeaders = { "User-Agent": "coinbase-pro-node-api" };
 
-export type ProductID = { product_id?: string };
+export interface ProductID {
+  product_id?: string;
+}
 
-export type PagArgs = {
+export interface PagArgs {
   before?: number | string;
   after?: number | string;
   limit?: number | string;
-};
+}
 
 export type PagProductID = ProductID & PagArgs;
 
-export type OrderBookArgs = ProductID & { level?: 1 | 2 | 3 };
+export interface OrderBookArgs extends ProductID {
+  level?: 1 | 2 | 3;
+}
 
-export type HistoricRatesArgs = {
+export interface HistoricRatesArgs {
   product_id?: string;
   start?: string;
   end?: string;
   granularity: 60 | 300 | 900 | 3600 | 21600 | 86400;
-};
+}
 
-export type ProductInfo = {
+export interface ProductInfo {
   id: string;
   base_currency: string;
   quote_currency: string;
@@ -42,29 +47,29 @@ export type ProductInfo = {
   cancel_only: boolean;
   status: string;
   status_message: string;
-};
+}
 
-export type OrderBookLevel1 = {
+export interface OrderBookLevel1 {
   sequence: number;
   bids: [[string, string, number]];
   asks: [[string, string, number]];
-};
+}
 
-export type OrderBookLevel2 = {
+export interface OrderBookLevel2 {
   sequence: number;
   bids: [string, string, number][];
   asks: [string, string, number][];
-};
+}
 
-export type OrderBookLevel3 = {
+export interface OrderBookLevel3 {
   sequence: number;
   bids: [string, string, string][];
   asks: [string, string, string][];
-};
+}
 
 export type OrderBook = OrderBookLevel1 | OrderBookLevel2 | OrderBookLevel3;
 
-export type Ticker = {
+export interface Ticker {
   trade_id: number;
   price: string;
   size: string;
@@ -72,30 +77,30 @@ export type Ticker = {
   bid: string;
   ask: string;
   volume: string;
-};
+}
 
 export type Side = "buy" | "sell";
 
-export type Trade = {
+export interface Trade {
   time: string;
   trade_id: number;
   price: string;
   size: string;
   side: Side;
-};
+}
 
 export type Candle = [number, number, number, number, number, number];
 
-export type ProductStats = {
+export interface ProductStats {
   open: string;
   high: string;
   low: string;
   volume: string;
   last: string;
   volume_30day: string;
-};
+}
 
-export type CurrencyDetails = {
+export interface CurrencyDetails {
   type: string;
   symbol?: string;
   sort_order: number;
@@ -107,9 +112,9 @@ export type CurrencyDetails = {
   crypto_address_link?: string;
   crypto_transaction_link?: string;
   display_name?: string;
-};
+}
 
-export type CurrencyInfo = {
+export interface CurrencyInfo {
   id: string;
   name: string;
   min_size: string;
@@ -118,72 +123,125 @@ export type CurrencyInfo = {
   details: CurrencyDetails;
   max_precision: string;
   convertible_to?: string[];
-};
+}
 
-export type Time = { iso: string; epoch: number };
+export interface Time {
+  iso: string;
+  epoch: number;
+}
 
-export type PublicClientOptions = {
+export interface PublicClientOptions {
   product_id?: string;
   sandbox?: boolean;
   apiUri?: string;
-  timeout?: number;
-};
+}
 
-export class PublicClient extends RPC {
-  readonly product_id: string;
+export class PublicClient extends FetchClient<unknown> {
+  public readonly product_id: string;
+  public readonly apiUri: URL;
 
-  constructor({
+  public constructor({
     product_id = DefaultProductID,
     sandbox = false,
     apiUri = sandbox ? SandboxApiUri : ApiUri,
-    timeout = DefaultTimeout
   }: PublicClientOptions = {}) {
-    const useQuerystring = true;
-    const headers = DefaultHeaders;
-    super({ useQuerystring, timeout, json: true, baseUrl: apiUri, headers });
+    super(
+      { headers: DefaultHeaders },
+      { rejectNotOk: false, transform: "raw", baseUrl: apiUri }
+    );
+    this.apiUri = new URL(apiUri);
     this.product_id = product_id;
   }
 
-  getProducts(): Promise<ProductInfo[]> {
-    return this.get({ uri: "/products" });
+  public async fetch(
+    path: string,
+    options: RequestInit = {}
+  ): Promise<unknown> {
+    const headers = new Headers(options.headers);
+    if (options.body) {
+      headers.set("Content-Type", "application/json");
+    }
+    const response = (await super.fetch(path, {
+      ...options,
+      headers,
+    })) as Response;
+    const text = await response.text();
+    const data = PublicClient.parseJSON(text);
+
+    if (!response.ok) {
+      throw new Error((data as { message: string })?.message ?? text);
+    }
+
+    return data ?? text;
   }
 
-  getOrderBook({
+  public async getProducts(): Promise<ProductInfo[]> {
+    const products = (await this.get("/products")) as ProductInfo[];
+    return products;
+  }
+
+  public async getOrderBook({
     product_id = this.product_id,
     ...qs
   }: OrderBookArgs = {}): Promise<OrderBook> {
-    return this.get({ uri: "/products/" + product_id + "/book", qs });
+    const url = new URL(`/products/${product_id}/book`, this.apiUri);
+    url.search = stringify({ ...qs });
+    const book = (await this.get(url.toString())) as OrderBook;
+    return book;
   }
 
-  getTicker({ product_id = this.product_id }: ProductID = {}): Promise<Ticker> {
-    return this.get({ uri: "/products/" + product_id + "/ticker" });
+  public async getTicker({
+    product_id = this.product_id,
+  }: ProductID = {}): Promise<Ticker> {
+    const ticker = (await this.get(`/products/${product_id}/ticker`)) as Ticker;
+    return ticker;
   }
 
-  getTrades({
+  public async getTrades({
     product_id = this.product_id,
     ...qs
   }: PagProductID = {}): Promise<Trade[]> {
-    return this.get({ uri: "/products/" + product_id + "/trades", qs });
+    const url = new URL(`/products/${product_id}/trades`, this.apiUri);
+    url.search = stringify({ ...qs });
+    const trades = (await this.get(url.toString())) as Trade[];
+    return trades;
   }
 
-  getHistoricRates({
+  public async getHistoricRates({
     product_id = this.product_id,
     ...qs
   }: HistoricRatesArgs): Promise<Candle[]> {
-    return this.get({ uri: "/products/" + product_id + "/candles", qs });
+    const url = new URL(`/products/${product_id}/candles`, this.apiUri);
+    url.search = stringify({ ...qs });
+    const rates = (await this.get(url.toString())) as Candle[];
+    return rates;
   }
 
-  get24hrStats({ product_id = this.product_id }: ProductID = {}): Promise<
-    ProductStats
-  > {
-    return this.get({ uri: "/products/" + product_id + "/stats" });
+  public async get24hrStats({
+    product_id = this.product_id,
+  }: ProductID = {}): Promise<ProductStats> {
+    const path = `/products/${product_id}/stats`;
+    const stats = (await this.get(path)) as ProductStats;
+    return stats;
   }
 
-  getCurrencies(): Promise<CurrencyInfo[]> {
-    return this.get({ uri: "/currencies" });
+  public async getCurrencies(): Promise<CurrencyInfo[]> {
+    const currencies = (await this.get("/currencies")) as CurrencyInfo[];
+    return currencies;
   }
 
-  getTime(): Promise<Time> {
-    return this.get({ uri: "/time" });
+  public async getTime(): Promise<Time> {
+    const time = (await this.get("/time")) as Time;
+    return time;
+  }
+
+  private static parseJSON(string: string): unknown {
+    let output: unknown;
+    try {
+      output = JSON.parse(string);
+      return output;
+    } catch {
+      return output;
+    }
   }
 }

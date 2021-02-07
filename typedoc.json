@@ -1,0 +1,8 @@
+{
+  "out": "docs",
+  "entryPoints": ["./index.ts"],
+  "name": "coinbase-pro-node-api",
+  "exclude": "test/**/*",
+  "hideGenerator": true,
+  "gitRevision": "master"
+}

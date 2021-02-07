@@ -1,4 +1,4 @@
-# coinbase-pro-node-api [![Build Status](https://travis-ci.com/vansergen/coinbase-pro.svg?branch=master)](https://travis-ci.com/vansergen/coinbase-pro) [![Coverage Status](https://coveralls.io/repos/github/vansergen/coinbase-pro/badge.svg?branch=master)](https://coveralls.io/github/vansergen/coinbase-pro?branch=master) [![Known Vulnerabilities](https://snyk.io/test/github/vansergen/coinbase-pro/badge.svg)](https://snyk.io/test/github/vansergen/coinbase-pro) [![GitHub version](https://badge.fury.io/gh/vansergen%2Fcoinbase-pro.svg)](https://github.com/vansergen/coinbase-pro) [![Greenkeeper badge](https://badges.greenkeeper.io/vansergen/coinbase-pro.svg)](https://greenkeeper.io/) ![node](https://img.shields.io/node/v/coinbase-pro-node-api) ![NPM](https://img.shields.io/npm/l/coinbase-pro-node-api) ![npm](https://img.shields.io/npm/dt/coinbase-pro-node-api) ![GitHub top language](https://img.shields.io/github/languages/top/vansergen/coinbase-pro)
+# coinbase-pro-node-api ![CI Status](https://github.com/vansergen/coinbase-pro/workflows/CI/badge.svg) ![npm](https://img.shields.io/npm/v/coinbase-pro-node-api) [![Coverage Status](https://coveralls.io/repos/github/vansergen/coinbase-pro/badge.svg?branch=master)](https://coveralls.io/github/vansergen/coinbase-pro?branch=master) [![Known Vulnerabilities](https://snyk.io/test/github/vansergen/coinbase-pro/badge.svg)](https://snyk.io/test/github/vansergen/coinbase-pro) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release) [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org) ![NPM license](https://img.shields.io/npm/l/coinbase-pro-node-api) ![node version](https://img.shields.io/node/v/coinbase-pro-node-api) ![npm downloads](https://img.shields.io/npm/dt/coinbase-pro-node-api) ![GitHub top language](https://img.shields.io/github/languages/top/vansergen/coinbase-pro)
 
 Node.js library for [Coinbase Pro](https://pro.coinbase.com/)
 
@@ -58,7 +58,7 @@ const candles = await client.getHistoricRates({
   product_id,
   end,
   start,
-  granularity
+  granularity,
 });
 ```
 
@@ -144,7 +144,7 @@ const order = await client.placeOrder({
   price,
   size,
   post_only,
-  cancel_after
+  cancel_after,
 });
 ```
 
@@ -211,7 +211,7 @@ const coinbase_account_id = "c13cd0fc-72ca-55e9-843b-b84ef628c198";
 const deposit = await client.depositCoinbase({
   amount,
   currency,
-  coinbase_account_id
+  coinbase_account_id,
 });
 ```
 
@@ -233,7 +233,7 @@ const coinbase_account_id = "c13cd0fc-72ca-55e9-843b-b84ef628c198";
 const withdraw = await client.withdrawCoinbase({
   amount,
   currency,
-  coinbase_account_id
+  coinbase_account_id,
 });
 ```
 
@@ -248,7 +248,7 @@ const withdraw = await client.withdrawCrypto({
   amount,
   currency,
   crypto_address,
-  no_destination_tag
+  no_destination_tag,
 });
 ```
 
@@ -332,50 +332,45 @@ const sandbox = false;
 const key = "CoinbaseProAPIKey";
 const secret = "CoinbaseProAPISecret";
 const passphrase = "CoinbaseProAPIPassphrase";
-const product_ids = ["BTC-USD", "BAT-USDC", "ETH-BTC"];
 const channels = [
-  "user",
-  "full",
-  { name: "level2", product_ids: ["BTC-EUR", "BTC-GBP"] }
+  { name: "status" },
+  { name: "ticker", product_ids: ["BTC-USD"] },
 ];
 const websocket = new WebsocketClient({
   key,
   secret,
   passphrase,
-  product_ids,
   channels,
-  sandbox
+  sandbox,
 });
 ```
 
 - [`connect`](https://docs.pro.coinbase.com/#websocket-feed)
 
 ```typescript
-websocket.connect();
+await websocket.connect();
 ```
 
 - [`disconnect`](https://docs.pro.coinbase.com/#websocket-feed)
 
 ```typescript
-websocket.disconnect();
+await websocket.disconnect();
 ```
 
 - [`subscribe`](https://docs.pro.coinbase.com/#subscribe)
 
 ```typescript
-const product_ids = ["ETH-USD", "ETH-EUR"];
 const channels = [
-  "level2",
-  "heartbeat",
-  { name: "ticker", product_ids: ["ETH-BTC", "ETH-USD"] }
+  { name: "heartbeat", product_ids: ["ETH-USD"] },
+  { name: "ticker", product_ids: ["ETH-EUR"] },
+  { name: "status" },
 ];
-websocket.subscribe({ channels, product_ids });
+await websocket.subscribe({ channels });
 ```
 
 - [`unsubscribe`](https://docs.pro.coinbase.com/#subscribe)
 
 ```typescript
-const product_ids = ["ETH-USD", "ETH-EUR"];
-const channels = ["ticker"];
-websocket.unsubscribe({ channels, product_ids });
+const channels = [{ name: "ticker", product_ids: ["ETH-USD", "ETH-EUR"] }];
+await websocket.unsubscribe({ channels });
 ```
