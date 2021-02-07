@@ -1,56 +1,58 @@
 import { EventEmitter } from "events";
-import * as Websocket from "ws";
-import { Signer, ProductInfo, CurrencyDetails, Side } from "../index";
+import Websocket from "ws";
+import { Signer } from "./signer";
+import { ProductInfo, CurrencyDetails, Side, DefaultProductID } from "./public";
 
 export const WsUri = "wss://ws-feed.pro.coinbase.com";
 export const SandboxWsUri = "wss://ws-feed-public.sandbox.pro.coinbase.com";
 export const DefaultChannels = [
-  { name: "full", product_ids: ["BTC-USD"] },
-  { name: "heartbeat", product_ids: ["BTC-USD"] },
-  { name: "status", product_ids: ["BTC-USD"] },
+  { name: "full", product_ids: [DefaultProductID] },
+  { name: "heartbeat", product_ids: [DefaultProductID] },
+  { name: "status", product_ids: [DefaultProductID] },
 ];
 
-export type Channel = string | { name: string; product_ids?: string[] };
+export type Channel =
+  | { name: "status" }
+  | { name: string; product_ids: string[] };
 
-export type SubscribeParams = {
-  product_ids?: string[];
+export interface SubscribeParams {
   channels: Channel[];
-};
+}
 
-export type Subscription = SubscribeParams & {
+export interface Subscription extends SubscribeParams {
   type: "subscribe" | "unsubscribe";
-};
+}
 
-export type SignedMessage = Subscription & {
+export interface SignedMessage extends Subscription {
   key?: string;
   signature?: string;
-  timestamp?: number;
+  timestamp?: string;
   passphrase?: string;
-};
+}
 
-export type WSMessageHeartbeat = {
+export interface WSMessageHeartbeat {
   type: "heartbeat";
   sequence: number;
   last_trade_id: number;
   product_id: string;
   time: string;
-};
+}
 
-export type WSMessageSnapshot = {
+export interface WSMessageSnapshot {
   type: "snapshot";
   product_id: string;
   bids: [string, string][];
   asks: [string, string][];
-};
+}
 
-export type WSMessageL2Update = {
+export interface WSMessageL2Update {
   type: "l2update";
   product_id: string;
   changes: [string, string, string][];
   time: string;
-};
+}
 
-export type WSMessageReceived = {
+export interface WSMessageReceived {
   type: "received";
   side: Side;
   product_id: string;
@@ -64,9 +66,9 @@ export type WSMessageReceived = {
   funds?: string;
   profile_id?: string;
   user_id?: string;
-};
+}
 
-export type WSMessageOpen = {
+export interface WSMessageOpen {
   type: "open";
   side: Side;
   product_id: string;
@@ -77,9 +79,9 @@ export type WSMessageOpen = {
   remaining_size: string;
   profile_id?: string;
   user_id?: string;
-};
+}
 
-export type WSMessageMatch = {
+export interface WSMessageMatch {
   type: "match";
   trade_id: number;
   maker_order_id: string;
@@ -90,9 +92,9 @@ export type WSMessageMatch = {
   product_id: string;
   sequence: number;
   time: string;
-};
+}
 
-export type WSMessageChange = {
+export interface WSMessageChange {
   type: "change";
   side: Side;
   product_id: string;
@@ -106,9 +108,9 @@ export type WSMessageChange = {
   old_funds?: string;
   profile_id?: string;
   user_id?: string;
-};
+}
 
-export type WSMessageDone = {
+export interface WSMessageDone {
   type: "done";
   side: Side;
   product_id: string;
@@ -120,9 +122,9 @@ export type WSMessageDone = {
   remaining_size?: string;
   profile_id?: string;
   user_id?: string;
-};
+}
 
-export type WSMessageActivate = {
+export interface WSMessageActivate {
   type: "activate";
   side: Side;
   product_id: string;
@@ -137,9 +139,9 @@ export type WSMessageActivate = {
   stop_type: string;
   profile_id?: string;
   user_id?: string;
-};
+}
 
-export type WSMessageTicker = {
+export interface WSMessageTicker {
   type: "ticker";
   sequence: number;
   product_id: string;
@@ -155,9 +157,9 @@ export type WSMessageTicker = {
   time: string;
   trade_id: number;
   last_size: string;
-};
+}
 
-export type WSMessageLastMatch = {
+export interface WSMessageLastMatch {
   type: "last_match";
   trade_id: number;
   maker_order_id: string;
@@ -168,14 +170,14 @@ export type WSMessageLastMatch = {
   product_id: string;
   sequence: number;
   time: string;
-};
+}
 
-export type WSMessageSubscriptions = {
+export interface WSMessageSubscriptions {
   type: "subscriptions";
   channels: { name: string; product_ids: string[] }[];
-};
+}
 
-export type WSMessageStatus = {
+export interface WSMessageStatus {
   type: "status";
   currencies: {
     id: string;
@@ -189,7 +191,7 @@ export type WSMessageStatus = {
     details: CurrencyDetails;
   }[];
   products: (ProductInfo & { type: string })[];
-};
+}
 
 export type WSMessage =
   | WSMessageHeartbeat
@@ -206,44 +208,40 @@ export type WSMessage =
   | WSMessageSubscriptions
   | WSMessageStatus;
 
-export type WSError =
-  | Error
-  | { type: "error"; message: string; reason: string };
-
-export type WebsocketClientOptions = {
-  product_ids?: string[];
+export interface WebsocketClientOptions {
   wsUri?: string;
   channels?: Channel[];
   key?: string;
   secret?: string;
   passphrase?: string;
   sandbox?: boolean;
-};
+}
 
 export declare interface WebsocketClient {
-  on(event: "open", eventListener: () => void): this;
-  on(event: "close", eventListener: () => void): this;
-  on(event: "message", eventListener: (data: WSMessage) => void): this;
-  on(event: "error", eventListener: (error: WSError) => void): this;
+  // emit(event: "open" | "close"): boolean;
+  // emit(event: "message", data: WSMessage): boolean;
+  // emit(event: "error", error: unknown): boolean;
 
-  once(event: "open", eventListener: () => void): this;
-  once(event: "close", eventListener: () => void): this;
+  on(event: "open" | "close", eventListener: () => void): this;
+  on(event: "message", eventListener: (data: WSMessage) => void): this;
+  on(event: "error", eventListener: (error: unknown) => void): this;
+
+  once(event: "open" | "close", eventListener: () => void): this;
   once(event: "message", eventListener: (data: WSMessage) => void): this;
-  once(event: "error", eventListener: (error: WSError) => void): this;
+  once(event: "error", eventListener: (error: unknown) => void): this;
 }
 
 export class WebsocketClient extends EventEmitter {
   public ws?: Websocket;
-  readonly channels: Channel[];
-  readonly product_ids: string[];
-  readonly key?: string;
-  readonly secret?: string;
-  readonly passphrase?: string;
-  readonly wsUri: string;
+  public readonly wsUri: string;
+  public readonly channels: Channel[];
 
-  constructor({
+  readonly #key?: string;
+  readonly #secret?: string;
+  readonly #passphrase?: string;
+
+  public constructor({
     channels = DefaultChannels,
-    product_ids = [],
     key,
     secret,
     passphrase,
@@ -252,81 +250,107 @@ export class WebsocketClient extends EventEmitter {
   }: WebsocketClientOptions = {}) {
     super();
     this.channels = channels;
-    this.product_ids = product_ids;
     this.wsUri = wsUri;
     if (key && secret && passphrase) {
-      this.key = key;
-      this.secret = secret;
-      this.passphrase = passphrase;
+      this.#key = key;
+      this.#secret = secret;
+      this.#passphrase = passphrase;
     }
   }
 
-  connect(): void {
-    if (this.ws) {
-      switch (this.ws.readyState) {
-        case Websocket.OPEN:
-          return;
-        case Websocket.CLOSING:
-        case Websocket.CONNECTING:
-          throw new Error("Could not connect. State: " + this.ws.readyState);
-      }
+  public async connect(): Promise<void> {
+    switch (this.ws?.readyState) {
+      case Websocket.CLOSING:
+      case Websocket.CONNECTING:
+        throw new Error(`Could not connect. State: ${this.ws.readyState}`);
+      case Websocket.OPEN:
+        return;
+      default:
+        break;
     }
 
-    this.ws = new Websocket(this.wsUri);
-    this.ws.on("open", () => {
-      this.emit("open");
-      const { product_ids, channels } = this;
-      this.subscribe({ channels, product_ids });
-    });
-    this.ws.on("close", () => this.emit("close"));
-    this.ws.on("error", (error) => this.emit("error", error));
-    this.ws.on("message", (data: string) => {
-      const message = JSON.parse(data);
-      if (message.type === "error") {
-        this.emit("error", message);
-      } else {
-        this.emit("message", message);
-      }
+    await new Promise<void>((resolve, reject) => {
+      this.ws = new Websocket(this.wsUri);
+      this.ws.once("open", () => {
+        resolve();
+      });
+      this.ws.once("error", reject);
+      this.ws.on("message", (data: string) => {
+        try {
+          const message = JSON.parse(data) as { type?: string };
+          if (message.type === "error") {
+            this.emit("error", message);
+          } else {
+            this.emit("message", message as WSMessage);
+          }
+        } catch (error) {
+          this.emit("error", error);
+        }
+      });
+      this.ws.on("open", () => {
+        this.emit("open");
+        this.subscribe({ channels: this.channels }).catch((error) => {
+          this.emit("error", error);
+        });
+      });
+      this.ws.on("close", () => {
+        this.emit("close");
+      });
+      this.ws.on("error", (error) => {
+        this.emit("error", error);
+      });
     });
   }
 
-  disconnect(): void {
-    if (!this.ws) {
-      return;
-    }
-    switch (this.ws.readyState) {
+  public async disconnect(): Promise<void> {
+    switch (this.ws?.readyState) {
       case Websocket.CLOSED:
         return;
       case Websocket.CLOSING:
       case Websocket.CONNECTING:
-        throw new Error("Could not disconnect. State: " + this.ws.readyState);
+        throw new Error(`Could not disconnect. State: ${this.ws.readyState}`);
+      default:
+        break;
     }
 
-    this.ws.close();
+    await new Promise<void>((resolve, reject) => {
+      if (!this.ws) {
+        resolve();
+      } else {
+        this.ws.once("error", reject);
+        this.ws.once("close", resolve);
+        this.ws.close();
+      }
+    });
   }
 
-  subscribe(params: SubscribeParams): void {
-    this.send({ ...params, type: "subscribe" });
+  public async subscribe(params: SubscribeParams): Promise<void> {
+    await this.send({ ...params, type: "subscribe" });
   }
 
-  unsubscribe(params: SubscribeParams): void {
-    this.send({ ...params, type: "unsubscribe" });
+  public async unsubscribe(params: SubscribeParams): Promise<void> {
+    await this.send({ ...params, type: "unsubscribe" });
   }
 
-  private send(params: Subscription): void {
-    if (!this.ws) {
+  private async send(params: Subscription): Promise<void> {
+    const { ws } = this;
+
+    if (!ws) {
       throw new Error("Websocket is not initialized");
     }
 
     const message: SignedMessage = params;
-    if (this.key && this.secret && this.passphrase) {
+
+    if (this.#key && this.#secret && this.#passphrase) {
+      const timestamp = Date.now() / 1000;
       const signature = Signer({
+        timestamp,
         body: "",
         method: "GET",
-        uri: "/users/self/verify",
-        key: this.key,
-        secret: this.secret,
-        passphrase: this.passphrase,
+        url: new URL("/users/self/verify", this.wsUri),
+        key: this.#key,
+        secret: this.#secret,
+        passphrase: this.#passphrase,
       });
       message.key = signature["CB-ACCESS-KEY"];
       message.signature = signature["CB-ACCESS-SIGN"];
@@ -334,6 +358,16 @@ export class WebsocketClient extends EventEmitter {
       message.passphrase = signature["CB-ACCESS-PASSPHRASE"];
     }
 
-    this.ws.send(JSON.stringify(message));
+    const data = JSON.stringify(message);
+
+    await new Promise<void>((resolve, reject) => {
+      ws.send(data, (error) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 }
