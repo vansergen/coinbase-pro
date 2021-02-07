@@ -1,6 +1,6 @@
 {
   "out": "docs",
-  "mode": "file",
+  "entryPoints": ["./index.ts"],
   "name": "coinbase-pro-node-api",
   "exclude": "test/**/*",
   "hideGenerator": true,

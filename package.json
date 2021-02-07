@@ -19,7 +19,7 @@
     "commitlint": "commitlint --verbose",
     "commitlint:all": "npm run commitlint -- --from=75eae5e229071ec797cb07606bccbb71de33dc49",
     "coverage": "nyc npm test && nyc report --reporter=lcov",
-    "docs:build": "npm run docs:remove && typedoc && npm run lint:fix && npm run prettier:write -- --ignore-path .prettierignore_docs",
+    "docs:build": "npm run docs:remove && typedoc && npm run prettier:write -- --ignore-path .prettierignore_docs",
     "docs:remove": "rm -rf ./docs",
     "docs:test": "npm run docs:build && npm run docs:remove",
     "install:clean": "rm -fr node_modules && rm -f package-lock.json && npm install",
@@ -68,7 +68,7 @@
     "prettier": "^2.2.1",
     "semantic-release": "^17.3.7",
     "ts-node": "^9.1.1",
-    "typedoc": "^0.19.2"
+    "typedoc": "^0.20.23"
   },
   "dependencies": {
     "@types/ws": "^7.4.0",
