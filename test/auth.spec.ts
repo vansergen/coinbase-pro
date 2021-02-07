@@ -1,8 +1,7 @@
-import * as assert from "assert";
-import * as nock from "nock";
+import assert from "assert";
+import nock from "nock";
 import {
   AuthenticatedClient,
-  DefaultHeaders,
   Account,
   AccountHistory,
   AccountHold,
@@ -27,7 +26,6 @@ import {
 
 const product_id = "ETH-BTC";
 const apiUri = "https://api.some-other-uri.com";
-const timeout = 20000;
 const key = "CoinbaseProAPIKey";
 const secret = "CoinbaseProAPISecret";
 const passphrase = "CoinbaseProAPIPassphrase";
@@ -38,31 +36,12 @@ const client = new AuthenticatedClient({
   passphrase,
   apiUri,
   product_id,
-  timeout,
 });
 
 suite("AuthenticatedClient", () => {
   test("constructor", () => {
-    assert.deepStrictEqual(client._rpoptions, {
-      useQuerystring: true,
-      headers: DefaultHeaders,
-      baseUrl: apiUri,
-      timeout,
-      json: true,
-    });
     assert.deepStrictEqual(client.product_id, product_id);
-    assert.deepStrictEqual(client.key, key);
-    assert.deepStrictEqual(client.secret, secret);
-    assert.deepStrictEqual(client.passphrase, passphrase);
-  });
-
-  test(".request()", async () => {
-    const uri = "/accounts";
-    const method = "GET";
-    const response = "response";
-    nock(apiUri).get(uri).reply(200, response);
-    const data = await client.request({ uri: "/accounts", method });
-    assert.deepStrictEqual(data, response);
+    assert.deepStrictEqual(client.apiUri, new URL(apiUri));
   });
 
   test(".getAccounts()", async () => {
@@ -102,9 +81,7 @@ suite("AuthenticatedClient", () => {
       profile_id: "75da88c5-05bf-4f54-bc85-5c775bd68254",
       trading_enabled: true,
     };
-    nock(apiUri)
-      .get("/accounts/" + account_id)
-      .reply(200, response);
+    nock(apiUri).get(`/accounts/${account_id}`).reply(200, response);
     const data = await client.getAccount({ account_id });
     assert.deepStrictEqual(data, response);
   });
@@ -141,7 +118,7 @@ suite("AuthenticatedClient", () => {
       },
     ];
     nock(apiUri)
-      .get("/accounts/" + account_id + "/ledger")
+      .get(`/accounts/${account_id}/ledger`)
       .query({ after, before, limit })
       .reply(200, response);
     const data = await client.getAccountHistory({
@@ -168,7 +145,7 @@ suite("AuthenticatedClient", () => {
       },
     ];
     nock(apiUri)
-      .get("/accounts/" + account_id + "/holds")
+      .get(`/accounts/${account_id}/holds`)
       .query({ after, before, limit })
       .reply(200, response);
     const data = await client.getHolds({
@@ -210,7 +187,9 @@ suite("AuthenticatedClient", () => {
       status: "pending",
       settled: false,
     };
-    nock(apiUri).post("/orders", params).reply(200, response);
+    nock(apiUri)
+      .post("/orders", { ...params })
+      .reply(200, response);
     const data = await client.placeOrder(params);
     assert.deepStrictEqual(data, response);
   });
@@ -253,26 +232,17 @@ suite("AuthenticatedClient", () => {
 
   test(".cancelOrder() (using `client_oid`)", async () => {
     const client_oid = "144c6f8e-713f-4682-8435-5280fbe8b2b4";
-    const response = "254b263a-dc33-4eaf-88e8-0e0df212856d";
-    nock(apiUri)
-      .delete("/orders/client:" + client_oid)
-      .reply(200, response);
+    const response = ["254b263a-dc33-4eaf-88e8-0e0df212856d"];
+    nock(apiUri).delete(`/orders/client:${client_oid}`).reply(200, response);
     const data = await client.cancelOrder({ client_oid });
     assert.deepStrictEqual(data, response);
   });
 
   test(".cancelOrder() (using `id`)", async () => {
     const id = "254b263a-dc33-4eaf-88e8-0e0df212856d";
-    nock(apiUri)
-      .delete("/orders/" + id)
-      .reply(200, id);
+    nock(apiUri).delete(`/orders/${id}`).reply(200, [id]);
     const data = await client.cancelOrder({ id });
-    assert.deepStrictEqual(data, id);
-  });
-
-  test(".cancelOrder() (without `id` and `client_oid`)", () => {
-    const error = new Error("Either `id` or `client_oid` must be provided");
-    assert.throws(() => client.cancelOrder({}), error);
+    assert.deepStrictEqual(data, [id]);
   });
 
   test(".cancelAll()", async () => {
@@ -283,10 +253,13 @@ suite("AuthenticatedClient", () => {
   });
 
   test(".cancelAll() (using `product_id`)", async () => {
-    const product_id = "BTC-USD";
+    const _product_id = "BTC-USD";
     const response = ["71452118-efc7-4cc4-8780-a5e22d4baa53"];
-    nock(apiUri).delete("/orders").query({ product_id }).reply(200, response);
-    const data = await client.cancelAll({ product_id });
+    nock(apiUri)
+      .delete("/orders")
+      .query({ product_id: _product_id })
+      .reply(200, response);
+    const data = await client.cancelAll({ product_id: _product_id });
     assert.deepStrictEqual(data, response);
   });
 
@@ -294,7 +267,7 @@ suite("AuthenticatedClient", () => {
     const limit = 2;
     const after = "2019-09-29T19:16:37.991967Z";
     const status = ["done", "rejected"];
-    const product_id = "BTC-USD";
+    const _product_id = "BTC-USD";
     const response: OrderInfo[] = [
       {
         id: "id1",
@@ -335,9 +308,14 @@ suite("AuthenticatedClient", () => {
     ];
     nock(apiUri)
       .get("/orders")
-      .query({ product_id, after, limit, status })
+      .query({ product_id: _product_id, after, limit, status })
       .reply(200, response);
-    const data = await client.getOrders({ after, product_id, limit, status });
+    const data = await client.getOrders({
+      after,
+      product_id: _product_id,
+      limit,
+      status,
+    });
     assert.deepStrictEqual(data, response);
   });
 
@@ -405,9 +383,7 @@ suite("AuthenticatedClient", () => {
       status: "done",
       settled: true,
     };
-    nock(apiUri)
-      .get("/orders/" + id)
-      .reply(200, response);
+    nock(apiUri).get(`/orders/${id}`).reply(200, response);
     const data = await client.getOrder({ id });
     assert.deepStrictEqual(data, response);
   });
@@ -431,16 +407,9 @@ suite("AuthenticatedClient", () => {
       status: "rejected",
       settled: true,
     };
-    nock(apiUri)
-      .get("/orders/client:" + client_oid)
-      .reply(200, response);
+    nock(apiUri).get(`/orders/client:${client_oid}`).reply(200, response);
     const data = await client.getOrder({ client_oid });
     assert.deepStrictEqual(data, response);
-  });
-
-  test(".getOrder() (without `id` and `client_oid`)", () => {
-    const error = new Error("Either `id` or `client_oid` must be provided");
-    assert.throws(() => client.getOrder({}), error);
   });
 
   test(".getFills()", async () => {
@@ -483,7 +452,7 @@ suite("AuthenticatedClient", () => {
 
   test(".getFills() (using `limit`)", async () => {
     const limit = 2;
-    const product_id = "BTC-USD";
+    const _product_id = "BTC-USD";
     const response: Fill[] = [
       {
         created_at: "2019-11-14T10:31:34.255Z",
@@ -518,9 +487,9 @@ suite("AuthenticatedClient", () => {
     ];
     nock(apiUri)
       .get("/fills")
-      .query({ product_id, limit })
+      .query({ product_id: _product_id, limit })
       .reply(200, response);
-    const data = await client.getFills({ limit, product_id });
+    const data = await client.getFills({ limit, product_id: _product_id });
     assert.deepStrictEqual(data, response);
   });
 
@@ -536,7 +505,9 @@ suite("AuthenticatedClient", () => {
       currency: "USD",
       payout_at: "2016-08-20T00:31:09Z",
     };
-    nock(apiUri).post("/deposits/payment-method", params).reply(200, response);
+    nock(apiUri)
+      .post("/deposits/payment-method", { ...params })
+      .reply(200, response);
     const data = await client.deposit(params);
     assert.deepStrictEqual(data, response);
   });
@@ -553,7 +524,7 @@ suite("AuthenticatedClient", () => {
       currency: "BTC",
     };
     nock(apiUri)
-      .post("/deposits/coinbase-account", params)
+      .post("/deposits/coinbase-account", { ...params })
       .reply(200, response);
     const data = await client.depositCoinbase(params);
     assert.deepStrictEqual(data, response);
@@ -572,7 +543,7 @@ suite("AuthenticatedClient", () => {
       payout_at: "2016-08-20T00:31:09Z",
     };
     nock(apiUri)
-      .post("/withdrawals/payment-method", params)
+      .post("/withdrawals/payment-method", { ...params })
       .reply(200, response);
     const data = await client.withdraw(params);
     assert.deepStrictEqual(data, response);
@@ -590,7 +561,7 @@ suite("AuthenticatedClient", () => {
       currency: "BTC",
     };
     nock(apiUri)
-      .post("/withdrawals/coinbase-account", params)
+      .post("/withdrawals/coinbase-account", { ...params })
       .reply(200, response);
     const data = await client.withdrawCoinbase(params);
     assert.deepStrictEqual(data, response);
@@ -608,7 +579,9 @@ suite("AuthenticatedClient", () => {
       amount: "20000.00",
       currency: "XRP",
     };
-    nock(apiUri).post("/withdrawals/crypto", params).reply(200, response);
+    nock(apiUri)
+      .post("/withdrawals/crypto", { ...params })
+      .reply(200, response);
     const data = await client.withdrawCrypto(params);
     assert.deepStrictEqual(data, response);
   });
@@ -627,7 +600,9 @@ suite("AuthenticatedClient", () => {
       from: "USD",
       to: "USDC",
     };
-    nock(apiUri).post("/conversions", params).reply(200, response);
+    nock(apiUri)
+      .post("/conversions", { ...params })
+      .reply(200, response);
     const data = await client.convert(params);
     assert.deepStrictEqual(data, response);
   });
@@ -798,7 +773,9 @@ suite("AuthenticatedClient", () => {
       type: "account",
       status: "pending",
     };
-    nock(apiUri).post("/reports", params).reply(200, response);
+    nock(apiUri)
+      .post("/reports", { ...params })
+      .reply(200, response);
     const data = await client.createReport(params);
     assert.deepStrictEqual(data, response);
   });
@@ -823,7 +800,7 @@ suite("AuthenticatedClient", () => {
     assert.deepStrictEqual(data, response);
   });
 
-  test(".createReport() (account with missing `account_id`)", () => {
+  test(".createReport() (account with missing `account_id`)", async () => {
     const params: ReportParams = {
       type: "account",
       start_date: "2019-01-06T10:34:47.000Z",
@@ -831,7 +808,7 @@ suite("AuthenticatedClient", () => {
       format: "pdf",
     };
     const error = new Error("`account_id` is missing");
-    assert.throws(() => client.createReport(params), error);
+    await assert.rejects(client.createReport(params), error);
   });
 
   test(".getReport()", async () => {
@@ -853,9 +830,7 @@ suite("AuthenticatedClient", () => {
         new_york_state: false,
       },
     };
-    nock(apiUri)
-      .get("/reports/" + id)
-      .reply(200, response);
+    nock(apiUri).get(`/reports/${id}`).reply(200, response);
     const data = await client.getReport({ id });
     assert.deepStrictEqual(data, response);
   });
@@ -886,9 +861,7 @@ suite("AuthenticatedClient", () => {
       is_default: true,
       created_at: "2019-11-18T15:08:40.236309Z",
     };
-    nock(apiUri)
-      .get("/profiles/" + id)
-      .reply(200, response);
+    nock(apiUri).get(`/profiles/${id}`).reply(200, response);
     const data = await client.getProfile({ id });
     assert.deepStrictEqual(data, response);
   });
@@ -898,7 +871,7 @@ suite("AuthenticatedClient", () => {
     const to = "e87429d3-f0a7-4f28-8dff-8dd93d383de1";
     const currency = "ETH";
     const amount = 100;
-    const response: "OK" = "OK";
+    const response = "OK" as const;
     nock(apiUri)
       .post("/profiles/transfer", { from, to, currency, amount })
       .reply(200, response);
