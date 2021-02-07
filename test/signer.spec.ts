@@ -1,4 +1,4 @@
-import * as assert from "assert";
+import assert from "assert";
 import { Signer } from "../index";
 
 suite("Signer", () => {
@@ -13,22 +13,22 @@ suite("Signer", () => {
     const currency = "ETH";
     const amount = 100;
     const body = { from, to, currency, amount };
-    const uri = "/profiles/transfer";
+    const url = new URL("/profiles/transfer", "http://www.example.com/");
     const timestamp = 1573653521.402;
     const signature = Signer({
       passphrase,
       key,
       secret,
       method,
-      uri,
-      body,
+      url,
+      body: JSON.stringify(body),
       timestamp,
     });
     const sign = "xBQCYBLmE0rX9tKUzNL4vgeuX7kIlpMdqILMftUiFzU=";
     const expectedSignature = {
       "CB-ACCESS-KEY": key,
       "CB-ACCESS-SIGN": sign,
-      "CB-ACCESS-TIMESTAMP": timestamp,
+      "CB-ACCESS-TIMESTAMP": `${timestamp}`,
       "CB-ACCESS-PASSPHRASE": passphrase,
     };
     assert.deepStrictEqual(signature, expectedSignature);
@@ -40,21 +40,21 @@ suite("Signer", () => {
     const secret =
       "QiM6irV9cW5NJo3xei+MLD0a4GLnsz+HSFwucGXdt+c8gZwRUxTltMfh09w8pZ2VHXKdM8LzqxhaMUg4WHSsvQ==";
     const method = "GET";
-    const uri = "/accounts";
+    const url = new URL("/accounts", "http://www.example.com/");
     const timestamp = 1573653521.402;
     const signature = Signer({
       passphrase,
       key,
       secret,
       method,
-      uri,
+      url,
       timestamp,
     });
-    const sign = "kfsE0njHsT+XDlLurLW2XjZxeHaDtReZbYLMpGf7Cyo=";
+    const sign = "7fF/Orhb4TQmCJ+nQ3f/q25/4ZU3kwDGCkOr/JyG4jA=";
     const expectedSignature = {
       "CB-ACCESS-KEY": key,
       "CB-ACCESS-SIGN": sign,
-      "CB-ACCESS-TIMESTAMP": timestamp,
+      "CB-ACCESS-TIMESTAMP": `${timestamp}`,
       "CB-ACCESS-PASSPHRASE": passphrase,
     };
     assert.deepStrictEqual(signature, expectedSignature);
@@ -66,7 +66,7 @@ suite("Signer", () => {
     const secret =
       "QiM6irV9cW5NJo3xei+MLD0a4GLnsz+HSFwucGXdt+c8gZwRUxTltMfh09w8pZ2VHXKdM8LzqxhaMUg4WHSsvQ==";
     const method = "GET";
-    const uri = "/users/self/verify";
+    const url = new URL("/users/self/verify", "http://www.example.com/");
     const body = "";
     const timestamp = 1573653521.402;
     const signature = Signer({
@@ -74,7 +74,7 @@ suite("Signer", () => {
       key,
       secret,
       method,
-      uri,
+      url,
       body,
       timestamp,
     });
@@ -82,7 +82,7 @@ suite("Signer", () => {
     const expectedSignature = {
       "CB-ACCESS-KEY": key,
       "CB-ACCESS-SIGN": sign,
-      "CB-ACCESS-TIMESTAMP": timestamp,
+      "CB-ACCESS-TIMESTAMP": `${timestamp}`,
       "CB-ACCESS-PASSPHRASE": passphrase,
     };
     assert.deepStrictEqual(signature, expectedSignature);
