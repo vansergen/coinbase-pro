@@ -5,348 +5,390 @@ import {
   DefaultChannels,
   Signer,
 } from "../index";
-import * as assert from "assert";
+import assert from "assert";
 import { OPEN, CONNECTING, CLOSING, CLOSED, Server } from "ws";
 
 const port = 10000;
-const wsUri = "ws://localhost:" + port;
+const wsUri = `ws://localhost:${port}`;
 
 const key = "CoinbaseProAPIKey";
 const secret = "CoinbaseProAPISecret";
 const passphrase = "CoinbaseProAPIPassphrase";
 
 suite("WebsocketClient", () => {
+  let client: WebsocketClient;
+  let server: Server;
+
+  setup(() => {
+    server = new Server({ port });
+    client = new WebsocketClient({ wsUri });
+  });
+
+  teardown(async () => {
+    await client.disconnect();
+    await new Promise<void>((resolve, reject) => {
+      server.close((error) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+      });
+    });
+  });
+
   test("constructor", () => {
-    const websocket = new WebsocketClient({ wsUri });
-    assert.deepStrictEqual(websocket.channels, DefaultChannels);
-    assert.deepStrictEqual(websocket.product_ids, []);
-    assert.deepStrictEqual(websocket.wsUri, wsUri);
-    assert.deepStrictEqual(websocket.key, undefined);
-    assert.deepStrictEqual(websocket.secret, undefined);
-    assert.deepStrictEqual(websocket.passphrase, undefined);
+    assert.deepStrictEqual(client.channels, DefaultChannels);
+    assert.deepStrictEqual(client.wsUri, wsUri);
   });
 
   test("constructor (with no arguments)", () => {
     const websocket = new WebsocketClient();
     assert.deepStrictEqual(websocket.channels, DefaultChannels);
-    assert.deepStrictEqual(websocket.product_ids, []);
     assert.deepStrictEqual(websocket.wsUri, WsUri);
-    assert.deepStrictEqual(websocket.key, undefined);
-    assert.deepStrictEqual(websocket.secret, undefined);
-    assert.deepStrictEqual(websocket.passphrase, undefined);
   });
 
   test("constructor (with sandbox flag)", () => {
     const websocket = new WebsocketClient({ sandbox: true });
     assert.deepStrictEqual(websocket.channels, DefaultChannels);
-    assert.deepStrictEqual(websocket.product_ids, []);
     assert.deepStrictEqual(websocket.wsUri, SandboxWsUri);
-    assert.deepStrictEqual(websocket.key, undefined);
-    assert.deepStrictEqual(websocket.secret, undefined);
-    assert.deepStrictEqual(websocket.passphrase, undefined);
   });
 
   test("constructor (with api key)", () => {
-    const key = "key";
-    const secret = "secret";
-    const passphrase = "passphrase";
     const channels = [
-      "level2",
-      "heartbeat",
-      {
-        name: "ticker",
-        product_ids: ["ETH-BTC", "ETH-USD"],
-      },
+      { name: "level2", product_ids: ["ETH-BTC"] },
+      { name: "heartbeat", product_ids: ["BTC-USD"] },
+      { name: "ticker", product_ids: ["ETH-BTC", "ETH-USD"] },
     ];
-    const product_ids = ["ETH-USD", "ETH-EUR"];
     const websocket = new WebsocketClient({
       key,
       secret,
       passphrase,
       channels,
-      product_ids,
     });
     assert.deepStrictEqual(websocket.channels, channels);
-    assert.deepStrictEqual(websocket.product_ids, product_ids);
     assert.deepStrictEqual(websocket.wsUri, WsUri);
-    assert.deepStrictEqual(websocket.key, key);
-    assert.deepStrictEqual(websocket.secret, secret);
-    assert.deepStrictEqual(websocket.passphrase, passphrase);
   });
 
-  test(".connect()", (done) => {
-    const server = new Server({ port });
-    const client = new WebsocketClient({ wsUri });
-    server.on("connection", () => server.close(done));
-    client.connect();
+  test(".connect()", async () => {
+    await client.connect();
+    assert.deepStrictEqual(client.ws?.readyState, OPEN);
   });
 
-  test(".connect() (sends the subscription on open)", (done) => {
-    const server = new Server({ port });
-    const client = new WebsocketClient({ wsUri });
-    server.on("connection", (ws) =>
-      ws.once("message", (data) => {
-        assert.deepStrictEqual(JSON.parse(data), {
-          type: "subscribe",
-          channels: DefaultChannels,
-          product_ids: [],
-        });
-        server.close(done);
-      })
-    );
-    client.connect();
-  });
-
-  test(".connect() (sends the subscription on open with API key)", (done) => {
-    const server = new Server({ port });
-    const client = new WebsocketClient({ wsUri, key, secret, passphrase });
-    server.on("connection", (ws) =>
-      ws.once("message", (data) => {
-        const message = JSON.parse(data);
-        const uri = "/users/self/verify";
-        const method = "GET";
-        const body = "";
-        const headers = Signer({
-          body,
-          method,
-          uri,
-          key,
-          secret,
-          passphrase,
-          timestamp: message.timestamp,
-        });
-        assert.deepStrictEqual(message, {
-          key: headers["CB-ACCESS-KEY"],
-          type: "subscribe",
-          channels: DefaultChannels,
-          product_ids: [],
-          signature: headers["CB-ACCESS-SIGN"],
-          timestamp: headers["CB-ACCESS-TIMESTAMP"],
-          passphrase: headers["CB-ACCESS-PASSPHRASE"],
-        });
-        server.close(done);
-      })
-    );
-    client.connect();
-  });
-
-  test(".connect() (when `readyState` is `OPEN`)", (done) => {
-    const server = new Server({ port });
-    const client = new WebsocketClient({ wsUri });
-    client.connect();
-    client.on("open", () => {
-      if (!client.ws) {
-        assert.fail("Websocket is not initialized");
+  test(".connect() (sends the subscription on open)", async () => {
+    const serverConnect = new Promise<void>((resolve, reject) => {
+      try {
+        server.once("connection", (ws) =>
+          ws.once("message", (data) => {
+            assert.deepStrictEqual(JSON.parse(data), {
+              type: "subscribe",
+              channels: DefaultChannels,
+            });
+            resolve();
+          })
+        );
+      } catch (error) {
+        reject(error);
       }
-      assert.deepStrictEqual(client.ws.readyState, OPEN);
-      client.connect();
-      server.close(done);
     });
+    await client.connect();
+    await serverConnect;
   });
 
-  test(".connect() (when `readyState` is `CONNECTING`)", (done) => {
-    function verifyClient(info: object, cb: Function): void {
-      setTimeout(() => cb(true) && info, 0);
-    }
-    const server = new Server({ port, verifyClient });
-    const client = new WebsocketClient({ wsUri });
-    client.connect();
-    if (!client.ws) {
-      assert.fail("Websocket is not initialized");
-    }
-    assert.deepStrictEqual(client.ws.readyState, CONNECTING);
+  test(".connect() (sends the subscription on open with API key)", async () => {
+    const websocket = new WebsocketClient({ wsUri, key, secret, passphrase });
+
+    const serverConnect = new Promise<void>((resolve, reject) => {
+      server.once("connection", (ws) =>
+        ws.once("message", (data) => {
+          try {
+            const message = JSON.parse(data) as { timestamp: number };
+            const uri = "/users/self/verify";
+            const method = "GET";
+            const body = "";
+            const headers = Signer({
+              body,
+              method,
+              url: new URL(uri, "https://www.example.com/"),
+              key,
+              secret,
+              passphrase,
+              timestamp: message.timestamp,
+            });
+            assert.deepStrictEqual(message, {
+              key: headers["CB-ACCESS-KEY"],
+              type: "subscribe",
+              channels: DefaultChannels,
+              signature: headers["CB-ACCESS-SIGN"],
+              timestamp: headers["CB-ACCESS-TIMESTAMP"],
+              passphrase: headers["CB-ACCESS-PASSPHRASE"],
+            });
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
+        })
+      );
+    });
+
+    await websocket.connect();
+    await serverConnect;
+    await websocket.disconnect();
+  });
+
+  test(".connect() (when `readyState` is `OPEN`)", async () => {
+    await client.connect();
+    assert.deepStrictEqual(client.ws?.readyState, OPEN);
+    await client.connect();
+    assert.deepStrictEqual(client.ws?.readyState, OPEN);
+  });
+
+  test(".connect() (when `readyState` is `CONNECTING`)", async () => {
+    const connect = client.connect();
     const error = new Error("Could not connect. State: 0");
-    assert.throws(() => client.connect(), error);
-    client.on("open", () => server.close(done));
+    assert.deepStrictEqual(client.ws?.readyState, CONNECTING);
+    await assert.rejects(client.connect(), error);
+    await connect;
+    assert.deepStrictEqual(client.ws?.readyState, OPEN);
   });
 
-  test(".connect() (when `readyState` is `CLOSING`)", (done) => {
-    const server = new Server({ port });
-    const client = new WebsocketClient({ wsUri });
-    client.on("open", () => {
-      client.disconnect();
-      if (!client.ws) {
-        assert.fail("Websocket is not initialized");
-      }
-      assert.deepStrictEqual(client.ws.readyState, CLOSING);
-      const error = new Error("Could not connect. State: 2");
-      assert.throws(() => client.connect(), error);
-      client.on("close", () => server.close(done));
-    });
-    client.connect();
+  test(".connect() (when `readyState` is `CLOSING`)", async () => {
+    await client.connect();
+    assert.deepStrictEqual(client.ws?.readyState, OPEN);
+    const disconnect = client.disconnect();
+    const error = new Error("Could not connect. State: 2");
+    assert.deepStrictEqual(client.ws?.readyState, CLOSING);
+    await assert.rejects(client.connect(), error);
+    await disconnect;
   });
 
-  test(".disconnect()", (done) => {
-    const server = new Server({ port });
-    const client = new WebsocketClient({ wsUri });
-    client.once("open", client.disconnect);
-    client.once("close", () => server.close(done));
-    client.connect();
+  test(".connect() (when `readyState` is `CLOSED`)", async () => {
+    await client.connect();
+    assert.deepStrictEqual(client.ws?.readyState, OPEN);
+    await client.disconnect();
+    assert.deepStrictEqual(client.ws?.readyState, CLOSED);
+    await client.connect();
+    assert.deepStrictEqual(client.ws?.readyState, OPEN);
   });
 
-  test(".disconnect() (when ws is not initialized)", (done) => {
-    const client = new WebsocketClient({ wsUri });
-    client.disconnect();
-    done();
+  test(".disconnect()", async () => {
+    await client.connect();
+    assert.deepStrictEqual(client.ws?.readyState, OPEN);
+    await client.disconnect();
+    assert.deepStrictEqual(client.ws?.readyState, CLOSED);
   });
 
-  test(".disconnect() (when `readyState` is `CLOSED`)", (done) => {
-    const server = new Server({ port });
-    const client = new WebsocketClient({ wsUri });
-    client.on("open", () => client.disconnect());
-    client.on("close", () => {
-      if (!client.ws) {
-        assert.fail("Websocket is not initialized");
-      }
-      assert.deepStrictEqual(client.ws.readyState, CLOSED);
-      client.disconnect();
-      server.close(done);
-    });
-    client.connect();
+  test(".disconnect() (when socket is not initialized)", async () => {
+    assert.ok(typeof client.ws === "undefined");
+    await client.disconnect();
+    assert.ok(typeof client.ws === "undefined");
   });
 
-  test(".disconnect() (when `readyState` is `CONNECTING`)", (done) => {
-    function verifyClient(info: object, cb: Function): void {
-      setTimeout(() => cb(true) && info, 0);
-    }
-    const server = new Server({ port, verifyClient });
-    const client = new WebsocketClient({ wsUri });
-    client.connect();
-    if (!client.ws) {
-      assert.fail("Websocket is not initialized");
-    }
-    assert.deepStrictEqual(client.ws.readyState, CONNECTING);
+  test(".disconnect() (when `readyState` is `CLOSED`)", async () => {
+    await client.connect();
+    assert.deepStrictEqual(client.ws?.readyState, OPEN);
+    await client.disconnect();
+    assert.deepStrictEqual(client.ws?.readyState, CLOSED);
+    await client.disconnect();
+    assert.deepStrictEqual(client.ws?.readyState, CLOSED);
+  });
+
+  test(".disconnect() (when `readyState` is `CONNECTING`)", async () => {
+    const connect = client.connect();
     const error = new Error("Could not disconnect. State: 0");
-    assert.throws(() => client.disconnect(), error);
-    client.on("open", () => server.close(done));
+    assert.deepStrictEqual(client.ws?.readyState, CONNECTING);
+    await assert.rejects(client.disconnect(), error);
+    await connect;
+    assert.deepStrictEqual(client.ws?.readyState, OPEN);
   });
 
-  test(".disconnect() (when `readyState` is `CLOSING`)", (done) => {
-    const server = new Server({ port });
-    const client = new WebsocketClient({ wsUri });
-    client.on("open", () => {
-      client.disconnect();
-      if (!client.ws) {
-        assert.fail("Websocket is not initialized");
-      }
-      assert.deepStrictEqual(client.ws.readyState, CLOSING);
-      const error = new Error("Could not disconnect. State: 2");
-      assert.throws(() => client.disconnect(), error);
-      client.on("close", () => server.close(done));
-    });
-    client.connect();
+  test(".disconnect() (when `readyState` is `CLOSING`)", async () => {
+    await client.connect();
+    assert.deepStrictEqual(client.ws?.readyState, OPEN);
+    const disconnect = client.disconnect();
+    const error = new Error("Could not disconnect. State: 2");
+    assert.deepStrictEqual(client.ws?.readyState, CLOSING);
+    await assert.rejects(client.disconnect(), error);
+    await disconnect;
+    assert.deepStrictEqual(client.ws?.readyState, CLOSED);
   });
 
-  test(".subscribe()", (done) => {
-    const server = new Server({ port });
-    const client = new WebsocketClient({ wsUri });
+  test(".subscribe()", async () => {
     const channels = [{ name: "ticker", product_ids: ["BTC-USD"] }];
-    server.on("connection", (ws) => {
-      ws.once("message", () => {
-        ws.once("message", (data) => {
-          assert.deepStrictEqual(JSON.parse(data), {
-            type: "subscribe",
-            channels: channels,
+    const serverConnect = new Promise<void>((resolve, reject) => {
+      server.on("connection", (ws) => {
+        ws.once("message", () => {
+          ws.once("message", (data) => {
+            try {
+              assert.deepStrictEqual(JSON.parse(data), {
+                type: "subscribe",
+                channels: channels,
+              });
+              resolve();
+            } catch (error) {
+              reject(error);
+            }
           });
-          server.close(done);
         });
-        client.subscribe({ channels });
       });
     });
-    client.connect();
+
+    await client.connect();
+    await client.subscribe({ channels });
+    await serverConnect;
   });
 
-  test(".subscribe() (when ws is not initialized)", (done) => {
-    const client = new WebsocketClient({ wsUri });
+  test(".subscribe() (when ws is not initialized)", async () => {
     const error = new Error("Websocket is not initialized");
-    assert.throws(() => client.subscribe({ channels: [] }), error);
-    done();
+    await assert.rejects(client.subscribe({ channels: [] }), error);
   });
 
-  test(".unsubscribe()", (done) => {
-    const server = new Server({ port });
-    const client = new WebsocketClient({ wsUri });
+  test(".unsubscribe()", async () => {
     const channels = [{ name: "ticker", product_ids: ["BTC-USD"] }];
-    server.on("connection", (ws) => {
-      ws.once("message", () => {
-        ws.once("message", (data) => {
-          assert.deepStrictEqual(JSON.parse(data), {
-            type: "unsubscribe",
-            channels: channels,
+    const serverConnect = new Promise<void>((resolve, reject) => {
+      server.on("connection", (ws) => {
+        ws.once("message", () => {
+          ws.once("message", (data) => {
+            try {
+              assert.deepStrictEqual(JSON.parse(data), {
+                type: "unsubscribe",
+                channels: channels,
+              });
+              resolve();
+            } catch (error) {
+              reject(error);
+            }
           });
-          server.close(done);
         });
-        client.unsubscribe({ channels });
       });
     });
-    client.connect();
+
+    await client.connect();
+    await client.unsubscribe({ channels });
+    await serverConnect;
+  });
+
+  test(".unsubscribe() (rejects on errors)", async () => {
+    const channels = [{ name: "ticker", product_ids: ["BTC-USD"] }];
+    const message = "WebSocket is not open: readyState 3 (CLOSED)";
+
+    await client.connect();
+    await client.disconnect();
+    await assert.rejects(client.unsubscribe({ channels }), new Error(message));
   });
 
   suite(".ws listeners", () => {
-    test("open event", (done) => {
-      const server = new Server({ port });
-      const client = new WebsocketClient({ wsUri });
-      client.connect();
-      client.on("open", () => server.close(done));
-    });
-
-    test("close event", (done) => {
-      const server = new Server({ port });
-      const client = new WebsocketClient({ wsUri });
-      client.connect();
-      client.on("open", client.disconnect);
-      client.on("close", () => server.close(done));
-    });
-
-    test("error event", (done) => {
-      const server = new Server({ port });
-      const client = new WebsocketClient({ wsUri });
-      const error = new Error("Error message");
-      client.once("open", () => {
-        if (!client.ws) {
-          assert.fail("Websocket is not initialized");
-        }
-        client.ws.emit("error", error);
+    test("open event", async () => {
+      await client.connect();
+      const open = new Promise<void>((resolve) => {
+        client.once("open", resolve);
       });
-      client.once("error", (err) => {
-        assert.deepStrictEqual(err, error);
-        server.close(done);
-      });
-      client.connect();
+      client.ws?.emit("open");
+      await open;
     });
 
-    test("message event (with error type)", (done) => {
-      const server = new Server({ port });
-      const client = new WebsocketClient({ wsUri });
+    test("open event (emits error when subscribe is rejected)", async () => {
+      const mesage = "WebSocket is not open: readyState 3 (CLOSED)";
+      await client.connect();
+      await client.disconnect();
+      const error = new Promise<void>((resolve, reject) => {
+        client.once("error", (err) => {
+          try {
+            assert.deepStrictEqual(err, new Error(mesage));
+            resolve();
+          } catch (_error) {
+            reject(_error);
+          }
+        });
+      });
+      client.ws?.emit("open");
+      await error;
+    });
+
+    test("close event", async () => {
+      await client.connect();
+      const close = new Promise<void>((resolve) => {
+        client.once("close", resolve);
+      });
+      client.ws?.emit("close");
+      await close;
+    });
+
+    test("error event", async () => {
+      const message = "Error message";
+      await client.connect();
+      const error = new Promise<void>((resolve, reject) => {
+        client.once("error", (err) => {
+          try {
+            assert.deepStrictEqual(err, new Error(message));
+            resolve();
+          } catch (_error) {
+            reject(_error);
+          }
+        });
+      });
+      client.ws?.emit("error", new Error(message));
+      await error;
+    });
+
+    test("message event (with error type)", async () => {
       const error = { type: "error", message: "Something bad" };
-      server.on("connection", (ws) => {
-        ws.send(JSON.stringify(error));
+      await client.connect();
+      const message = new Promise<void>((resolve, reject) => {
+        client.once("error", (err) => {
+          try {
+            assert.deepStrictEqual(err, error);
+            resolve();
+          } catch (_error) {
+            reject(_error);
+          }
+        });
       });
-      client.connect();
-      client.on("error", (err) => {
-        assert.deepStrictEqual(err, error);
-        server.close(done);
-      });
+      client.ws?.emit("message", JSON.stringify(error));
+      await message;
     });
 
-    test("message event", (done) => {
-      const server = new Server({ port });
-      const client = new WebsocketClient({ wsUri });
-      const message = {
+    test("message event (with invalid JSON)", async () => {
+      const data = "NOT JSON";
+      await client.connect();
+      const message = new Promise<void>((resolve, reject) => {
+        client.once("error", (err) => {
+          try {
+            assert.deepStrictEqual(
+              err,
+              new SyntaxError("Unexpected token N in JSON at position 0")
+            );
+            resolve();
+          } catch (_error) {
+            reject(_error);
+          }
+        });
+      });
+      client.ws?.emit("message", data);
+      await message;
+    });
+
+    test("message event", async () => {
+      const data = {
         type: "heartbeat",
         sequence: 90,
         last_trade_id: 20,
         product_id: "BTC-USD",
         time: "2014-11-07T08:19:28.464459Z",
       };
-      server.on("connection", (ws) => {
-        ws.send(JSON.stringify(message));
+      await client.connect();
+      const message = new Promise<void>((resolve, reject) => {
+        client.once("message", (msg) => {
+          try {
+            assert.deepStrictEqual(msg, data);
+            resolve();
+          } catch (_error) {
+            reject(_error);
+          }
+        });
       });
-      client.connect();
-      client.on("message", (msg) => {
-        assert.deepStrictEqual(msg, message);
-        server.close(done);
-      });
+      client.ws?.emit("message", JSON.stringify(data));
+      await message;
     });
   });
 });
