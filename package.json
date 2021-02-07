@@ -10,7 +10,7 @@
     "test": "test"
   },
   "engines": {
-    "node": ">=10.18.1"
+    "node": ">=14.15.4"
   },
   "scripts": {
     "build": "npm run build:remove && tsc",
@@ -19,7 +19,6 @@
     "commitlint": "commitlint --verbose",
     "commitlint:all": "npm run commitlint -- --from=75eae5e229071ec797cb07606bccbb71de33dc49",
     "coverage": "nyc npm test && nyc report --reporter=lcov",
-    "coverage-ci": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
     "docs:build": "npm run docs:remove && typedoc && npm run lint:fix && npm run prettier:write -- --ignore-path .prettierignore_docs",
     "docs:remove": "rm -rf ./docs",
     "docs:test": "npm run docs:build && npm run docs:remove",
