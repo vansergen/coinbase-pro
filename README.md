@@ -24,6 +24,13 @@ const client = new PublicClient({ sandbox });
 const products = await client.getProducts();
 ```
 
+- [`getProduct`](https://docs.pro.coinbase.com/#get-single-product)
+
+```typescript
+const product_id = "ETH-BTC";
+const product = await client.getProduct({ product_id });
+```
+
 - [`getOrderBook`](https://docs.pro.coinbase.com/#get-product-order-book)
 
 ```typescript
