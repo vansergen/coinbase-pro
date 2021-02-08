@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.1.0](https://github.com/vansergen/coinbase-pro/compare/v3.0.0...v3.1.0) (2021-02-08)
+
+### Features
+
+- add the `getProduct` method ([da35a92](https://github.com/vansergen/coinbase-pro/commit/da35a924e102eaa4d72792fdd26bdc00210af530))
+
 ## [3.0.0](https://github.com/vansergen/coinbase-pro/compare/v2.0.1...v3.0.0) (2021-02-07)
 
 ### ⚠ BREAKING CHANGES
