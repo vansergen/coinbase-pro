@@ -218,10 +218,6 @@ export interface WebsocketClientOptions {
 }
 
 export declare interface WebsocketClient {
-  // emit(event: "open" | "close"): boolean;
-  // emit(event: "message", data: WSMessage): boolean;
-  // emit(event: "error", error: unknown): boolean;
-
   on(event: "open" | "close", eventListener: () => void): this;
   on(event: "message", eventListener: (data: WSMessage) => void): this;
   on(event: "error", eventListener: (error: unknown) => void): this;
@@ -271,9 +267,7 @@ export class WebsocketClient extends EventEmitter {
 
     await new Promise<void>((resolve, reject) => {
       this.ws = new Websocket(this.wsUri);
-      this.ws.once("open", () => {
-        resolve();
-      });
+      this.ws.once("open", resolve);
       this.ws.once("error", reject);
       this.ws.on("message", (data: string) => {
         try {
