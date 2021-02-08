@@ -126,6 +126,7 @@ suite("PublicClient", () => {
         cancel_only: false,
         status: "online",
         status_message: "",
+        trading_disabled: false,
       },
       {
         id: "BTC-GBP",
@@ -144,10 +145,36 @@ suite("PublicClient", () => {
         cancel_only: false,
         status: "online",
         status_message: "",
+        trading_disabled: false,
       },
     ];
     nock(apiUri).get("/products").reply(200, response);
     const data = await client.getProducts();
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".getProduct()", async () => {
+    const response: ProductInfo = {
+      id: "ETH-USD",
+      base_currency: "ETH",
+      quote_currency: "USD",
+      base_min_size: "0.01000000",
+      base_max_size: "2800.00000000",
+      quote_increment: "0.01000000",
+      base_increment: "0.00000001",
+      display_name: "ETH/USD",
+      min_market_funds: "5",
+      max_market_funds: "1000000",
+      margin_enabled: false,
+      post_only: false,
+      limit_only: false,
+      cancel_only: false,
+      trading_disabled: false,
+      status: "online",
+      status_message: "",
+    };
+    nock(apiUri).get(`/products/${product_id}`).reply(200, response);
+    const data = await client.getProduct();
     assert.deepStrictEqual(data, response);
   });
 
