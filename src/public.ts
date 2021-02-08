@@ -45,6 +45,7 @@ export interface ProductInfo {
   post_only: boolean;
   limit_only: boolean;
   cancel_only: boolean;
+  trading_disabled: boolean;
   status: string;
   status_message: string;
 }
@@ -178,6 +179,13 @@ export class PublicClient extends FetchClient<unknown> {
   public async getProducts(): Promise<ProductInfo[]> {
     const products = (await this.get("/products")) as ProductInfo[];
     return products;
+  }
+
+  public async getProduct({
+    product_id = this.product_id,
+  }: ProductID = {}): Promise<ProductInfo> {
+    const product = (await this.get(`/products/${product_id}`)) as ProductInfo;
+    return product;
   }
 
   public async getOrderBook({
