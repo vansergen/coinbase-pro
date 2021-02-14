@@ -68,7 +68,7 @@
     "prettier": "^2.2.1",
     "semantic-release": "^17.3.8",
     "ts-node": "^9.1.1",
-    "typedoc": "^0.20.23"
+    "typedoc": "^0.20.24"
   },
   "dependencies": {
     "@types/ws": "^7.4.0",
