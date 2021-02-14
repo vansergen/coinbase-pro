@@ -1,5 +1,11 @@
 # Changelog
 
+### [3.1.1](https://github.com/vansergen/coinbase-pro/compare/v3.1.0...v3.1.1) (2021-02-14)
+
+### Dependencies
+
+- upgrade `rpc-request` to `v5.0.2` ([61ff8ed](https://github.com/vansergen/coinbase-pro/commit/61ff8ed89cb2d512d9ffb06fee297eef46f5f94d))
+
 ## [3.1.0](https://github.com/vansergen/coinbase-pro/compare/v3.0.0...v3.1.0) (2021-02-08)
 
 ### Features
