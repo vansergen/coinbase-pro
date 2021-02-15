@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.2.0](https://github.com/vansergen/coinbase-pro/compare/v3.1.1...v3.2.0) (2021-02-15)
+
+### Features
+
+- add the `getCurrency` method ([284e146](https://github.com/vansergen/coinbase-pro/commit/284e14683645c8b3018ead538c7dd933fa052a30))
+
 ### [3.1.1](https://github.com/vansergen/coinbase-pro/compare/v3.1.0...v3.1.1) (2021-02-14)
 
 ### Dependencies
