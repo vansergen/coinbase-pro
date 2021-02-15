@@ -238,6 +238,11 @@ export class PublicClient extends FetchClient<unknown> {
     return currencies;
   }
 
+  public async getCurrency({ id }: { id: string }): Promise<CurrencyInfo> {
+    const currency = (await this.get(`/currencies/${id}`)) as CurrencyInfo;
+    return currency;
+  }
+
   public async getTime(): Promise<Time> {
     const time = (await this.get("/time")) as Time;
     return time;
