@@ -82,6 +82,13 @@ const stats = await client.get24hrStats({ product_id });
 const currencies = await client.getCurrencies();
 ```
 
+- [`getCurrency`](https://docs.pro.coinbase.com/#get-a-currency)
+
+```typescript
+const id = "BTC";
+const currency = await client.getCurrency({ id });
+```
+
 - [`getTime`](https://docs.pro.coinbase.com/#time)
 
 ```typescript
