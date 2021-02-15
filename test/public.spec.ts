@@ -379,6 +379,32 @@ suite("PublicClient", () => {
     assert.deepStrictEqual(data, response);
   });
 
+  test(".getCurrency()", async () => {
+    const id = "BTC";
+    const response: CurrencyInfo = {
+      id: "BTC",
+      name: "Bitcoin",
+      min_size: "0.00000001",
+      status: "online",
+      max_precision: "0.01",
+      message: "",
+      details: {
+        type: "crypto",
+        symbol: "₿",
+        network_confirmations: 3,
+        sort_order: 3,
+        crypto_address_link:
+          "https://live.blockcypher.com/btc/address/{{address}}",
+        crypto_transaction_link: "https://live.blockcypher.com/btc/tx/{{txId}}",
+        push_payment_methods: ["crypto"],
+        group_types: ["btc", "crypto"],
+      },
+    };
+    nock(apiUri).get(`/currencies/${id}`).reply(200, response);
+    const data = await client.getCurrency({ id });
+    assert.deepStrictEqual(data, response);
+  });
+
   test(".getTime()", async () => {
     const response: Time = {
       iso: "2019-11-13T10:16:24.124Z",
