@@ -73,7 +73,7 @@
   "dependencies": {
     "@types/ws": "^7.4.0",
     "rpc-request": "^5.0.2",
-    "ws": "^7.4.3"
+    "ws": "^7.4.4"
   },
   "funding": {
     "type": "Coinbase Commerce",
