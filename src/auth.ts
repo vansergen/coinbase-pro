@@ -64,6 +64,11 @@ export interface WithdrawCryptoParams {
   no_destination_tag?: boolean;
 }
 
+export interface FeeEstimateParams {
+  currency: string;
+  crypto_address: string;
+}
+
 export interface ConvertParams {
   from: string;
   to: string;
@@ -167,6 +172,10 @@ export interface DepositInfo {
   amount: string;
   currency: string;
   payout_at?: string;
+}
+
+export interface EstimatedFee {
+  fee: number;
 }
 
 export interface Conversion {
@@ -521,6 +530,14 @@ export class AuthenticatedClient extends PublicClient {
     const path = "/withdrawals/crypto";
     const info = (await this.post(path, { body })) as DepositInfo;
     return info;
+  }
+
+  /** Get the network fee estimate when sending to the given address. */
+  public async feeEstimate(qs: FeeEstimateParams): Promise<EstimatedFee> {
+    const url = new URL(`/withdrawals/fee-estimate`, this.apiUri);
+    url.search = stringify({ ...qs });
+    const methods = (await this.get(url.toString())) as EstimatedFee;
+    return methods;
   }
 
   public async convert(params: ConvertParams): Promise<Conversion> {

@@ -10,6 +10,7 @@ import {
   Fill,
   DepositParams,
   DepositInfo,
+  EstimatedFee,
   DepositCoinbaseParams,
   WithdrawCryptoParams,
   ConvertParams,
@@ -583,6 +584,20 @@ suite("AuthenticatedClient", () => {
       .post("/withdrawals/crypto", { ...params })
       .reply(200, response);
     const data = await client.withdrawCrypto(params);
+    assert.deepStrictEqual(data, response);
+  });
+
+  test(".feeEstimate()", async () => {
+    const query = {
+      currency: "ETH",
+      crypto_address: "0x5ad5769cd04681FeD900BCE3DDc877B50E83d469",
+    };
+    const response: EstimatedFee = { fee: 0.01 };
+    nock(apiUri)
+      .get("/withdrawals/fee-estimate")
+      .query(query)
+      .reply(200, response);
+    const data = await client.feeEstimate(query);
     assert.deepStrictEqual(data, response);
   });
 
