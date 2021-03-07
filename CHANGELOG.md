@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.3.0](https://github.com/vansergen/coinbase-pro/compare/v3.2.0...v3.3.0) (2021-03-07)
+
+### Features
+
+- add the `feeEstimate` method ([1b046de](https://github.com/vansergen/coinbase-pro/commit/1b046dee038af0d2c754cffd08a1fa414f6fc2b6))
+
+### Dependencies
+
+- upgrade `rpc-request` to `v5.0.3` ([8a888c2](https://github.com/vansergen/coinbase-pro/commit/8a888c2dbc7f4ad7beee528314298afba94d60b6))
+- upgrade `ws` to `v7.4.4` ([b19a370](https://github.com/vansergen/coinbase-pro/commit/b19a370c10924c2c4ac72a7fa4500b8bbf4e1507))
+
 ## [3.2.0](https://github.com/vansergen/coinbase-pro/compare/v3.1.1...v3.2.0) (2021-02-15)
 
 ### Features

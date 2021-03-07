@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>WebsocketClientOptions | coinbase-pro-node-api</title>
+    <title>FeeEstimateParams | coinbase-pro-node-api</title>
     <meta
       name="description"
       content="Documentation for coinbase-pro-node-api"
@@ -78,10 +78,10 @@
               <a href="../modules.html">coinbase-pro-node-api</a>
             </li>
             <li>
-              <a href="websocketclientoptions.html">WebsocketClientOptions</a>
+              <a href="feeestimateparams.html">FeeEstimateParams</a>
             </li>
           </ul>
-          <h1>Interface WebsocketClientOptions</h1>
+          <h1>Interface FeeEstimateParams</h1>
         </div>
       </div>
     </header>
@@ -92,7 +92,7 @@
             <h3>Hierarchy</h3>
             <ul class="tsd-hierarchy">
               <li>
-                <span class="target">WebsocketClientOptions</span>
+                <span class="target">FeeEstimateParams</span>
               </li>
             </ul>
           </section>
@@ -105,44 +105,16 @@
                   <ul class="tsd-index-list">
                     <li class="tsd-kind-property tsd-parent-kind-interface">
                       <a
-                        href="websocketclientoptions.html#channels"
+                        href="feeestimateparams.html#crypto_address"
                         class="tsd-kind-icon"
-                        >channels</a
+                        >crypto_<wbr />address</a
                       >
                     </li>
                     <li class="tsd-kind-property tsd-parent-kind-interface">
                       <a
-                        href="websocketclientoptions.html#key"
+                        href="feeestimateparams.html#currency"
                         class="tsd-kind-icon"
-                        >key</a
-                      >
-                    </li>
-                    <li class="tsd-kind-property tsd-parent-kind-interface">
-                      <a
-                        href="websocketclientoptions.html#passphrase"
-                        class="tsd-kind-icon"
-                        >passphrase</a
-                      >
-                    </li>
-                    <li class="tsd-kind-property tsd-parent-kind-interface">
-                      <a
-                        href="websocketclientoptions.html#sandbox"
-                        class="tsd-kind-icon"
-                        >sandbox</a
-                      >
-                    </li>
-                    <li class="tsd-kind-property tsd-parent-kind-interface">
-                      <a
-                        href="websocketclientoptions.html#secret"
-                        class="tsd-kind-icon"
-                        >secret</a
-                      >
-                    </li>
-                    <li class="tsd-kind-property tsd-parent-kind-interface">
-                      <a
-                        href="websocketclientoptions.html#wsuri"
-                        class="tsd-kind-icon"
-                        >ws<wbr />Uri</a
+                        >currency</a
                       >
                     </li>
                   </ul>
@@ -155,40 +127,10 @@
             <section
               class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"
             >
-              <a name="channels" class="tsd-anchor"></a>
-              <h3>
-                <span class="tsd-flag ts-flagOptional">Optional</span> channels
-              </h3>
+              <a name="crypto_address" class="tsd-anchor"></a>
+              <h3>crypto_<wbr />address</h3>
               <div class="tsd-signature tsd-kind-icon">
-                channels<span class="tsd-signature-symbol">:</span>
-                <a
-                  href="../modules.html#channel"
-                  class="tsd-signature-type"
-                  data-tsd-kind="Type alias"
-                  >Channel</a
-                ><span class="tsd-signature-symbol">[]</span>
-              </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/vansergen/coinbase-pro/blob/master/src/websocket.ts#L213"
-                      >src/websocket.ts:213</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section
-              class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"
-            >
-              <a name="key" class="tsd-anchor"></a>
-              <h3>
-                <span class="tsd-flag ts-flagOptional">Optional</span> key
-              </h3>
-              <div class="tsd-signature tsd-kind-icon">
-                key<span class="tsd-signature-symbol">:</span>
+                crypto_<wbr />address<span class="tsd-signature-symbol">:</span>
                 <span class="tsd-signature-type">string</span>
               </div>
               <aside class="tsd-sources">
@@ -196,8 +138,8 @@
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/vansergen/coinbase-pro/blob/master/src/websocket.ts#L214"
-                      >src/websocket.ts:214</a
+                      href="https://github.com/vansergen/coinbase-pro/blob/master/src/auth.ts#L69"
+                      >src/auth.ts:69</a
                     >
                   </li>
                 </ul>
@@ -206,13 +148,10 @@
             <section
               class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"
             >
-              <a name="passphrase" class="tsd-anchor"></a>
-              <h3>
-                <span class="tsd-flag ts-flagOptional">Optional</span>
-                passphrase
-              </h3>
+              <a name="currency" class="tsd-anchor"></a>
+              <h3>currency</h3>
               <div class="tsd-signature tsd-kind-icon">
-                passphrase<span class="tsd-signature-symbol">:</span>
+                currency<span class="tsd-signature-symbol">:</span>
                 <span class="tsd-signature-type">string</span>
               </div>
               <aside class="tsd-sources">
@@ -220,78 +159,8 @@
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/vansergen/coinbase-pro/blob/master/src/websocket.ts#L216"
-                      >src/websocket.ts:216</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section
-              class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"
-            >
-              <a name="sandbox" class="tsd-anchor"></a>
-              <h3>
-                <span class="tsd-flag ts-flagOptional">Optional</span> sandbox
-              </h3>
-              <div class="tsd-signature tsd-kind-icon">
-                sandbox<span class="tsd-signature-symbol">:</span>
-                <span class="tsd-signature-type">boolean</span>
-              </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/vansergen/coinbase-pro/blob/master/src/websocket.ts#L217"
-                      >src/websocket.ts:217</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section
-              class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"
-            >
-              <a name="secret" class="tsd-anchor"></a>
-              <h3>
-                <span class="tsd-flag ts-flagOptional">Optional</span> secret
-              </h3>
-              <div class="tsd-signature tsd-kind-icon">
-                secret<span class="tsd-signature-symbol">:</span>
-                <span class="tsd-signature-type">string</span>
-              </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/vansergen/coinbase-pro/blob/master/src/websocket.ts#L215"
-                      >src/websocket.ts:215</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section
-              class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"
-            >
-              <a name="wsuri" class="tsd-anchor"></a>
-              <h3>
-                <span class="tsd-flag ts-flagOptional">Optional</span>
-                ws<wbr />Uri
-              </h3>
-              <div class="tsd-signature tsd-kind-icon">
-                ws<wbr />Uri<span class="tsd-signature-symbol">:</span>
-                <span class="tsd-signature-type">string</span>
-              </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/vansergen/coinbase-pro/blob/master/src/websocket.ts#L212"
-                      >src/websocket.ts:212</a
+                      href="https://github.com/vansergen/coinbase-pro/blob/master/src/auth.ts#L68"
+                      >src/auth.ts:68</a
                     >
                   </li>
                 </ul>
@@ -311,50 +180,22 @@
             <ul class="before-current"></ul>
             <ul class="current">
               <li class="current tsd-kind-interface">
-                <a href="websocketclientoptions.html" class="tsd-kind-icon"
-                  >Websocket<wbr />Client<wbr />Options</a
+                <a href="feeestimateparams.html" class="tsd-kind-icon"
+                  >Fee<wbr />Estimate<wbr />Params</a
                 >
                 <ul>
                   <li class="tsd-kind-property tsd-parent-kind-interface">
                     <a
-                      href="websocketclientoptions.html#channels"
+                      href="feeestimateparams.html#crypto_address"
                       class="tsd-kind-icon"
-                      >channels</a
+                      >crypto_<wbr />address</a
                     >
                   </li>
                   <li class="tsd-kind-property tsd-parent-kind-interface">
                     <a
-                      href="websocketclientoptions.html#key"
+                      href="feeestimateparams.html#currency"
                       class="tsd-kind-icon"
-                      >key</a
-                    >
-                  </li>
-                  <li class="tsd-kind-property tsd-parent-kind-interface">
-                    <a
-                      href="websocketclientoptions.html#passphrase"
-                      class="tsd-kind-icon"
-                      >passphrase</a
-                    >
-                  </li>
-                  <li class="tsd-kind-property tsd-parent-kind-interface">
-                    <a
-                      href="websocketclientoptions.html#sandbox"
-                      class="tsd-kind-icon"
-                      >sandbox</a
-                    >
-                  </li>
-                  <li class="tsd-kind-property tsd-parent-kind-interface">
-                    <a
-                      href="websocketclientoptions.html#secret"
-                      class="tsd-kind-icon"
-                      >secret</a
-                    >
-                  </li>
-                  <li class="tsd-kind-property tsd-parent-kind-interface">
-                    <a
-                      href="websocketclientoptions.html#wsuri"
-                      class="tsd-kind-icon"
-                      >ws<wbr />Uri</a
+                      >currency</a
                     >
                   </li>
                 </ul>

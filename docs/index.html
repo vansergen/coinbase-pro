@@ -499,6 +499,17 @@
 </code></pre>
             <ul>
               <li>
+                <a href="https://docs.pro.coinbase.com/#fee-estimate"
+                  ><code>feeEstimate</code></a
+                >
+              </li>
+            </ul>
+            <pre><code class="language-typescript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">currency</span><span style="color: #000000"> = </span><span style="color: #A31515">&quot;ETH&quot;</span><span style="color: #000000">;</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">crypto_address</span><span style="color: #000000"> = </span><span style="color: #A31515">&quot;0x5ad5769cd04681FeD900BCE3DDc877B50E83d469&quot;</span><span style="color: #000000">;</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">estimate</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">client</span><span style="color: #000000">.</span><span style="color: #795E26">feeEstimate</span><span style="color: #000000">({ </span><span style="color: #001080">currency</span><span style="color: #000000">, </span><span style="color: #001080">crypto_address</span><span style="color: #000000"> });</span>
+</code></pre>
+            <ul>
+              <li>
                 <a href="https://docs.pro.coinbase.com/#create-conversion"
                   ><code>convert</code></a
                 >
@@ -769,6 +780,18 @@
               <li class="tsd-kind-interface">
                 <a href="interfaces/depositparams.html" class="tsd-kind-icon"
                   >Deposit<wbr />Params</a
+                >
+              </li>
+              <li class="tsd-kind-interface">
+                <a href="interfaces/estimatedfee.html" class="tsd-kind-icon"
+                  >Estimated<wbr />Fee</a
+                >
+              </li>
+              <li class="tsd-kind-interface">
+                <a
+                  href="interfaces/feeestimateparams.html"
+                  class="tsd-kind-icon"
+                  >Fee<wbr />Estimate<wbr />Params</a
                 >
               </li>
               <li class="tsd-kind-interface">
