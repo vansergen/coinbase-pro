@@ -266,6 +266,14 @@ const withdraw = await client.withdrawCrypto({
 });
 ```
 
+- [`feeEstimate`](https://docs.pro.coinbase.com/#fee-estimate)
+
+```typescript
+const currency = "ETH";
+const crypto_address = "0x5ad5769cd04681FeD900BCE3DDc877B50E83d469";
+const estimate = await client.feeEstimate({ currency, crypto_address });
+```
+
 - [`convert`](https://docs.pro.coinbase.com/#create-conversion)
 
 ```typescript
