@@ -399,9 +399,7 @@ export class AuthenticatedClient extends PublicClient {
     return data;
   }
 
-  /**
-   * Get a list of trading accounts from the profile of the API key.
-   */
+  /** Get a list of trading accounts from the profile of the API key. */
   public async getAccounts(): Promise<Account[]> {
     const accounts = (await this.get("/accounts")) as Account[];
     return accounts;
@@ -412,9 +410,7 @@ export class AuthenticatedClient extends PublicClient {
     return account;
   }
 
-  /**
-   * List account activity of the API key’s profile.
-   */
+  /** List account activity of the API key’s profile. */
   public async getAccountHistory({
     account_id,
     ...qs
@@ -425,9 +421,7 @@ export class AuthenticatedClient extends PublicClient {
     return history;
   }
 
-  /**
-   * List holds of an account that belong to the same profile as the API key.
-   */
+  /** List holds of an account that belong to the same profile as the API key. */
   public async getHolds({
     account_id,
     ...qs
@@ -579,34 +573,26 @@ export class AuthenticatedClient extends PublicClient {
     return status;
   }
 
-  /**
-   * List your profiles.
-   */
+  /** List your profiles. */
   public async getProfiles(): Promise<Profile[]> {
     const profiles = (await this.get("/profiles")) as Profile[];
     return profiles;
   }
 
-  /**
-   * Get a single profile by profile id.
-   */
+  /** Get a single profile by profile id. */
   public async getProfile({ id }: { id: string }): Promise<Profile> {
     const profile = (await this.get(`/profiles/${id}`)) as Profile;
     return profile;
   }
 
-  /**
-   * Transfer funds from API key’s profile to another user owned profile.
-   */
+  /** Transfer funds from API key’s profile to another user owned profile. */
   public async transfer(params: TransferParams): Promise<"OK"> {
     const body = JSON.stringify(params);
     const result = (await this.post("/profiles/transfer", { body })) as "OK";
     return result;
   }
 
-  /**
-   * Get your 30-day trailing volume for all products of the API key’s profile.
-   */
+  /** Get your 30-day trailing volume for all products of the API key’s profile. */
   public async getTrailingVolume(): Promise<TrailingVolume[]> {
     const path = "/users/self/trailing-volume";
     const volumes = (await this.get(path)) as TrailingVolume[];
