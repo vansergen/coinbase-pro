@@ -32,20 +32,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Commitlint
+        run: npm run commitlint:all
+
       - name: Prettier
         run: npm run prettier
 
       - name: ESLint
         run: npm run lint
-
-      - name: Commitlint
-        run: npm run commitlint:all
-
-      - name: Tests
-        run: npm test
-
-      - name: Tests:js
-        run: npm run test:js
 
       - name: Coverage
         run: npm run coverage:ci
