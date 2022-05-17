@@ -167,7 +167,7 @@ export class PublicClient extends FetchClient<unknown> {
       headers,
     })) as Response;
     const text = await response.text();
-    const data = PublicClient.parseJSON(text);
+    const data = PublicClient.#parseJSON(text);
 
     if (!response.ok) {
       throw new Error((data as { message: string })?.message ?? text);
@@ -248,7 +248,7 @@ export class PublicClient extends FetchClient<unknown> {
     return time;
   }
 
-  private static parseJSON(string: string): unknown {
+  static #parseJSON(string: string): unknown {
     let output: unknown;
     try {
       output = JSON.parse(string);
