@@ -80,7 +80,7 @@ suite("WebsocketClient", () => {
       try {
         server.once("connection", (ws) =>
           ws.once("message", (data) => {
-            assert.deepStrictEqual(JSON.parse(data), {
+            assert.deepStrictEqual(JSON.parse(data.toString()), {
               type: "subscribe",
               channels: DefaultChannels,
             });
@@ -102,7 +102,9 @@ suite("WebsocketClient", () => {
       server.once("connection", (ws) =>
         ws.once("message", (data) => {
           try {
-            const message = JSON.parse(data) as { timestamp: number };
+            const message = JSON.parse(data.toString()) as {
+              timestamp: number;
+            };
             const uri = "/users/self/verify";
             const method = "GET";
             const body = "";
@@ -220,7 +222,7 @@ suite("WebsocketClient", () => {
         ws.once("message", () => {
           ws.once("message", (data) => {
             try {
-              assert.deepStrictEqual(JSON.parse(data), {
+              assert.deepStrictEqual(JSON.parse(data.toString()), {
                 type: "subscribe",
                 channels: channels,
               });
@@ -250,7 +252,7 @@ suite("WebsocketClient", () => {
         ws.once("message", () => {
           ws.once("message", (data) => {
             try {
-              assert.deepStrictEqual(JSON.parse(data), {
+              assert.deepStrictEqual(JSON.parse(data.toString()), {
                 type: "unsubscribe",
                 channels: channels,
               });
