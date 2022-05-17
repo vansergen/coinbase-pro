@@ -1,5 +1,6 @@
-import assert from "assert";
-import { Signer } from "../index";
+import { deepStrictEqual } from "node:assert";
+
+import { Signer } from "../index.js";
 
 suite("Signer", () => {
   test("Correct signature", () => {
@@ -31,7 +32,7 @@ suite("Signer", () => {
       "CB-ACCESS-TIMESTAMP": `${timestamp}`,
       "CB-ACCESS-PASSPHRASE": passphrase,
     };
-    assert.deepStrictEqual(signature, expectedSignature);
+    deepStrictEqual(signature, expectedSignature);
   });
 
   test("Correct signature (no body)", () => {
@@ -57,7 +58,7 @@ suite("Signer", () => {
       "CB-ACCESS-TIMESTAMP": `${timestamp}`,
       "CB-ACCESS-PASSPHRASE": passphrase,
     };
-    assert.deepStrictEqual(signature, expectedSignature);
+    deepStrictEqual(signature, expectedSignature);
   });
 
   test("Correct signature (body is an empty string)", () => {
@@ -85,6 +86,6 @@ suite("Signer", () => {
       "CB-ACCESS-TIMESTAMP": `${timestamp}`,
       "CB-ACCESS-PASSPHRASE": passphrase,
     };
-    assert.deepStrictEqual(signature, expectedSignature);
+    deepStrictEqual(signature, expectedSignature);
   });
 });

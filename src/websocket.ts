@@ -1,7 +1,13 @@
-import { EventEmitter } from "events";
+import { EventEmitter } from "node:events";
 import Websocket from "ws";
-import { Signer } from "./signer";
-import { ProductInfo, CurrencyDetails, Side, DefaultProductID } from "./public";
+
+import {
+  ProductInfo,
+  CurrencyDetails,
+  Side,
+  DefaultProductID,
+} from "./public.js";
+import { Signer } from "./signer.js";
 
 export const WsUri = "wss://ws-feed.pro.coinbase.com";
 export const SandboxWsUri = "wss://ws-feed-public.sandbox.pro.coinbase.com";
@@ -319,14 +325,14 @@ export class WebsocketClient extends EventEmitter {
   }
 
   public async subscribe(params: SubscribeParams): Promise<void> {
-    await this.send({ ...params, type: "subscribe" });
+    await this.#send({ ...params, type: "subscribe" });
   }
 
   public async unsubscribe(params: SubscribeParams): Promise<void> {
-    await this.send({ ...params, type: "unsubscribe" });
+    await this.#send({ ...params, type: "unsubscribe" });
   }
 
-  private async send(params: Subscription): Promise<void> {
+  async #send(params: Subscription): Promise<void> {
     const { ws } = this;
 
     if (!ws) {

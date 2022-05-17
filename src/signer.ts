@@ -1,4 +1,4 @@
-import { createHmac } from "crypto";
+import { createHmac } from "node:crypto";
 
 export interface SignerOptions {
   method: string;
@@ -26,12 +26,11 @@ export function Signer({
   passphrase,
   timestamp,
 }: SignerOptions): SignedHeaders {
-  const hmac = createHmac("sha256", Buffer.from(secret, "base64"));
-  const message = `${timestamp}${method}${url.pathname}${url.search}${body}`;
-  const sign = hmac.update(message).digest("base64");
   return {
     "CB-ACCESS-KEY": key,
-    "CB-ACCESS-SIGN": sign,
+    "CB-ACCESS-SIGN": createHmac("sha256", Buffer.from(secret, "base64"))
+      .update(`${timestamp}${method}${url.pathname}${url.search}${body}`)
+      .digest("base64"),
     "CB-ACCESS-TIMESTAMP": `${timestamp}`,
     "CB-ACCESS-PASSPHRASE": passphrase,
   };

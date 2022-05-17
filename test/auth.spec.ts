@@ -1,5 +1,6 @@
-import assert from "assert";
+import { deepStrictEqual, rejects } from "node:assert";
 import nock from "nock";
+
 import {
   AuthenticatedClient,
   Account,
@@ -23,14 +24,13 @@ import {
   ReportStatus,
   Profile,
   TrailingVolume,
-} from "../index";
+} from "../index.js";
 
 const product_id = "ETH-BTC";
 const apiUri = "https://api.some-other-uri.com";
 const key = "CoinbaseProAPIKey";
 const secret = "CoinbaseProAPISecret";
 const passphrase = "CoinbaseProAPIPassphrase";
-
 const client = new AuthenticatedClient({
   key,
   secret,
@@ -41,8 +41,8 @@ const client = new AuthenticatedClient({
 
 suite("AuthenticatedClient", () => {
   test("constructor", () => {
-    assert.deepStrictEqual(client.product_id, product_id);
-    assert.deepStrictEqual(client.apiUri, new URL(apiUri));
+    deepStrictEqual(client.product_id, product_id);
+    deepStrictEqual(client.apiUri, new URL(apiUri));
   });
 
   test(".getAccounts()", async () => {
@@ -68,7 +68,7 @@ suite("AuthenticatedClient", () => {
     ];
     nock(apiUri).get("/accounts").reply(200, response);
     const data = await client.getAccounts();
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".getAccount()", async () => {
@@ -84,7 +84,7 @@ suite("AuthenticatedClient", () => {
     };
     nock(apiUri).get(`/accounts/${account_id}`).reply(200, response);
     const data = await client.getAccount({ account_id });
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".getAccountHistory()", async () => {
@@ -128,7 +128,7 @@ suite("AuthenticatedClient", () => {
       before,
       limit,
     });
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".getHolds()", async () => {
@@ -155,7 +155,7 @@ suite("AuthenticatedClient", () => {
       before,
       limit,
     });
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".placeOrder()", async () => {
@@ -192,7 +192,7 @@ suite("AuthenticatedClient", () => {
       .post("/orders", { ...params })
       .reply(200, response);
     const data = await client.placeOrder(params);
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".placeOrder() (with missing `product_id`)", async () => {
@@ -228,7 +228,7 @@ suite("AuthenticatedClient", () => {
       .post("/orders", { ...params, product_id })
       .reply(200, response);
     const data = await client.placeOrder(params);
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".cancelOrder() (using `client_oid`)", async () => {
@@ -236,21 +236,21 @@ suite("AuthenticatedClient", () => {
     const response = ["254b263a-dc33-4eaf-88e8-0e0df212856d"];
     nock(apiUri).delete(`/orders/client:${client_oid}`).reply(200, response);
     const data = await client.cancelOrder({ client_oid });
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".cancelOrder() (using `id`)", async () => {
     const id = "254b263a-dc33-4eaf-88e8-0e0df212856d";
     nock(apiUri).delete(`/orders/${id}`).reply(200, [id]);
     const data = await client.cancelOrder({ id });
-    assert.deepStrictEqual(data, [id]);
+    deepStrictEqual(data, [id]);
   });
 
   test(".cancelAll()", async () => {
     const response = ["71452118-efc7-4cc4-8780-a5e22d4baa53"];
     nock(apiUri).delete("/orders").reply(200, response);
     const data = await client.cancelAll();
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".cancelAll() (using `product_id`)", async () => {
@@ -261,7 +261,7 @@ suite("AuthenticatedClient", () => {
       .query({ product_id: _product_id })
       .reply(200, response);
     const data = await client.cancelAll({ product_id: _product_id });
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".getOrders()", async () => {
@@ -317,7 +317,7 @@ suite("AuthenticatedClient", () => {
       limit,
       status,
     });
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".getOrders() (with no arguments)", async () => {
@@ -361,7 +361,7 @@ suite("AuthenticatedClient", () => {
     ];
     nock(apiUri).get("/orders").reply(200, response);
     const data = await client.getOrders();
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".getOrder() (using `id`)", async () => {
@@ -386,7 +386,7 @@ suite("AuthenticatedClient", () => {
     };
     nock(apiUri).get(`/orders/${id}`).reply(200, response);
     const data = await client.getOrder({ id });
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".getOrder() (using `client_oid`)", async () => {
@@ -410,7 +410,7 @@ suite("AuthenticatedClient", () => {
     };
     nock(apiUri).get(`/orders/client:${client_oid}`).reply(200, response);
     const data = await client.getOrder({ client_oid });
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".getFills()", async () => {
@@ -448,7 +448,7 @@ suite("AuthenticatedClient", () => {
     ];
     nock(apiUri).get("/fills").query({ product_id }).reply(200, response);
     const data = await client.getFills();
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".getFills() (using `limit`)", async () => {
@@ -491,7 +491,7 @@ suite("AuthenticatedClient", () => {
       .query({ product_id: _product_id, limit })
       .reply(200, response);
     const data = await client.getFills({ limit, product_id: _product_id });
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".deposit()", async () => {
@@ -510,7 +510,7 @@ suite("AuthenticatedClient", () => {
       .post("/deposits/payment-method", { ...params })
       .reply(200, response);
     const data = await client.deposit(params);
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".depositCoinbase()", async () => {
@@ -528,7 +528,7 @@ suite("AuthenticatedClient", () => {
       .post("/deposits/coinbase-account", { ...params })
       .reply(200, response);
     const data = await client.depositCoinbase(params);
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".withdraw()", async () => {
@@ -547,7 +547,7 @@ suite("AuthenticatedClient", () => {
       .post("/withdrawals/payment-method", { ...params })
       .reply(200, response);
     const data = await client.withdraw(params);
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".withdrawCoinbase()", async () => {
@@ -565,7 +565,7 @@ suite("AuthenticatedClient", () => {
       .post("/withdrawals/coinbase-account", { ...params })
       .reply(200, response);
     const data = await client.withdrawCoinbase(params);
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".withdrawCrypto()", async () => {
@@ -584,7 +584,7 @@ suite("AuthenticatedClient", () => {
       .post("/withdrawals/crypto", { ...params })
       .reply(200, response);
     const data = await client.withdrawCrypto(params);
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".feeEstimate()", async () => {
@@ -598,7 +598,7 @@ suite("AuthenticatedClient", () => {
       .query(query)
       .reply(200, response);
     const data = await client.feeEstimate(query);
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".convert()", async () => {
@@ -619,7 +619,7 @@ suite("AuthenticatedClient", () => {
       .post("/conversions", { ...params })
       .reply(200, response);
     const data = await client.convert(params);
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".getPaymentMethods()", async () => {
@@ -693,7 +693,7 @@ suite("AuthenticatedClient", () => {
     ];
     nock(apiUri).get("/payment-methods").reply(200, response);
     const data = await client.getPaymentMethods();
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".getCoinbaseAccounts()", async () => {
@@ -761,7 +761,7 @@ suite("AuthenticatedClient", () => {
     ];
     nock(apiUri).get("/coinbase-accounts").reply(200, response);
     const data = await client.getCoinbaseAccounts();
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".getFees()", async () => {
@@ -772,7 +772,7 @@ suite("AuthenticatedClient", () => {
     };
     nock(apiUri).get("/fees").reply(200, response);
     const data = await client.getFees();
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".createReport()", async () => {
@@ -792,7 +792,7 @@ suite("AuthenticatedClient", () => {
       .post("/reports", { ...params })
       .reply(200, response);
     const data = await client.createReport(params);
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".createReport() (fils with missing `product_id`)", async () => {
@@ -812,7 +812,7 @@ suite("AuthenticatedClient", () => {
       .post("/reports", { ...params, product_id })
       .reply(200, response);
     const data = await client.createReport(params);
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".createReport() (account with missing `account_id`)", async () => {
@@ -823,7 +823,7 @@ suite("AuthenticatedClient", () => {
       format: "pdf",
     };
     const error = new Error("`account_id` is missing");
-    await assert.rejects(client.createReport(params), error);
+    await rejects(client.createReport(params), error);
   });
 
   test(".getReport()", async () => {
@@ -847,7 +847,7 @@ suite("AuthenticatedClient", () => {
     };
     nock(apiUri).get(`/reports/${id}`).reply(200, response);
     const data = await client.getReport({ id });
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".getProfiles()", async () => {
@@ -863,7 +863,7 @@ suite("AuthenticatedClient", () => {
     ];
     nock(apiUri).get("/profiles").reply(200, response);
     const data = await client.getProfiles();
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".getProfile()", async () => {
@@ -878,7 +878,7 @@ suite("AuthenticatedClient", () => {
     };
     nock(apiUri).get(`/profiles/${id}`).reply(200, response);
     const data = await client.getProfile({ id });
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".transfer()", async () => {
@@ -891,7 +891,7 @@ suite("AuthenticatedClient", () => {
       .post("/profiles/transfer", { from, to, currency, amount })
       .reply(200, response);
     const data = await client.transfer({ from, to, currency, amount });
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 
   test(".getTrailingVolume()", async () => {
@@ -911,6 +911,6 @@ suite("AuthenticatedClient", () => {
     ];
     nock(apiUri).get("/users/self/trailing-volume").reply(200, response);
     const data = await client.getTrailingVolume();
-    assert.deepStrictEqual(data, response);
+    deepStrictEqual(data, response);
   });
 });

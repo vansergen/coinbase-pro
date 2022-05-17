@@ -1,6 +1,6 @@
-import { FetchClient } from "rpc-request";
+import { stringify } from "node:querystring";
 import { RequestInit, Response, Headers } from "node-fetch";
-import { stringify } from "querystring";
+import { FetchClient } from "rpc-request";
 
 export const ApiUri = "https://api.pro.coinbase.com";
 export const SandboxApiUri = "https://api-public.sandbox.pro.coinbase.com";
@@ -167,7 +167,7 @@ export class PublicClient extends FetchClient<unknown> {
       headers,
     })) as Response;
     const text = await response.text();
-    const data = PublicClient.parseJSON(text);
+    const data = PublicClient.#parseJSON(text);
 
     if (!response.ok) {
       throw new Error((data as { message: string })?.message ?? text);
@@ -248,7 +248,7 @@ export class PublicClient extends FetchClient<unknown> {
     return time;
   }
 
-  private static parseJSON(string: string): unknown {
+  static #parseJSON(string: string): unknown {
     let output: unknown;
     try {
       output = JSON.parse(string);
