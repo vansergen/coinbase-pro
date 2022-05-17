@@ -12,7 +12,7 @@ import {
   ProductStats,
   CurrencyInfo,
   Time,
-} from "../index";
+} from "../index.js";
 import assert from "assert";
 import http from "http";
 import { FetchError } from "node-fetch";

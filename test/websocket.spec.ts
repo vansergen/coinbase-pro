@@ -4,7 +4,7 @@ import {
   SandboxWsUri,
   DefaultChannels,
   Signer,
-} from "../index";
+} from "../index.js";
 import assert from "assert";
 import { OPEN, CONNECTING, CLOSING, CLOSED, Server } from "ws";
 

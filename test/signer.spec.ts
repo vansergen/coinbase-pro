@@ -1,5 +1,5 @@
 import assert from "assert";
-import { Signer } from "../index";
+import { Signer } from "../index.js";
 
 suite("Signer", () => {
   test("Correct signature", () => {

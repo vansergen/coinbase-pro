@@ -23,7 +23,7 @@ import {
   ReportStatus,
   Profile,
   TrailingVolume,
-} from "../index";
+} from "../index.js";
 
 const product_id = "ETH-BTC";
 const apiUri = "https://api.some-other-uri.com";

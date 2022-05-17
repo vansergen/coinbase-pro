@@ -4,8 +4,8 @@ import {
   PagArgs,
   ProductID,
   Side,
-} from "./public";
-import { Signer } from "./signer";
+} from "./public.js";
+import { Signer } from "./signer.js";
 import { stringify } from "querystring";
 
 export interface AccountId {
