@@ -1,5 +1,5 @@
 import { EventEmitter } from "node:events";
-import Websocket from "ws";
+import WebSocket from "ws";
 
 import {
   ProductInfo,
@@ -214,7 +214,7 @@ export type WSMessage =
   | WSMessageSubscriptions
   | WSMessageStatus;
 
-export interface WebsocketClientOptions {
+export interface WebSocketClientOptions {
   wsUri?: string;
   channels?: Channel[];
   key?: string;
@@ -223,7 +223,7 @@ export interface WebsocketClientOptions {
   sandbox?: boolean;
 }
 
-export declare interface WebsocketClient {
+export declare interface WebSocketClient {
   on(event: "open" | "close", eventListener: () => void): this;
   on(event: "message", eventListener: (data: WSMessage) => void): this;
   on(event: "error", eventListener: (error: unknown) => void): this;
@@ -233,8 +233,8 @@ export declare interface WebsocketClient {
   once(event: "error", eventListener: (error: unknown) => void): this;
 }
 
-export class WebsocketClient extends EventEmitter {
-  public ws?: Websocket;
+export class WebSocketClient extends EventEmitter {
+  public ws?: WebSocket;
   public readonly wsUri: string;
   public readonly channels: Channel[];
 
@@ -249,7 +249,7 @@ export class WebsocketClient extends EventEmitter {
     passphrase,
     sandbox = false,
     wsUri = sandbox ? SandboxWsUri : WsUri,
-  }: WebsocketClientOptions = {}) {
+  }: WebSocketClientOptions = {}) {
     super();
     this.channels = channels;
     this.wsUri = wsUri;
@@ -262,17 +262,17 @@ export class WebsocketClient extends EventEmitter {
 
   public async connect(): Promise<void> {
     switch (this.ws?.readyState) {
-      case Websocket.CLOSING:
-      case Websocket.CONNECTING:
+      case WebSocket.CLOSING:
+      case WebSocket.CONNECTING:
         throw new Error(`Could not connect. State: ${this.ws.readyState}`);
-      case Websocket.OPEN:
+      case WebSocket.OPEN:
         return;
       default:
         break;
     }
 
     await new Promise<void>((resolve, reject) => {
-      this.ws = new Websocket(this.wsUri);
+      this.ws = new WebSocket(this.wsUri);
       this.ws.once("open", resolve);
       this.ws.once("error", reject);
       this.ws.on("message", (data: string) => {
@@ -304,10 +304,10 @@ export class WebsocketClient extends EventEmitter {
 
   public async disconnect(): Promise<void> {
     switch (this.ws?.readyState) {
-      case Websocket.CLOSED:
+      case WebSocket.CLOSED:
         return;
-      case Websocket.CLOSING:
-      case Websocket.CONNECTING:
+      case WebSocket.CLOSING:
+      case WebSocket.CONNECTING:
         throw new Error(`Could not disconnect. State: ${this.ws.readyState}`);
       default:
         break;

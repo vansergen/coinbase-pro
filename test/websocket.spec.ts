@@ -2,7 +2,7 @@ import { deepStrictEqual, ok, rejects } from "node:assert";
 import WebSocket, { WebSocketServer } from "ws";
 
 import {
-  WebsocketClient,
+  WebSocketClient,
   WsUri,
   SandboxWsUri,
   DefaultChannels,
@@ -15,13 +15,13 @@ const key = "CoinbaseProAPIKey";
 const secret = "CoinbaseProAPISecret";
 const passphrase = "CoinbaseProAPIPassphrase";
 
-suite("WebsocketClient", () => {
-  let client: WebsocketClient;
+suite("WebSocketClient", () => {
+  let client: WebSocketClient;
   let server: WebSocketServer;
 
   setup(() => {
     server = new WebSocketServer({ port });
-    client = new WebsocketClient({ wsUri });
+    client = new WebSocketClient({ wsUri });
   });
 
   teardown(async () => {
@@ -43,13 +43,13 @@ suite("WebsocketClient", () => {
   });
 
   test("constructor (with no arguments)", () => {
-    const websocket = new WebsocketClient();
+    const websocket = new WebSocketClient();
     deepStrictEqual(websocket.channels, DefaultChannels);
     deepStrictEqual(websocket.wsUri, WsUri);
   });
 
   test("constructor (with sandbox flag)", () => {
-    const websocket = new WebsocketClient({ sandbox: true });
+    const websocket = new WebSocketClient({ sandbox: true });
     deepStrictEqual(websocket.channels, DefaultChannels);
     deepStrictEqual(websocket.wsUri, SandboxWsUri);
   });
@@ -60,7 +60,7 @@ suite("WebsocketClient", () => {
       { name: "heartbeat", product_ids: ["BTC-USD"] },
       { name: "ticker", product_ids: ["ETH-BTC", "ETH-USD"] },
     ];
-    const websocket = new WebsocketClient({
+    const websocket = new WebSocketClient({
       key,
       secret,
       passphrase,
@@ -96,7 +96,7 @@ suite("WebsocketClient", () => {
   });
 
   test(".connect() (sends the subscription on open with API key)", async () => {
-    const websocket = new WebsocketClient({ wsUri, key, secret, passphrase });
+    const websocket = new WebSocketClient({ wsUri, key, secret, passphrase });
 
     const serverConnect = new Promise<void>((resolve, reject) => {
       server.once("connection", (ws) =>
@@ -241,7 +241,7 @@ suite("WebsocketClient", () => {
   });
 
   test(".subscribe() (when ws is not initialized)", async () => {
-    const error = new Error("Websocket is not initialized");
+    const error = new Error("WebSocket is not initialized");
     await rejects(client.subscribe({ channels: [] }), error);
   });
 
