@@ -2,7 +2,7 @@
   "name": "coinbase-pro-node-api",
   "version": "3.3.0",
   "description": "Node.js library for Coinbase Pro",
-  "type": "commonjs",
+  "type": "module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "directories": {
