@@ -74,7 +74,7 @@
   },
   "dependencies": {
     "rpc-request": "^5.0.3",
-    "ws": "^7.4.4"
+    "ws": "^8.6.0"
   },
   "funding": {
     "type": "Coinbase Commerce",
