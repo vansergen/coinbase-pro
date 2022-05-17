@@ -72,12 +72,14 @@
     "typedoc": "^0.22.15"
   },
   "dependencies": {
-    "@types/ws": "^7.4.0",
     "rpc-request": "^5.0.3",
     "ws": "^7.4.4"
   },
   "funding": {
     "type": "Coinbase Commerce",
     "url": "https://commerce.coinbase.com/checkout/ce079fed-047e-4280-bb3d-3cf865a3c309"
+  },
+  "peerDependencies": {
+    "@types/ws": "^8.5.3"
   }
 }
