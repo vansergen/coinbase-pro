@@ -1,6 +1,6 @@
-import { FetchClient } from "rpc-request";
+import { stringify } from "node:querystring";
 import { RequestInit, Response, Headers } from "node-fetch";
-import { stringify } from "querystring";
+import { FetchClient } from "rpc-request";
 
 export const ApiUri = "https://api.pro.coinbase.com";
 export const SandboxApiUri = "https://api-public.sandbox.pro.coinbase.com";

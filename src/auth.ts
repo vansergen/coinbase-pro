@@ -1,3 +1,4 @@
+import { stringify } from "node:querystring";
 import {
   PublicClient,
   PublicClientOptions,
@@ -6,7 +7,6 @@ import {
   Side,
 } from "./public.js";
 import { Signer } from "./signer.js";
-import { stringify } from "querystring";
 
 export interface AccountId {
   account_id: string;

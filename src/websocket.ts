@@ -1,12 +1,13 @@
-import { EventEmitter } from "events";
+import { EventEmitter } from "node:events";
 import Websocket from "ws";
-import { Signer } from "./signer.js";
+
 import {
   ProductInfo,
   CurrencyDetails,
   Side,
   DefaultProductID,
 } from "./public.js";
+import { Signer } from "./signer.js";
 
 export const WsUri = "wss://ws-feed.pro.coinbase.com";
 export const SandboxWsUri = "wss://ws-feed-public.sandbox.pro.coinbase.com";
