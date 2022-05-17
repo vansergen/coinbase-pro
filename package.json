@@ -10,7 +10,8 @@
     "test": "test"
   },
   "engines": {
-    "node": ">=14.15.4"
+    "node": ">=16.15.0",
+    "npm": ">=8.5.5"
   },
   "scripts": {
     "build": "npm run build:remove && tsc",
