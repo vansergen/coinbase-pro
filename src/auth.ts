@@ -377,7 +377,7 @@ export class AuthenticatedClient extends PublicClient {
     this.#passphrase = passphrase;
   }
 
-  public async fetch(
+  public fetch(
     path: string,
     { method, body }: { method: string; body?: string }
   ): Promise<unknown> {
@@ -391,211 +391,183 @@ export class AuthenticatedClient extends PublicClient {
       body,
       url: new URL(path, this.apiUri),
     });
-    const data = await super.fetch(path, {
+    return super.fetch(path, {
       method,
       headers: { ...headers },
       body,
     });
-    return data;
   }
 
   /** Get a list of trading accounts from the profile of the API key. */
-  public async getAccounts(): Promise<Account[]> {
-    const accounts = (await this.get("/accounts")) as Account[];
-    return accounts;
+  public getAccounts(): Promise<Account[]> {
+    return this.get("/accounts") as Promise<Account[]>;
   }
 
-  public async getAccount({ account_id }: AccountId): Promise<Account> {
-    const account = (await this.get(`/accounts/${account_id}`)) as Account;
-    return account;
+  public getAccount({ account_id }: AccountId): Promise<Account> {
+    return this.get(`/accounts/${account_id}`) as Promise<Account>;
   }
 
   /** List account activity of the API key’s profile. */
-  public async getAccountHistory({
+  public getAccountHistory({
     account_id,
     ...qs
   }: AccountHistoryParams): Promise<AccountHistory[]> {
     const url = new URL(`/accounts/${account_id}/ledger`, this.apiUri);
     url.search = stringify({ ...qs });
-    const history = (await this.get(url.toString())) as AccountHistory[];
-    return history;
+    return this.get(url.toString()) as Promise<AccountHistory[]>;
   }
 
   /** List holds of an account that belong to the same profile as the API key. */
-  public async getHolds({
+  public getHolds({
     account_id,
     ...qs
   }: AccountHistoryParams): Promise<AccountHold[]> {
     const url = new URL(`/accounts/${account_id}/holds`, this.apiUri);
     url.search = stringify({ ...qs });
-    const holds = (await this.get(url.toString())) as AccountHold[];
-    return holds;
+    return this.get(url.toString()) as Promise<AccountHold[]>;
   }
 
-  public async placeOrder({
+  public placeOrder({
     product_id = this.product_id,
     ...rest
   }: OrderParams): Promise<OrderInfo> {
-    const body = JSON.stringify({ product_id, ...rest });
-    const order = (await this.post("/orders", { body })) as OrderInfo;
-    return order;
+    return this.post("/orders", {
+      body: JSON.stringify({ product_id, ...rest }),
+    }) as Promise<OrderInfo>;
   }
 
-  public async cancelOrder(params: CancelOrderParams): Promise<string> {
-    if ("client_oid" in params) {
-      const path = `/orders/client:${params.client_oid}`;
-      const id = (await this.delete(path)) as string;
-      return id;
-    }
-    const id = (await this.delete(`/orders/${params.id}`)) as string;
-    return id;
+  public cancelOrder(params: CancelOrderParams): Promise<string> {
+    return this.delete(
+      "client_oid" in params
+        ? `/orders/client:${params.client_oid}`
+        : `/orders/${params.id}`
+    ) as Promise<string>;
   }
 
-  public async cancelAll(qs: ProductID = {}): Promise<string[]> {
+  public cancelAll(qs: ProductID = {}): Promise<string[]> {
     const url = new URL(`/orders`, this.apiUri);
     url.search = stringify({ ...qs });
-    const orders = (await this.delete(url.toString())) as string[];
-    return orders;
+    return this.delete(url.toString()) as Promise<string[]>;
   }
 
-  public async getOrders(qs: GetOrdersParams = {}): Promise<OrderInfo[]> {
+  public getOrders(qs: GetOrdersParams = {}): Promise<OrderInfo[]> {
     const url = new URL(`/orders`, this.apiUri);
     url.search = stringify({ ...qs });
-    const orders = (await this.get(url.toString())) as OrderInfo[];
-    return orders;
+    return this.get(url.toString()) as Promise<OrderInfo[]>;
   }
 
-  public async getOrder(params: CancelOrderParams): Promise<OrderInfo> {
-    if ("client_oid" in params) {
-      const path = `/orders/client:${params.client_oid}`;
-      const order = (await this.get(path)) as OrderInfo;
-      return order;
-    }
-    const order = (await this.get(`/orders/${params.id}`)) as OrderInfo;
-    return order;
+  public getOrder(params: CancelOrderParams): Promise<OrderInfo> {
+    return this.get(
+      "client_oid" in params
+        ? `/orders/client:${params.client_oid}`
+        : `/orders/${params.id}`
+    ) as Promise<OrderInfo>;
   }
 
-  public async getFills(qs: GetFillsParams = {}): Promise<Fill[]> {
+  public getFills(qs: GetFillsParams = {}): Promise<Fill[]> {
     if (!qs.order_id && !qs.product_id) {
       qs.product_id = this.product_id;
     }
     const url = new URL("/fills", this.apiUri);
     url.search = stringify({ ...qs });
-    const fills = (await this.get(url.toString())) as Fill[];
-    return fills;
+    return this.get(url.toString()) as Promise<Fill[]>;
   }
 
-  public async deposit(params: DepositParams): Promise<DepositInfo> {
-    const body = JSON.stringify(params);
-    const path = "/deposits/payment-method";
-    const info = (await this.post(path, { body })) as DepositInfo;
-    return info;
+  public deposit(params: DepositParams): Promise<DepositInfo> {
+    return this.post("/deposits/payment-method", {
+      body: JSON.stringify(params),
+    }) as Promise<DepositInfo>;
   }
 
-  public async depositCoinbase(
-    params: DepositCoinbaseParams
-  ): Promise<DepositInfo> {
-    const body = JSON.stringify(params);
-    const path = "/deposits/coinbase-account";
-    const info = (await this.post(path, { body })) as DepositInfo;
-    return info;
+  public depositCoinbase(params: DepositCoinbaseParams): Promise<DepositInfo> {
+    return this.post("/deposits/coinbase-account", {
+      body: JSON.stringify(params),
+    }) as Promise<DepositInfo>;
   }
 
-  public async withdraw(params: DepositParams): Promise<DepositInfo> {
-    const body = JSON.stringify(params);
-    const path = "/withdrawals/payment-method";
-    const info = (await this.post(path, { body })) as DepositInfo;
-    return info;
+  public withdraw(params: DepositParams): Promise<DepositInfo> {
+    return this.post("/withdrawals/payment-method", {
+      body: JSON.stringify(params),
+    }) as Promise<DepositInfo>;
   }
 
-  public async withdrawCoinbase(
-    params: DepositCoinbaseParams
-  ): Promise<DepositInfo> {
-    const body = JSON.stringify(params);
-    const path = "/withdrawals/coinbase-account";
-    const info = (await this.post(path, { body })) as DepositInfo;
-    return info;
+  public withdrawCoinbase(params: DepositCoinbaseParams): Promise<DepositInfo> {
+    return this.post("/withdrawals/coinbase-account", {
+      body: JSON.stringify(params),
+    }) as Promise<DepositInfo>;
   }
 
-  public async withdrawCrypto(
-    params: WithdrawCryptoParams
-  ): Promise<DepositInfo> {
-    const body = JSON.stringify(params);
-    const path = "/withdrawals/crypto";
-    const info = (await this.post(path, { body })) as DepositInfo;
-    return info;
+  public withdrawCrypto(params: WithdrawCryptoParams): Promise<DepositInfo> {
+    return this.post("/withdrawals/crypto", {
+      body: JSON.stringify(params),
+    }) as Promise<DepositInfo>;
   }
 
   /** Get the network fee estimate when sending to the given address. */
-  public async feeEstimate(qs: FeeEstimateParams): Promise<EstimatedFee> {
+  public feeEstimate(qs: FeeEstimateParams): Promise<EstimatedFee> {
     const url = new URL(`/withdrawals/fee-estimate`, this.apiUri);
     url.search = stringify({ ...qs });
-    const methods = (await this.get(url.toString())) as EstimatedFee;
-    return methods;
+    return this.get(url.toString()) as Promise<EstimatedFee>;
   }
 
-  public async convert(params: ConvertParams): Promise<Conversion> {
-    const body = JSON.stringify(params);
-    const result = (await this.post("/conversions", { body })) as Conversion;
-    return result;
+  public convert(params: ConvertParams): Promise<Conversion> {
+    return this.post("/conversions", {
+      body: JSON.stringify(params),
+    }) as Promise<Conversion>;
   }
 
-  public async getPaymentMethods(): Promise<PaymentMethod[]> {
-    const methods = (await this.get("/payment-methods")) as PaymentMethod[];
-    return methods;
+  public getPaymentMethods(): Promise<PaymentMethod[]> {
+    return this.get("/payment-methods") as Promise<PaymentMethod[]>;
   }
 
-  public async getCoinbaseAccounts(): Promise<CoinbaseAccount[]> {
-    const path = "/coinbase-accounts";
-    const accounts = (await this.get(path)) as CoinbaseAccount[];
-    return accounts;
+  public getCoinbaseAccounts(): Promise<CoinbaseAccount[]> {
+    return this.get("/coinbase-accounts") as Promise<CoinbaseAccount[]>;
   }
 
-  public async getFees(): Promise<Fees> {
-    const fees = (await this.get("/fees")) as Fees;
-    return fees;
+  public getFees(): Promise<Fees> {
+    return this.get("/fees") as Promise<Fees>;
   }
 
-  public async createReport(params: ReportParams): Promise<BaseReportStatus> {
-    if (params.type === "fills" && !params.product_id) {
-      params.product_id = this.product_id;
-    } else if (params.type === "account" && !params.account_id) {
-      throw new Error("`account_id` is missing");
-    }
+  public createReport(params: ReportParams): Promise<BaseReportStatus> {
+    return new Promise<BaseReportStatus>((resolve, reject) => {
+      if (params.type === "fills" && !params.product_id) {
+        params.product_id = this.product_id;
+      } else if (params.type === "account" && !params.account_id) {
+        reject(new Error("`account_id` is missing"));
+        return;
+      }
 
-    const body = JSON.stringify(params);
-    const result = (await this.post("/reports", { body })) as BaseReportStatus;
-    return result;
+      this.post("/reports", { body: JSON.stringify(params) })
+        .then((data) => {
+          resolve(data as BaseReportStatus);
+        })
+        .catch(reject);
+    });
   }
 
-  public async getReport({ id }: { id: string }): Promise<ReportStatus> {
-    const status = (await this.get(`/reports/${id}`)) as ReportStatus;
-    return status;
+  public getReport({ id }: { id: string }): Promise<ReportStatus> {
+    return this.get(`/reports/${id}`) as Promise<ReportStatus>;
   }
 
   /** List your profiles. */
-  public async getProfiles(): Promise<Profile[]> {
-    const profiles = (await this.get("/profiles")) as Profile[];
-    return profiles;
+  public getProfiles(): Promise<Profile[]> {
+    return this.get("/profiles") as Promise<Profile[]>;
   }
 
   /** Get a single profile by profile id. */
-  public async getProfile({ id }: { id: string }): Promise<Profile> {
-    const profile = (await this.get(`/profiles/${id}`)) as Profile;
-    return profile;
+  public getProfile({ id }: { id: string }): Promise<Profile> {
+    return this.get(`/profiles/${id}`) as Promise<Profile>;
   }
 
   /** Transfer funds from API key’s profile to another user owned profile. */
-  public async transfer(params: TransferParams): Promise<"OK"> {
-    const body = JSON.stringify(params);
-    const result = (await this.post("/profiles/transfer", { body })) as "OK";
-    return result;
+  public transfer(params: TransferParams): Promise<"OK"> {
+    return this.post("/profiles/transfer", {
+      body: JSON.stringify(params),
+    }) as Promise<"OK">;
   }
 
   /** Get your 30-day trailing volume for all products of the API key’s profile. */
-  public async getTrailingVolume(): Promise<TrailingVolume[]> {
-    const path = "/users/self/trailing-volume";
-    const volumes = (await this.get(path)) as TrailingVolume[];
-    return volumes;
+  public getTrailingVolume(): Promise<TrailingVolume[]> {
+    return this.get("/users/self/trailing-volume") as Promise<TrailingVolume[]>;
   }
 }

@@ -1,5 +1,5 @@
 import { EventEmitter } from "node:events";
-import Websocket from "ws";
+import WebSocket from "ws";
 
 import {
   ProductInfo,
@@ -214,7 +214,7 @@ export type WSMessage =
   | WSMessageSubscriptions
   | WSMessageStatus;
 
-export interface WebsocketClientOptions {
+export interface WebSocketClientOptions {
   wsUri?: string;
   channels?: Channel[];
   key?: string;
@@ -223,7 +223,7 @@ export interface WebsocketClientOptions {
   sandbox?: boolean;
 }
 
-export declare interface WebsocketClient {
+export declare interface WebSocketClient {
   on(event: "open" | "close", eventListener: () => void): this;
   on(event: "message", eventListener: (data: WSMessage) => void): this;
   on(event: "error", eventListener: (error: unknown) => void): this;
@@ -233,8 +233,8 @@ export declare interface WebsocketClient {
   once(event: "error", eventListener: (error: unknown) => void): this;
 }
 
-export class WebsocketClient extends EventEmitter {
-  public ws?: Websocket;
+export class WebSocketClient extends EventEmitter {
+  public ws?: WebSocket;
   public readonly wsUri: string;
   public readonly channels: Channel[];
 
@@ -249,7 +249,7 @@ export class WebsocketClient extends EventEmitter {
     passphrase,
     sandbox = false,
     wsUri = sandbox ? SandboxWsUri : WsUri,
-  }: WebsocketClientOptions = {}) {
+  }: WebSocketClientOptions = {}) {
     super();
     this.channels = channels;
     this.wsUri = wsUri;
@@ -260,107 +260,112 @@ export class WebsocketClient extends EventEmitter {
     }
   }
 
-  public async connect(): Promise<void> {
-    switch (this.ws?.readyState) {
-      case Websocket.CLOSING:
-      case Websocket.CONNECTING:
-        throw new Error(`Could not connect. State: ${this.ws.readyState}`);
-      case Websocket.OPEN:
-        return;
-      default:
-        break;
-    }
+  public connect(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      switch (this.ws?.readyState) {
+        case WebSocket.CLOSING:
+        case WebSocket.CONNECTING:
+          reject(new Error(`Could not connect. State: ${this.ws.readyState}`));
+          return;
+        case WebSocket.OPEN:
+          resolve();
+          return;
+        default:
+          break;
+      }
 
-    await new Promise<void>((resolve, reject) => {
-      this.ws = new Websocket(this.wsUri);
-      this.ws.once("open", resolve);
-      this.ws.once("error", reject);
-      this.ws.on("message", (data: string) => {
-        try {
-          const message = JSON.parse(data) as { type?: string };
-          if (message.type === "error") {
-            this.emit("error", message);
-          } else {
-            this.emit("message", message as WSMessage);
+      (this.ws = new WebSocket(this.wsUri))
+        .once("open", resolve)
+        .once("error", reject)
+        .on("message", (data: string) => {
+          try {
+            const message = JSON.parse(data) as { type?: string };
+            if (message.type === "error") {
+              this.emit("error", message);
+            } else {
+              this.emit("message", message as WSMessage);
+            }
+          } catch (error) {
+            this.emit("error", error);
           }
-        } catch (error) {
-          this.emit("error", error);
-        }
-      });
-      this.ws.on("open", () => {
-        this.emit("open");
-        this.subscribe({ channels: this.channels }).catch((error) => {
+        })
+        .on("open", () => {
+          this.emit("open");
+          this.subscribe({ channels: this.channels }).catch((error) => {
+            this.emit("error", error);
+          });
+        })
+        .on("close", () => {
+          this.emit("close");
+        })
+        .on("error", (error) => {
           this.emit("error", error);
         });
-      });
-      this.ws.on("close", () => {
-        this.emit("close");
-      });
-      this.ws.on("error", (error) => {
-        this.emit("error", error);
-      });
     });
   }
 
-  public async disconnect(): Promise<void> {
-    switch (this.ws?.readyState) {
-      case Websocket.CLOSED:
-        return;
-      case Websocket.CLOSING:
-      case Websocket.CONNECTING:
-        throw new Error(`Could not disconnect. State: ${this.ws.readyState}`);
-      default:
-        break;
-    }
+  public disconnect(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      switch (this.ws?.readyState) {
+        case WebSocket.CLOSED:
+          resolve();
+          return;
+        case WebSocket.CLOSING:
+        case WebSocket.CONNECTING:
+          reject(
+            new Error(`Could not disconnect. State: ${this.ws.readyState}`)
+          );
+          return;
+        default:
+          break;
+      }
 
-    await new Promise<void>((resolve, reject) => {
       if (!this.ws) {
         resolve();
       } else {
-        this.ws.once("error", reject);
-        this.ws.once("close", resolve);
-        this.ws.close();
+        this.ws.once("error", reject).once("close", resolve).close();
       }
     });
   }
 
-  public async subscribe(params: SubscribeParams): Promise<void> {
-    await this.#send({ ...params, type: "subscribe" });
+  public subscribe(params: SubscribeParams): Promise<void> {
+    return this.#send({ ...params, type: "subscribe" });
   }
 
-  public async unsubscribe(params: SubscribeParams): Promise<void> {
-    await this.#send({ ...params, type: "unsubscribe" });
+  public unsubscribe(params: SubscribeParams): Promise<void> {
+    return this.#send({ ...params, type: "unsubscribe" });
   }
 
-  async #send(params: Subscription): Promise<void> {
-    const { ws } = this;
+  #send(params: Subscription): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const { ws } = this;
 
-    if (!ws) {
-      throw new Error("Websocket is not initialized");
-    }
+      if (!ws) {
+        reject(new Error("WebSocket is not initialized"));
+        return;
+      }
 
-    const message: SignedMessage = params;
+      const message: SignedMessage = params;
 
-    if (this.#key && this.#secret && this.#passphrase) {
-      const timestamp = Date.now() / 1000;
-      const signature = Signer({
-        timestamp,
-        body: "",
-        method: "GET",
-        url: new URL("/users/self/verify", this.wsUri),
-        key: this.#key,
-        secret: this.#secret,
-        passphrase: this.#passphrase,
-      });
-      message.key = signature["CB-ACCESS-KEY"];
-      message.signature = signature["CB-ACCESS-SIGN"];
-      message.timestamp = signature["CB-ACCESS-TIMESTAMP"];
-      message.passphrase = signature["CB-ACCESS-PASSPHRASE"];
-    }
+      if (this.#key && this.#secret && this.#passphrase) {
+        const timestamp = Date.now() / 1000;
+        const signature = Signer({
+          timestamp,
+          body: "",
+          method: "GET",
+          url: new URL("/users/self/verify", this.wsUri),
+          key: this.#key,
+          secret: this.#secret,
+          passphrase: this.#passphrase,
+        });
+        message.key = signature["CB-ACCESS-KEY"];
+        message.signature = signature["CB-ACCESS-SIGN"];
+        message.timestamp = signature["CB-ACCESS-TIMESTAMP"];
+        message.passphrase = signature["CB-ACCESS-PASSPHRASE"];
+      }
 
-    const data = JSON.stringify(message);
+      const data = JSON.stringify(message);
 
-    await new Promise<void>((resolve, reject) => {
       ws.send(data, (error) => {
         if (error) {
           reject(error);

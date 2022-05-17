@@ -138,8 +138,8 @@ export interface PublicClientOptions {
 }
 
 export class PublicClient extends FetchClient<unknown> {
-  public readonly product_id: string;
-  public readonly apiUri: URL;
+  readonly #product_id: string;
+  readonly #api_url: URL;
 
   public constructor({
     product_id = DefaultProductID,
@@ -150,8 +150,16 @@ export class PublicClient extends FetchClient<unknown> {
       { headers: DefaultHeaders },
       { rejectNotOk: false, transform: "raw", baseUrl: apiUri }
     );
-    this.apiUri = new URL(apiUri);
-    this.product_id = product_id;
+    this.#api_url = new URL(apiUri);
+    this.#product_id = product_id;
+  }
+
+  public get product_id(): string {
+    return this.#product_id;
+  }
+
+  public get apiUri(): URL {
+    return new URL(this.#api_url.toString());
   }
 
   public async fetch(
@@ -176,83 +184,71 @@ export class PublicClient extends FetchClient<unknown> {
     return data ?? text;
   }
 
-  public async getProducts(): Promise<ProductInfo[]> {
-    const products = (await this.get("/products")) as ProductInfo[];
-    return products;
+  public getProducts(): Promise<ProductInfo[]> {
+    return this.get("/products") as Promise<ProductInfo[]>;
   }
 
-  public async getProduct({
+  public getProduct({
     product_id = this.product_id,
   }: ProductID = {}): Promise<ProductInfo> {
-    const product = (await this.get(`/products/${product_id}`)) as ProductInfo;
-    return product;
+    return this.get(`/products/${product_id}`) as Promise<ProductInfo>;
   }
 
-  public async getOrderBook({
+  public getOrderBook({
     product_id = this.product_id,
     ...qs
   }: OrderBookArgs = {}): Promise<OrderBook> {
     const url = new URL(`/products/${product_id}/book`, this.apiUri);
     url.search = stringify({ ...qs });
-    const book = (await this.get(url.toString())) as OrderBook;
-    return book;
+    return this.get(url.toString()) as Promise<OrderBook>;
   }
 
-  public async getTicker({
+  public getTicker({
     product_id = this.product_id,
   }: ProductID = {}): Promise<Ticker> {
-    const ticker = (await this.get(`/products/${product_id}/ticker`)) as Ticker;
-    return ticker;
+    return this.get(`/products/${product_id}/ticker`) as Promise<Ticker>;
   }
 
-  public async getTrades({
+  public getTrades({
     product_id = this.product_id,
     ...qs
   }: PagProductID = {}): Promise<Trade[]> {
     const url = new URL(`/products/${product_id}/trades`, this.apiUri);
     url.search = stringify({ ...qs });
-    const trades = (await this.get(url.toString())) as Trade[];
-    return trades;
+    return this.get(url.toString()) as Promise<Trade[]>;
   }
 
-  public async getHistoricRates({
+  public getHistoricRates({
     product_id = this.product_id,
     ...qs
   }: HistoricRatesArgs): Promise<Candle[]> {
     const url = new URL(`/products/${product_id}/candles`, this.apiUri);
     url.search = stringify({ ...qs });
-    const rates = (await this.get(url.toString())) as Candle[];
-    return rates;
+    return this.get(url.toString()) as Promise<Candle[]>;
   }
 
-  public async get24hrStats({
+  public get24hrStats({
     product_id = this.product_id,
   }: ProductID = {}): Promise<ProductStats> {
-    const path = `/products/${product_id}/stats`;
-    const stats = (await this.get(path)) as ProductStats;
-    return stats;
+    return this.get(`/products/${product_id}/stats`) as Promise<ProductStats>;
   }
 
-  public async getCurrencies(): Promise<CurrencyInfo[]> {
-    const currencies = (await this.get("/currencies")) as CurrencyInfo[];
-    return currencies;
+  public getCurrencies(): Promise<CurrencyInfo[]> {
+    return this.get("/currencies") as Promise<CurrencyInfo[]>;
   }
 
-  public async getCurrency({ id }: { id: string }): Promise<CurrencyInfo> {
-    const currency = (await this.get(`/currencies/${id}`)) as CurrencyInfo;
-    return currency;
+  public getCurrency({ id }: { id: string }): Promise<CurrencyInfo> {
+    return this.get(`/currencies/${id}`) as Promise<CurrencyInfo>;
   }
 
-  public async getTime(): Promise<Time> {
-    const time = (await this.get("/time")) as Time;
-    return time;
+  public getTime(): Promise<Time> {
+    return this.get("/time") as Promise<Time>;
   }
 
   static #parseJSON(string: string): unknown {
     let output: unknown;
     try {
-      output = JSON.parse(string);
-      return output;
+      return JSON.parse(string);
     } catch {
       return output;
     }
