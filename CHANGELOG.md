@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.0.0](https://github.com/vansergen/coinbase-pro/compare/v3.3.0...v4.0.0) (2022-05-17)
+
+### ⚠ BREAKING CHANGES
+
+- change the package type from `commonjs` to `module`
+- drop Node.js `<16.15.0` support
+
+### Performance Improvements
+
+- change the package type from `commonjs` to `module` ([9db8580](https://github.com/vansergen/coinbase-pro/commit/9db8580df6f4074e23790dacad92cc5b22aab8ef))
+- drop Node.js `<16.15.0` support ([969ea9d](https://github.com/vansergen/coinbase-pro/commit/969ea9d6195c561f506777303e863a72a0125861))
+
+### Dependencies
+
+- upgrade `rpc-request` to `v6.0.1` ([3e487b1](https://github.com/vansergen/coinbase-pro/commit/3e487b194b5a56624c26a8c59c4fc3b2c650c8a0))
+- upgrade `ws` to `v8.6.0` ([3dfd6e6](https://github.com/vansergen/coinbase-pro/commit/3dfd6e65c95897a386315354e9f47ba396ba8fa2))
+
 ## [3.3.0](https://github.com/vansergen/coinbase-pro/compare/v3.2.0...v3.3.0) (2021-03-07)
 
 ### Features
