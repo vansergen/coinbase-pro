@@ -1,5 +1,4 @@
 import { deepStrictEqual, fail, ok, rejects } from "node:assert";
-import { Server } from "node:http";
 import nock from "nock";
 import { FetchError } from "node-fetch";
 
@@ -67,36 +66,19 @@ suite("PublicClient", () => {
   });
 
   test(".get() (reject on errors)", async () => {
-    const port = 28080;
-    const otherUrl = `http://127.0.0.1:${port}`;
-    const server = await new Promise<Server>((resolve) => {
-      const _server = new Server((_request, response) => {
-        response.destroy();
-      });
-      _server
-        .on("listening", () => {
-          resolve(_server);
-        })
-        .listen(port);
-    });
-
-    const otherClient = new PublicClient({ apiUri: otherUrl });
+    const url = new URL("http://127.0.0.1");
+    url.port = "28080";
     const uri = "/some/path";
+    nock(url.toString()).get(uri).replyWithError("Some error");
+
+    const otherClient = new PublicClient({ apiUri: url.toString() });
+
     try {
       await otherClient.get(uri);
       fail("Should throw an error");
     } catch (error) {
       ok(error instanceof FetchError);
     }
-    await new Promise<void>((resolve, reject) => {
-      server.close((error) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
-      });
-    });
   });
 
   test(".get()", async () => {
