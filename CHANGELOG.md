@@ -1,5 +1,17 @@
 # Changelog
 
+### [4.0.1](https://github.com/vansergen/coinbase-pro/compare/v4.0.0...v4.0.1) (2022-06-25)
+
+### Bug Fixes
+
+- update `ProductInfo` ([b2e59b1](https://github.com/vansergen/coinbase-pro/commit/b2e59b14cd52fbd07af90b67e82631d0dd71614b))
+- update the base url ([f58dfb8](https://github.com/vansergen/coinbase-pro/commit/f58dfb8e51a84829b3892ff7c0a5ccb662716c09))
+
+### Dependencies
+
+- upgrade `rpc-request` to `v6.0.2` ([a5512a7](https://github.com/vansergen/coinbase-pro/commit/a5512a7be23c83464ea35205d22c72f56b2d9689))
+- upgrade `ws` to `v8.8.0` ([cdd00bd](https://github.com/vansergen/coinbase-pro/commit/cdd00bdef9484b4f4af2d17877106fd30ddd948d))
+
 ## [4.0.0](https://github.com/vansergen/coinbase-pro/compare/v3.3.0...v4.0.0) (2022-05-17)
 
 ### ⚠ BREAKING CHANGES
