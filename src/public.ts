@@ -42,12 +42,15 @@ export interface ProductInfo {
   min_market_funds: string;
   max_market_funds: string;
   margin_enabled: boolean;
+  fx_stablecoin: boolean;
+  max_slippage_percentage: string;
   post_only: boolean;
   limit_only: boolean;
   cancel_only: boolean;
   trading_disabled: boolean;
   status: string;
   status_message: string;
+  auction_mode: boolean;
 }
 
 export interface OrderBookLevel1 {
