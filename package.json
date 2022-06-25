@@ -72,7 +72,7 @@
     "typedoc": "^0.22.18"
   },
   "dependencies": {
-    "rpc-request": "^6.0.1",
+    "rpc-request": "^6.0.2",
     "ws": "^8.6.0"
   },
   "funding": {
