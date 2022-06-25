@@ -1,5 +1,4 @@
 import { deepStrictEqual, fail, ok, rejects } from "node:assert";
-import { Server } from "node:http";
 import nock from "nock";
 import { FetchError } from "node-fetch";
 
@@ -67,36 +66,19 @@ suite("PublicClient", () => {
   });
 
   test(".get() (reject on errors)", async () => {
-    const port = 28080;
-    const otherUrl = `http://127.0.0.1:${port}`;
-    const server = await new Promise<Server>((resolve) => {
-      const _server = new Server((_request, response) => {
-        response.destroy();
-      });
-      _server
-        .on("listening", () => {
-          resolve(_server);
-        })
-        .listen(port);
-    });
-
-    const otherClient = new PublicClient({ apiUri: otherUrl });
+    const url = new URL("http://127.0.0.1");
+    url.port = "28080";
     const uri = "/some/path";
+    nock(url.toString()).get(uri).replyWithError("Some error");
+
+    const otherClient = new PublicClient({ apiUri: url.toString() });
+
     try {
       await otherClient.get(uri);
       fail("Should throw an error");
     } catch (error) {
       ok(error instanceof FetchError);
     }
-    await new Promise<void>((resolve, reject) => {
-      server.close((error) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
-      });
-    });
   });
 
   test(".get()", async () => {
@@ -111,42 +93,180 @@ suite("PublicClient", () => {
   test(".getProducts()", async () => {
     const response: ProductInfo[] = [
       {
-        id: "DASH-BTC",
-        base_currency: "DASH",
-        quote_currency: "BTC",
-        base_min_size: "0.01000000",
-        base_max_size: "1500.00000000",
-        quote_increment: "0.00000001",
-        base_increment: "0.00100000",
-        display_name: "DASH/BTC",
-        min_market_funds: "0.0001",
-        max_market_funds: "10",
+        id: "ATOM-EUR",
+        base_currency: "ATOM",
+        quote_currency: "EUR",
+        base_min_size: "0.029",
+        base_max_size: "11000",
+        quote_increment: "0.01",
+        base_increment: "0.001",
+        display_name: "ATOM/EUR",
+        min_market_funds: "0.84",
+        max_market_funds: "370000",
         margin_enabled: false,
+        fx_stablecoin: false,
+        max_slippage_percentage: "0.03000000",
         post_only: false,
         limit_only: false,
         cancel_only: false,
+        trading_disabled: false,
         status: "online",
         status_message: "",
-        trading_disabled: false,
+        auction_mode: false,
       },
       {
-        id: "BTC-GBP",
-        base_currency: "BTC",
-        quote_currency: "GBP",
-        base_min_size: "0.00100000",
-        base_max_size: "80.00000000",
-        quote_increment: "0.01000000",
-        base_increment: "0.00000001",
-        display_name: "BTC/GBP",
-        min_market_funds: "10",
-        max_market_funds: "200000",
+        id: "BTRST-USD",
+        base_currency: "BTRST",
+        quote_currency: "USD",
+        base_min_size: "0.17",
+        base_max_size: "83000",
+        quote_increment: "0.001",
+        base_increment: "0.01",
+        display_name: "BTRST/USD",
+        min_market_funds: "1",
+        max_market_funds: "220000",
         margin_enabled: false,
+        fx_stablecoin: false,
+        max_slippage_percentage: "0.03000000",
         post_only: false,
         limit_only: false,
         cancel_only: false,
+        trading_disabled: false,
         status: "online",
         status_message: "",
+        auction_mode: false,
+      },
+      {
+        id: "REP-USD",
+        base_currency: "REP",
+        quote_currency: "USD",
+        base_min_size: "0.04",
+        base_max_size: "13000",
+        quote_increment: "0.01",
+        base_increment: "0.000001",
+        display_name: "REP/USD",
+        min_market_funds: "1",
+        max_market_funds: "200000",
+        margin_enabled: false,
+        fx_stablecoin: false,
+        max_slippage_percentage: "0.03000000",
+        post_only: false,
+        limit_only: false,
+        cancel_only: false,
         trading_disabled: false,
+        status: "online",
+        status_message: "",
+        auction_mode: false,
+      },
+      {
+        id: "MANA-ETH",
+        base_currency: "MANA",
+        quote_currency: "ETH",
+        base_min_size: "0.31",
+        base_max_size: "230000",
+        quote_increment: "0.0000001",
+        base_increment: "0.01",
+        display_name: "MANA/ETH",
+        min_market_funds: "0.00022",
+        max_market_funds: "210",
+        margin_enabled: false,
+        fx_stablecoin: false,
+        max_slippage_percentage: "0.03000000",
+        post_only: false,
+        limit_only: false,
+        cancel_only: false,
+        trading_disabled: false,
+        status: "online",
+        status_message: "",
+        auction_mode: false,
+      },
+      {
+        id: "MATH-USDT",
+        base_currency: "MATH",
+        quote_currency: "USDT",
+        base_min_size: "1",
+        base_max_size: "1800000",
+        quote_increment: "0.0001",
+        base_increment: "0.1",
+        display_name: "MATH/USDT",
+        min_market_funds: "1",
+        max_market_funds: "250000",
+        margin_enabled: false,
+        fx_stablecoin: false,
+        max_slippage_percentage: "0.03000000",
+        post_only: false,
+        limit_only: true,
+        cancel_only: false,
+        trading_disabled: false,
+        status: "online",
+        status_message: "",
+        auction_mode: false,
+      },
+      {
+        id: "MCO2-USD",
+        base_currency: "MCO2",
+        quote_currency: "USD",
+        base_min_size: "0.1",
+        base_max_size: "28000",
+        quote_increment: "0.01",
+        base_increment: "0.01",
+        display_name: "MCO2/USD",
+        min_market_funds: "1",
+        max_market_funds: "200000",
+        margin_enabled: false,
+        fx_stablecoin: false,
+        max_slippage_percentage: "0.03000000",
+        post_only: false,
+        limit_only: false,
+        cancel_only: false,
+        trading_disabled: false,
+        status: "online",
+        status_message: "",
+        auction_mode: false,
+      },
+      {
+        id: "APE-USD",
+        base_currency: "APE",
+        quote_currency: "USD",
+        base_min_size: "0.05",
+        base_max_size: "63000",
+        quote_increment: "0.001",
+        base_increment: "0.01",
+        display_name: "APE/USD",
+        min_market_funds: "1",
+        max_market_funds: "250000",
+        margin_enabled: false,
+        fx_stablecoin: false,
+        max_slippage_percentage: "0.03000000",
+        post_only: false,
+        limit_only: false,
+        cancel_only: false,
+        trading_disabled: false,
+        status: "online",
+        status_message: "",
+        auction_mode: false,
+      },
+      {
+        id: "RNDR-EUR",
+        base_currency: "RNDR",
+        quote_currency: "EUR",
+        base_min_size: "0.1",
+        base_max_size: "110000",
+        quote_increment: "0.01",
+        base_increment: "0.01",
+        display_name: "RNDR/EUR",
+        min_market_funds: "1",
+        max_market_funds: "100000",
+        margin_enabled: false,
+        fx_stablecoin: false,
+        max_slippage_percentage: "0.03000000",
+        post_only: false,
+        limit_only: true,
+        cancel_only: false,
+        trading_disabled: false,
+        status: "online",
+        status_message: "",
+        auction_mode: false,
       },
     ];
     nock(apiUri).get("/products").reply(200, response);
@@ -156,23 +276,26 @@ suite("PublicClient", () => {
 
   test(".getProduct()", async () => {
     const response: ProductInfo = {
-      id: "ETH-USD",
+      id: "ETH-BTC",
       base_currency: "ETH",
-      quote_currency: "USD",
-      base_min_size: "0.01000000",
-      base_max_size: "2800.00000000",
-      quote_increment: "0.01000000",
+      quote_currency: "BTC",
+      base_min_size: "0.00022",
+      base_max_size: "3300",
+      quote_increment: "0.00001",
       base_increment: "0.00000001",
-      display_name: "ETH/USD",
-      min_market_funds: "5",
-      max_market_funds: "1000000",
+      display_name: "ETH/BTC",
+      min_market_funds: "0.00001",
+      max_market_funds: "250",
       margin_enabled: false,
+      fx_stablecoin: false,
+      max_slippage_percentage: "0.03000000",
       post_only: false,
       limit_only: false,
       cancel_only: false,
       trading_disabled: false,
       status: "online",
       status_message: "",
+      auction_mode: false,
     };
     nock(apiUri).get(`/products/${product_id}`).reply(200, response);
     const data = await client.getProduct();

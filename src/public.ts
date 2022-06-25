@@ -2,10 +2,9 @@ import { stringify } from "node:querystring";
 import { RequestInit, Response, Headers } from "node-fetch";
 import { FetchClient } from "rpc-request";
 
-export const ApiUri = "https://api.pro.coinbase.com";
-export const SandboxApiUri = "https://api-public.sandbox.pro.coinbase.com";
+export const ApiUri = "https://api.exchange.coinbase.com";
+export const SandboxApiUri = "https://api-public.sandbox.exchange.coinbase.com";
 export const DefaultProductID = "BTC-USD";
-export const DefaultHeaders = { "User-Agent": "coinbase-pro-node-api" };
 
 export interface ProductID {
   product_id?: string;
@@ -42,12 +41,15 @@ export interface ProductInfo {
   min_market_funds: string;
   max_market_funds: string;
   margin_enabled: boolean;
+  fx_stablecoin: boolean;
+  max_slippage_percentage: string;
   post_only: boolean;
   limit_only: boolean;
   cancel_only: boolean;
   trading_disabled: boolean;
   status: string;
   status_message: string;
+  auction_mode: boolean;
 }
 
 export interface OrderBookLevel1 {
@@ -146,10 +148,7 @@ export class PublicClient extends FetchClient<unknown> {
     sandbox = false,
     apiUri = sandbox ? SandboxApiUri : ApiUri,
   }: PublicClientOptions = {}) {
-    super(
-      { headers: DefaultHeaders },
-      { rejectNotOk: false, transform: "raw", baseUrl: apiUri }
-    );
+    super({}, { rejectNotOk: false, transform: "raw", baseUrl: apiUri });
     this.#api_url = new URL(apiUri);
     this.#product_id = product_id;
   }

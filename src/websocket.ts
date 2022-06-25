@@ -9,8 +9,9 @@ import {
 } from "./public.js";
 import { Signer } from "./signer.js";
 
-export const WsUri = "wss://ws-feed.pro.coinbase.com";
-export const SandboxWsUri = "wss://ws-feed-public.sandbox.pro.coinbase.com";
+export const WsUri = "wss://ws-feed.exchange.coinbase.com";
+export const SandboxWsUri =
+  "wss://ws-feed-public.sandbox.exchange.coinbase.com";
 export const DefaultChannels = [
   { name: "full", product_ids: [DefaultProductID] },
   { name: "heartbeat", product_ids: [DefaultProductID] },
